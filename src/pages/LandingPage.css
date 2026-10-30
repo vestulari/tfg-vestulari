@@ -1,0 +1,59 @@
+.landing {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  /* Placeholder fins que hi hagi imatges: després serà un background-image */
+  background: linear-gradient(180deg, #8a7a66 0%, #3d3a36 70%, #1f2a28 100%);
+}
+
+.landing__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+  padding: 8rem 1.5rem 4rem;
+  text-align: center;
+}
+
+.landing__title {
+  margin: 0;
+  font-size: clamp(4rem, 12vw, 9rem);
+  font-weight: 700;
+  line-height: 1;
+  text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.35);
+}
+
+.landing__subtitle {
+  margin: 0;
+  padding: 0.6rem 3rem;
+  font-size: clamp(1.4rem, 3.6vw, 3.4rem);
+  background: rgba(15, 25, 25, 0.75);
+  border-radius: 999px;
+}
+
+.landing__text {
+  margin: 0;
+  max-width: 62ch;
+  font-size: clamp(1rem, 1.5vw, 1.4rem);
+  line-height: 1.5;
+}
+
+.landing__cta {
+  width: min(32rem, 90%);
+  padding: 1.3rem 2rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--red);
+  color: #fff;
+  font: inherit;
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.landing__cta:hover { filter: brightness(1.08); }
+.landing__cta:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }

@@ -1,0 +1,9 @@
+:root {
+  --blue: #0b4bb0;
+  --yellow: #f9d949;
+  --red: #d0405a;
+  font-family: "Space Grotesk", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
