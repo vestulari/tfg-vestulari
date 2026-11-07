@@ -2,5 +2,6 @@
   "name": "tfg-vestulari-api",
   "main": "src/index.ts",
   "compatibility_date": "2026-11-07",
-  "compatibility_flags": ["nodejs_compat"]
+  "compatibility_flags": ["nodejs_compat"],
+  "previews": {}
 }
