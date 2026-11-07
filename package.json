@@ -1,10 +1,10 @@
 {
-  "name": "tfg-vestuari",
+  "name": "tfg-vestulari",
   "private": true,
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
-    "dev:web": "npm run dev --workspace @tfg-vestuari/web",
-    "build:web": "npm run build --workspace @tfg-vestuari/web",
+    "dev:web": "npm run dev --workspace @tfg-vestulari/web",
+    "build:web": "npm run build --workspace @tfg-vestulari/web",
     "typecheck": "npm run typecheck --workspaces --if-present"
   }
 }
