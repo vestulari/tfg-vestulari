@@ -1,0 +1,19 @@
+name: Branch policy
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  only-from-dev:
+    name: Main només des de dev
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comprovar la branca d'origen
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          if [ "$HEAD_REF" != "dev" ]; then
+            echo "A main només es pot fer merge des de dev"
+            exit 1
+          fi
