@@ -5,6 +5,8 @@
   "scripts": {
     "dev:web": "npm run dev --workspace @tfg-vestulari/web",
     "build:web": "npm run build --workspace @tfg-vestulari/web",
+    "dev:api": "npm run dev --workspace @tfg-vestulari/api",
+    "deploy:api": "npm run deploy --workspace @tfg-vestulari/api",
     "typecheck": "npm run typecheck --workspaces --if-present"
   }
 }
