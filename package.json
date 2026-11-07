@@ -1,25 +1,10 @@
 {
-  "name": "vestualri-frontend",
+  "name": "tfg-vestuari",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "workspaces": ["apps/*", "packages/*"],
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@supabase/supabase-js": "^2.118.0",
-    "bootstrap": "^5.2.3",
-    "css": "^3.0.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^7.18.4"
-  },
-  "devDependencies": {
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.1",
-    "vite": "^6.0.0"
+    "dev:web": "npm run dev --workspace @tfg-vestuari/web",
+    "build:web": "npm run build --workspace @tfg-vestuari/web",
+    "typecheck": "npm run typecheck --workspaces --if-present"
   }
 }
