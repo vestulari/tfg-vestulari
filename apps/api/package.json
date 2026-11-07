@@ -9,7 +9,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "hono": "^4.13.17"
+    "hono": "^4.13.17",
+    "jose": "^6.2.15",
+    "postgres": "^4.1.0"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

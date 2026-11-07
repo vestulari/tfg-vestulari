@@ -1,5 +1,11 @@
+# Frontend
 node_modules/
 .env
 dist
+
+# Backend
 .wrangler/
+apps/api/.dev.vars
+
+# Supabase
 supabase/.temp/
