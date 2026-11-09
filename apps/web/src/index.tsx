@@ -1,20 +1,31 @@
-/* Pàgina inicial de la nostra aplicació */
+/* Encarregat de fer la redirecció de totes es pantalles */
 
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { AuthProvider } from "./auth/AuthProvider";
+import { RequireAuth } from "./auth/RequireAuth";
 import Landing from "./pages/LandingPage";
-/* import Login from "./pages/LogIn"; */
+import Login from "./pages/LogIn";
+import Inici from "./pages/Inici";
 import "./index.css";
- 
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        {/* <Route path="/login" element={<Login />} /> */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+
+          {/* Rutes que requereixen inici de sessió */}
+          <Route element={<RequireAuth />}>
+            <Route path="/inici" element={<Inici />} />
+          </Route>
+
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

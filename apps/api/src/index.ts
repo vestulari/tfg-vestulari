@@ -5,18 +5,20 @@ import { createRemoteJWKSet, jwtVerify } from 'jose'
 import postgres from 'postgres'
 
 type Env = {
-  Bindings: { SUPABASE_URL: string; DATABASE_URL: string }
-  Variables: { userId: string }
+  Bindings: { SUPABASE_URL: string; DATABASE_URL: string }  // Variables d'entorn
+  Variables: { userId: string }     // Dades
 }
 
 const app = new Hono<Env>()
 
+// Dominis disponibles
 app.use(
   '*',
   cors({
     origin: (origin) => {
       const allowed =
         origin === 'http://localhost:5173' ||
+        origin === 'https://elteudomini.com' ||
         origin === 'https://tfg-vestulari.pages.dev' ||
         origin.endsWith('.tfg-vestulari.pages.dev')
       return allowed ? origin : null
@@ -27,6 +29,8 @@ app.use(
 
 let jwks: ReturnType<typeof createRemoteJWKSet> | undefined
 
+// Creador per verificar el token JWT de Supabase.
+// Si el token és vàlid, afegeix l'ID d'usuari a les dades de la sol·licitud.
 const auth = createMiddleware<Env>(async (c, next) => {
   const header = c.req.header('Authorization')
   if (!header?.startsWith('Bearer ')) {
