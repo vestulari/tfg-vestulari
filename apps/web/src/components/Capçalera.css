@@ -1,0 +1,136 @@
+.capcalera {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 3.75rem;
+  padding: 0 1.5rem 0 2.5rem;
+  background: var(--blue);
+  border-radius: 999px;
+}
+
+.capcalera__titol {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--yellow);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* El bloc d'usuari es superposa a la barra i creix cap avall en obrir-se */
+.capcalera__usuari {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10;
+  border-radius: 1.9rem;
+  overflow: hidden;
+}
+
+.capcalera__usuari--obert {
+  min-width: 15.5rem;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.capcalera__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  width: 100%;
+  height: 3.75rem;
+  padding: 0 1.5rem;
+  border: 0;
+  background: none;
+  color: var(--yellow);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.capcalera__usuari--obert .capcalera__toggle {
+  color: var(--blue);
+  border-bottom: 1px solid #000;
+}
+
+.capcalera__nom {
+  max-width: 12rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.capcalera__avatar {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: #fcc9f9;
+  color: var(--blue);
+  font-weight: 700;
+}
+
+.capcalera__fletxa { color: inherit; }
+
+.capcalera__menu {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.capcalera__menu li + li { border-top: 1px solid #000; }
+
+.capcalera__opcio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  color: #000;
+  text-decoration: none;
+}
+
+.capcalera__opcio:hover { background: #f1f4f8; }
+
+.capcalera__subratllat { text-decoration: underline; }
+
+.capcalera__badge {
+  display: grid;
+  place-items: center;
+  min-width: 2.2rem;
+  height: 2.2rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: var(--red);
+  color: #000;
+}
+
+.capcalera__sortir {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border: 0;
+  background: #f4606f;
+  color: #000;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.capcalera__sortir:hover { filter: brightness(1.05); }
+
+.capcalera__toggle:focus-visible,
+.capcalera__opcio:focus-visible,
+.capcalera__sortir:focus-visible {
+  outline: 3px solid var(--yellow);
+  outline-offset: -3px;
+}
+
+@media (max-width: 480px) {
+  .capcalera { padding-left: 1.25rem; }
+  .capcalera__nom { display: none; }
+}

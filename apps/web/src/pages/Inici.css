@@ -1,0 +1,90 @@
+.inici {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 3rem 0;
+  background: #e6eef6;
+}
+
+.inici__contingut {
+  flex: 1;
+  padding: 2.5rem 0.5rem;
+}
+
+.inici__missatge { margin: 0; color: #3d3a36; }
+
+.inici__entitats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entitat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  width: 12rem;
+  padding: 1rem 1rem 1.2rem;
+  border-radius: 2rem;
+  background: #eff3f8;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  color: #111;
+  text-decoration: none;
+}
+
+.entitat-card:hover { box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12); }
+.entitat-card:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
+/* Placeholder fins que hi hagi imatges de les entitats */
+.entitat-card__imatge {
+  display: grid;
+  place-items: center;
+  width: 7.7rem;
+  height: 7.7rem;
+  border: 1px solid #c9c9c9;
+  background: var(--blue);
+  color: #fff;
+  font-size: 3rem;
+  font-weight: 700;
+}
+
+.entitat-card__nom {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 1.15rem;
+}
+
+.inici__peu {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0 3rem;
+}
+
+.inici__crea {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.9rem 1.6rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--yellow);
+  color: #000;
+  font: inherit;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.inici__crea-icona { font-size: 1.8rem; font-weight: 700; line-height: 1; }
+.inici__crea:hover { filter: brightness(1.05); }
+.inici__crea:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
+@media (max-width: 600px) {
+  .inici { padding: 1rem 1rem 0; }
+  .entitat-card { width: calc(50% - 0.75rem); }
+}
