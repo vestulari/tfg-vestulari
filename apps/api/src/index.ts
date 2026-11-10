@@ -18,7 +18,7 @@ app.use(
     origin: (origin) => {
       const allowed =
         origin === 'http://localhost:5173' ||
-        origin === 'https://elteudomini.com' ||
+        origin === 'https://vestulari.cat' ||
         origin === 'https://tfg-vestulari.pages.dev' ||
         origin.endsWith('.tfg-vestulari.pages.dev')
       return allowed ? origin : null
