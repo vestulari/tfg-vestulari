@@ -1,5 +1,3 @@
-// Crea el worker.
-
 {
   "name": "tfg-vestulari-api",
   "main": "src/index.ts",
@@ -7,6 +5,5 @@
   "compatibility_flags": ["nodejs_compat"],
   "routes": [
     { "pattern": "api.vestulari.cat", "custom_domain": true }
-  ],
-  "previews": {}
+  ]
 }
