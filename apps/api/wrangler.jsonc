@@ -3,5 +3,8 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-11-07",
   "compatibility_flags": ["nodejs_compat"],
-  "previews": {}
+  "routes": [
+    { "pattern": "api.vestulari.cat", "custom_domain": true }
+  ],
+  "preview": {}
 }

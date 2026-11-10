@@ -22,6 +22,7 @@ export default function Landing() {
           posicions i el vestuari que utilitzaran.
         </p>
 
+        {/* Botó vermell, si s'acciona, es va al login! */}
         <button className="landing__cta" onClick={() => navigate("/login")}>
           Inicia sessió
         </button>

@@ -1,0 +1,116 @@
+.login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  color: #fff;
+  /* Mateix degradat que la landing */
+  background: linear-gradient(180deg, #8a7a66 0%, #3d3a36 70%, #1f2a28 100%);
+}
+
+.login__card {
+  width: min(26rem, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 2.5rem 2rem;
+  background: rgba(15, 25, 25, 0.75);
+  border-radius: 1.5rem;
+}
+
+.login__title {
+  margin: 0;
+  text-align: center;
+  font-size: clamp(1.8rem, 5vw, 2.4rem);
+  font-weight: 700;
+  line-height: 1.1;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
+}
+
+.login__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.login__label {
+  font-size: 0.95rem;
+}
+
+.login__input {
+  width: 100%;
+  padding: 0.85rem 1.2rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #1f2a28;
+  font: inherit;
+}
+
+.login__input:focus-visible {
+  outline: 3px solid var(--yellow);
+  outline-offset: 2px;
+}
+
+.login__hint {
+  margin: 0;
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.login__message {
+  margin: 0;
+  padding: 0.75rem 1.2rem;
+  border-radius: 1rem;
+  font-size: 0.95rem;
+}
+
+.login__message--error {
+  background: rgba(208, 64, 90, 0.25);
+  border: 1px solid #ff8fa3;
+}
+
+.login__message--info {
+  background: rgba(249, 217, 73, 0.2);
+  border: 1px solid var(--yellow);
+}
+
+.login__submit {
+  padding: 1rem 2rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--red);
+  color: #fff;
+  font: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.login__submit:hover { filter: brightness(1.08); }
+.login__submit:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
+.login__submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.login__switch {
+  padding: 0.25rem;
+  border: 0;
+  background: none;
+  color: #fff;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.login__switch:focus-visible,
+.login__back:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 4px;
+}
+
+.login__back {
+  align-self: center;
+  color: #fff;
+  opacity: 0.85;
+}
