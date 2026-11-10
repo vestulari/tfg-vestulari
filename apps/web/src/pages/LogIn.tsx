@@ -1,10 +1,10 @@
-// Page del login i registre d'usuaris.
-
 import { useState, type FormEvent } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthProvider";
 import { supabase } from "../lib/supabase";
 import "./LogIn.css";
+
+const MISSATGE_JA_REGISTRAT = "Aquest correu ja té un compte. Inicia la sessió.";
 
 export default function LogIn() {
   const { session, loading } = useAuth();
@@ -17,14 +17,12 @@ export default function LogIn() {
 
   if (!loading && session) return <Navigate to="/inici" replace />;
 
-  // Funció que s'executa quan l'usuari envia el formulari.
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
     setInfo(null);
     setSubmitting(true);
 
-    // Crida a Supabase per iniciar sessió o registrar-se.
     if (mode === "login") {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) setError("Correu o contrasenya incorrectes");
@@ -34,14 +32,28 @@ export default function LogIn() {
         password,
         options: { emailRedirectTo: `${window.location.origin}/inici` },
       });
-      if (error) setError(error.message);
-      else if (!data.session) setInfo("Revisa el correu per confirmar el compte.");
+
+      if (error) {
+        // Si la confirmació per correu estigués desactivada, Supabase
+        // retornaria directament l'error "User already registered".
+        if (/already registered/i.test(error.message)) {
+          setMode("login");
+          setError(MISSATGE_JA_REGISTRAT);
+        } else {
+          setError(error.message);
+        }
+      } else if (data.user?.identities?.length === 0) {
+        // Amb la confirmació activada, Supabase retorna un usuari fals
+        setMode("login");
+        setError(MISSATGE_JA_REGISTRAT);
+      } else if (!data.session) {
+        setInfo("Revisa el correu per confirmar el compte.");
+      }
     }
 
     setSubmitting(false);
   }
 
-  // Funció que canvia entre mode login i registre.
   function canviaMode() {
     setMode(mode === "login" ? "registre" : "login");
     setError(null);
