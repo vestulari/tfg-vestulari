@@ -7,6 +7,6 @@
   "compatibility_flags": ["nodejs_compat"],
   "routes": [
     { "pattern": "api.elteudomini.com", "custom_domain": true }
-  ]
+  ],
   "previews": {}
 }
