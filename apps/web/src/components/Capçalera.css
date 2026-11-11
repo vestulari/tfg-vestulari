@@ -25,7 +25,7 @@
   top: 0;
   right: 0;
   z-index: 10;
-  border-radius: 1.9rem;
+  border-radius: 1.75rem;
   overflow: hidden;
 }
 
@@ -96,8 +96,6 @@
 }
 
 .capcalera__opcio:hover { background: #f1f4f8; }
-
-.capcalera__subratllat { text-decoration: underline; }
 
 .capcalera__badge {
   display: grid;

@@ -87,7 +87,7 @@ export default function Capcalera({ titol = "Escull entitat…" }: Props) {
                     {pendents}
                   </span>
                 )}
-                <span className="capcalera__subratllat">Invitacions</span>
+                <span>Invitacions</span>
               </Link>
             </li>
             <li>

@@ -12,7 +12,8 @@
   "dependencies": {
     "hono": "^4.13.17",
     "jose": "^6.2.15",
-    "postgres": "^4.1.0"
+    "postgres": "^4.1.0",
+    "@tfg-vestulari/shared": "*"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

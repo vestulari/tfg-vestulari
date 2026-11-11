@@ -5,6 +5,5 @@
   "compatibility_flags": ["nodejs_compat"],
   "routes": [
     { "pattern": "api.vestulari.cat", "custom_domain": true }
-  ],
-  "preview": {}
+  ]
 }
