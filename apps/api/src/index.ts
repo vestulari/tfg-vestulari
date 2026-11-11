@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import type { Env } from './types'
 import { me } from './routes/me'
+import { entitats } from './middleware/entitats'
 
 const app = new Hono<Env>()
 
@@ -22,5 +23,6 @@ app.use(
 
 app.get('/health', (c) => c.json({ ok: true }))
 app.route('/me', me)
+app.route('/entitats', entitats)
 
 export default app
