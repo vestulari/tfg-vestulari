@@ -1,3 +1,6 @@
+// Middelwares de autenticació i autorització.
+// Es dediquen sobretot a mirar que el token JWT sigui vàlid, afegint-ho a la request
+
 import { createMiddleware } from 'hono/factory'
 import { createRemoteJWKSet, jwtVerify, type JWTPayload } from 'jose'
 import type { Env } from '../types'

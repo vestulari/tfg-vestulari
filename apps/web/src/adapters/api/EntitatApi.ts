@@ -1,3 +1,5 @@
+// Fa les crides API relacionades amb les entitats.
+
 import type { EntitatResumDto } from '@tfg-vestulari/shared'
 import { api } from './ApiClient'
 import type { EntitatGateway } from '../interfaces/EntitatGateway'

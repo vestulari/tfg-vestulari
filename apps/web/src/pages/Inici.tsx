@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { EntitatResumDto } from "@tfg-vestulari/shared";
 import { entitatApi } from "../adapters/api/EntitatApi";
-import Capcalera from "../components/Capçalera";
+import Capcalera from "../components/Capcalera";
 import "./Inici.css";
 
 export default function Inici() {

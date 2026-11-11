@@ -25,6 +25,17 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
     },
   })
 
-  if (!res.ok) throw new ApiError(res.status, await res.text())
+  if (!res.ok) {
+    let missatge = res.statusText || 'Error'
+    try {
+      const cos = (await res.json()) as { error?: unknown }
+      if (typeof cos.error === 'string') missatge = cos.error
+    } catch {
+      // la resposta no era JSON
+    }
+    throw new ApiError(res.status, missatge)
+  }
+
+  if (res.status === 204) return undefined as T
   return (await res.json()) as T
 }
