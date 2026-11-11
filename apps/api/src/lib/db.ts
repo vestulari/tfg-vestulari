@@ -1,3 +1,5 @@
+// Obre la connexió amb la base de dades
+
 import postgres from 'postgres'
 
 export function obreConnexio(url: string) {

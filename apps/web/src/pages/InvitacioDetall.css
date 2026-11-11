@@ -1,0 +1,85 @@
+.invitacio {
+  min-height: 100vh;
+  padding: 1.5rem 3rem 3rem;
+  background: #e6eef6;
+}
+
+.invitacio__targeta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(14rem, 22rem);
+  grid-template-areas:
+    "enrere enrere"
+    "info accions";
+  gap: 1rem 4rem;
+  margin-top: 2.25rem;
+  padding: 2.5rem 3rem 3rem;
+  border-radius: 3rem;
+  background: #f2f5fa;
+}
+
+.invitacio__enrere { grid-area: enrere; }
+.invitacio__info { grid-area: info; padding: 0 1rem; }
+
+.invitacio__nom {
+  margin: 1rem 0 2.5rem;
+  text-align: center;
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.invitacio__descripcio {
+  margin: 0;
+  text-align: justify;
+  line-height: 1.5;
+  white-space: pre-line;  /* respecta els salts de línia i paràgrafs */
+}
+
+.invitacio__accions {
+  grid-area: accions;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.invitacio__missatge { grid-column: 1 / -1; margin: 0; color: #3d3a36; }
+
+.invitacio__error {
+  margin: 0;
+  padding: 0.75rem 1.2rem;
+  border: 1px solid #ff8fa3;
+  border-radius: 1rem;
+  background: rgba(208, 64, 90, 0.12);
+  text-align: center;
+}
+
+.invitacio__boto {
+  width: 100%;
+  padding: 0.9rem 1.5rem;
+  border: 0;
+  border-radius: 999px;
+  color: #000;
+  font: inherit;
+  font-size: 1.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.invitacio__boto--accepta { background: #aee06a; }
+.invitacio__boto--rebutja { background: #f4606f; }
+.invitacio__boto:hover:not(:disabled) { filter: brightness(1.05); }
+.invitacio__boto:disabled { opacity: 0.6; cursor: not-allowed; }
+.invitacio__boto:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
+@media (max-width: 800px) {
+  .invitacio { padding: 1rem 1rem 2rem; }
+  .invitacio__targeta {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "enrere" "info" "accions";
+    padding: 1.5rem 1.25rem 2rem;
+    border-radius: 2rem;
+  }
+  .invitacio__info { padding: 0; }
+}

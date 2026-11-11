@@ -1,0 +1,93 @@
+.invitacions {
+  min-height: 100vh;
+  padding: 1.5rem 3rem 3rem;
+  background: #e6eef6;
+}
+
+.invitacions__barra {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem 4rem 1.5rem;
+}
+
+.invitacions__cerca {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: min(27rem, 100%);
+  padding: 0.55rem 1.25rem;
+  border-radius: 999px;
+  background: #f1f5fa;
+  color: #000;
+}
+
+.invitacions__cerca:focus-within { outline: 3px solid var(--blue); outline-offset: 2px; }
+.invitacions__cerca svg { flex: none; width: 1.6rem; height: 1.6rem; }
+
+.invitacions__cerca input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  color: #000;
+  font: inherit;
+  font-size: 1.1rem;
+  outline: none;
+}
+
+.invitacions__llista {
+  display: grid;
+  gap: 1.1rem;
+  margin: 0;
+  padding: 0.5rem 2rem 0;
+  list-style: none;
+}
+
+.invitacions__fila {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.55rem 1.25rem 0.55rem 1.75rem;
+  border-radius: 999px;
+  background: #f1f5fa;
+  color: #111;
+  text-decoration: none;
+}
+
+.invitacions__fila:hover { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1); }
+.invitacions__fila:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
+.invitacions__sobre {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  width: 3.4rem;
+  color: #000;
+}
+
+.invitacions__sobre svg { display: block; width: 100%; height: auto; }
+
+/* El punt només hi és si la invitació encara no s'ha obert */
+.invitacions__punt {
+  position: absolute;
+  top: -0.4rem;
+  right: -0.45rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 50%;
+  background: var(--red);
+}
+
+.invitacions__text { flex: 1; min-width: 0; font-size: 1.2rem; }
+
+.invitacions__missatge { margin: 0; padding: 1rem 2rem; color: #3d3a36; }
+
+@media (max-width: 600px) {
+  .invitacions { padding: 1rem 1rem 2rem; }
+  .invitacions__barra { padding: 1.25rem 0.5rem 1rem; gap: 1rem; }
+  .boto-enrere { width: 3rem; }
+  .invitacions__llista { padding: 0.5rem 0 0; }
+  .invitacions__fila { gap: 1rem; padding-left: 1.1rem; border-radius: 2rem; }
+  .invitacions__text { font-size: 1rem; }
+}

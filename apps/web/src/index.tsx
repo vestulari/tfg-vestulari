@@ -9,6 +9,8 @@ import Landing from "./pages/LandingPage";
 import Login from "./pages/LogIn";
 import Inici from "./pages/Inici";
 import "./index.css";
+import InvitacioDetall from "./pages/InvitacioDetall";
+import Invitacions from "./pages/Invitacions";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -21,6 +23,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           {/* Rutes que requereixen inici de sessió */}
           <Route element={<RequireAuth />}>
             <Route path="/inici" element={<Inici />} />
+            <Route path="/invitacions" element={<Invitacions />} />
+            <Route path="/invitacions/:id" element={<InvitacioDetall />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

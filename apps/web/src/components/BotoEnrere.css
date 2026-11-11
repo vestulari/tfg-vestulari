@@ -1,0 +1,9 @@
+.boto-enrere {
+  display: inline-flex;
+  width: 4.2rem;
+  color: #000;
+}
+
+.boto-enrere svg { width: 100%; height: auto; display: block; }
+.boto-enrere:hover { opacity: 0.75; }
+.boto-enrere:focus-visible { outline: 3px solid var(--blue); outline-offset: 4px; }

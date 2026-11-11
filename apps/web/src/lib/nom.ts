@@ -1,3 +1,5 @@
+// Validador del nom d'usuari.
+
 export const NOM_MIN = 1;
 export const NOM_MAX = 40;
 
