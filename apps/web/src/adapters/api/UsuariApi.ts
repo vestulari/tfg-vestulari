@@ -6,4 +6,6 @@ import type { UsuariGateway } from '../interfaces/UsuariGateway'
 
 export const usuariApi: UsuariGateway = {
   getMe: () => api<UsuariDto>('/me'),
+  canviaNom: (nom) =>
+    api<UsuariDto>('/me', { method: 'PATCH', body: JSON.stringify({ nom }) }),
 }

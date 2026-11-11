@@ -1,0 +1,22 @@
+.requisits {
+  display: grid;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.85rem;
+  color: #55595f;
+}
+
+.requisits__item::before { content: "✗ "; }
+.requisits__item--ok { color: #2f6f1f; }
+.requisits__item--ok::before { content: "✓ "; }
+
+.requisits__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

@@ -1,14 +1,14 @@
 // Crides API REST a /me. Crida base de tot el que estigui relacionat amb l'usuari autenticat.
 
-import { Hono } from 'hono'
-import type { UsuariDto } from '@tfg-vestulari/shared'
+import { Hono, type Context } from 'hono'
+import { errorNom, type UsuariDto } from '@tfg-vestulari/shared'
 import type { Env } from '../types'
 import { auth } from '../middleware/auth'
 import { bd } from '../middleware/bd'
+import { invitacions } from './invitacions'
 import * as usuariRepo from '../repositories/usuariRepository'
 import * as entitatRepo from '../repositories/entitatRepository'
 import * as invitacioRepo from '../repositories/invitacioRepository'
-import { invitacions } from './invitacions'
 
 export const me = new Hono<Env>()
 
@@ -17,8 +17,7 @@ export const me = new Hono<Env>()
 me.use('*', auth, bd)
 me.route('/invitacions', invitacions)
 
-// Retorna les dades de l'usuari autenticat i el nombre d'invitacions pendents
-me.get('/', async (c) => {
+async function carregaUsuari(c: Context<Env>): Promise<UsuariDto | null> {
   const sql = c.get('sql')
   const userId = c.get('userId')
 
@@ -26,14 +25,43 @@ me.get('/', async (c) => {
     usuariRepo.troba(sql, userId),
     invitacioRepo.comptaPendents(sql, userId),
   ])
-  if (!usuari) return c.json({ error: 'Usuari no trobat' }, 404)
+  if (!usuari) return null
 
-  const dto: UsuariDto = {
+  return {
     id: userId,
     nom: usuari.nom,
     email: c.get('email'),
     invitacionsPendents: pendents,
   }
+}
+
+// Retorna les dades de l'usuari autenticat i el nombre d'invitacions pendents
+me.get('/', async (c) => {
+  const dto = await carregaUsuari(c)
+  if (!dto) return c.json({ error: 'Usuari no trobat' }, 404)
+  return c.json(dto)
+})
+
+// Només es pot canviar el nom d'un mateix: l'identificador ve del token, no del cos.
+me.patch('/', async (c) => {
+  let cos: unknown
+  try {
+    cos = await c.req.json()
+  } catch {
+    return c.json({ error: 'Cos de la petició no vàlid' }, 400)
+  }
+
+  const nom = (cos as { nom?: unknown } | null)?.nom
+  if (typeof nom !== 'string') return c.json({ error: 'Falta el nom' }, 400)
+
+  const error = errorNom(nom)
+  if (error) return c.json({ error }, 400)
+
+  const fet = await usuariRepo.canviaNom(c.get('sql'), c.get('userId'), nom)
+  if (!fet) return c.json({ error: 'Usuari no trobat' }, 404)
+
+  const dto = await carregaUsuari(c)
+  if (!dto) return c.json({ error: 'Usuari no trobat' }, 404)
   return c.json(dto)
 })
 
@@ -42,3 +70,4 @@ me.get('/entitats', async (c) => {
   const entitats = await entitatRepo.llistaPerUsuari(c.get('sql'), c.get('userId'))
   return c.json(entitats)
 })
+
