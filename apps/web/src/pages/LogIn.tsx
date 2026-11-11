@@ -1,14 +1,30 @@
 import { useState, type FormEvent } from "react";
 import { Link, Navigate } from "react-router-dom";
+import type { AuthError } from "@supabase/supabase-js";
 import { useAuth } from "../auth/AuthProvider";
 import { supabase } from "../lib/supabase";
+import { NOM_MAX, errorNom } from "../lib/nom";
+import { LONGITUD_MINIMA, contrasenyaValida, requisitsContrasenya} from "../lib/contrasenya";
 import "./LogIn.css";
 
-const MISSATGE_JA_REGISTRAT = "Aquest correu ja té un compte. Inicia la sessió.";
+function missatgeError(error: AuthError): string {
+  switch (error.code) {
+    case "weak_password":
+      return "La contrasenya no compleix els requisits de seguretat.";
+    case "email_address_invalid":
+      return "El correu no és vàlid.";
+    case "over_email_send_rate_limit":
+    case "over_request_rate_limit":
+      return "Massa intents. Torna-ho a provar d'aquí una estona.";
+    default:
+      return error.message;
+  }
+}
 
 export default function LogIn() {
   const { session, loading } = useAuth();
   const [mode, setMode] = useState<"login" | "registre">("login");
+  const [nom, setNom] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -21,36 +37,36 @@ export default function LogIn() {
     e.preventDefault();
     setError(null);
     setInfo(null);
-    setSubmitting(true);
 
     if (mode === "login") {
+      setSubmitting(true);
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) setError("Correu o contrasenya incorrectes");
-    } else {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { emailRedirectTo: `${window.location.origin}/inici` },
-      });
-
-      if (error) {
-        // Si la confirmació per correu estigués desactivada, Supabase
-        // retornaria directament l'error "User already registered".
-        if (/already registered/i.test(error.message)) {
-          setMode("login");
-          setError(MISSATGE_JA_REGISTRAT);
-        } else {
-          setError(error.message);
-        }
-      } else if (data.user?.identities?.length === 0) {
-        // Amb la confirmació activada, Supabase retorna un usuari fals
-        setMode("login");
-        setError(MISSATGE_JA_REGISTRAT);
-      } else if (!data.session) {
-        setInfo("Revisa el correu per confirmar el compte.");
-      }
+      setSubmitting(false);
+      return;
     }
 
+    const errNom = errorNom(nom);
+    if (errNom) {
+      setError(errNom);
+      return;
+    }
+    if (!contrasenyaValida(password)) {
+      setError("La contrasenya no compleix tots els requisits.");
+      return;
+    }
+
+    setSubmitting(true);
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { full_name: nom },
+        emailRedirectTo: `${window.location.origin}/inici`,
+      },
+    });
+    if (error) setError(missatgeError(error));
+    else if (!data.session) setInfo("Revisa el correu per confirmar el compte.");
     setSubmitting(false);
   }
 
@@ -66,6 +82,22 @@ export default function LogIn() {
         <h1 className="login__title">
           {mode === "login" ? "Inicia la sessió" : "Crea un compte"}
         </h1>
+
+        {mode === "registre" && (
+          <div className="login__field">
+            <label className="login__label" htmlFor="nom">Nom d'usuari</label>
+            <input
+              id="nom"
+              className="login__input"
+              type="text"
+              autoComplete="nickname"
+              value={nom}
+              onChange={(e) => setNom(e.target.value)}
+              required
+              maxLength={NOM_MAX}
+            />
+          </div>
+        )}
 
         <div className="login__field">
           <label className="login__label" htmlFor="email">Correu electrònic</label>
@@ -90,10 +122,19 @@ export default function LogIn() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            minLength={8}
+            minLength={mode === "registre" ? LONGITUD_MINIMA : undefined}
           />
           {mode === "registre" && (
-            <p className="login__hint">Mínim 8 caràcters.</p>
+            <ul className="login__requisits">
+              {requisitsContrasenya(password).map((r) => (
+                <li
+                  key={r.text}
+                  className={`login__requisit${r.complert ? " login__requisit--ok" : ""}`}
+                >
+                  {r.text}
+                </li>
+              ))}
+            </ul>
           )}
         </div>
 

@@ -6,5 +6,5 @@
   "routes": [
     { "pattern": "api.vestulari.cat", "custom_domain": true }
   ],
-  "preview": {}
+  "previews": {}
 }
