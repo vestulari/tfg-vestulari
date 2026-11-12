@@ -3,9 +3,10 @@ import { Link, Navigate } from "react-router-dom";
 import type { AuthError } from "@supabase/supabase-js";
 import { useAuth } from "../auth/AuthProvider";
 import { supabase } from "../lib/supabase";
-import { NOM_MAX, errorNom } from "../lib/nom";
+import { errorNom, NOM_MAX } from "@tfg-vestulari/shared";
 import { LONGITUD_MINIMA, contrasenyaValida, requisitsContrasenya} from "../lib/contrasenya";
 import "./LogIn.css";
+
 
 function missatgeError(error: AuthError): string {
   switch (error.code) {

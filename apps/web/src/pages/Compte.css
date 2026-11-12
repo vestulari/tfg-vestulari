@@ -1,0 +1,101 @@
+.compte {
+  min-height: 100vh;
+  padding: 1.5rem 3rem 3rem;
+  background: #e6eef6;
+}
+
+.compte__barra { padding: 2rem 4rem 0.5rem; }
+
+.compte__targeta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2.5rem 4rem;
+  margin-top: 1rem;
+  padding: 2.5rem 3rem 3rem;
+  border-radius: 3rem;
+  background: #f2f5fa;
+}
+
+.compte__missatge { grid-column: 1 / -1; margin: 0; color: #3d3a36; }
+
+.compte__seccio {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.compte__seccio--sessio { grid-column: 1 / -1; align-items: flex-start; }
+
+.compte__titol { margin: 0; font-size: 1.6rem; font-weight: 700; color: var(--blue); }
+
+.compte__avatar {
+  display: grid;
+  place-items: center;
+  width: 7rem;
+  height: 7rem;
+  border-radius: 50%;
+  background: #fcc9f9;
+  color: var(--blue);
+  font-size: 3rem;
+  font-weight: 700;
+  user-select: none;
+}
+
+.compte__correu { margin: 0; color: #3d3a36; overflow-wrap: anywhere; }
+
+.compte__form { display: flex; flex-direction: column; gap: 0.6rem; }
+
+.compte__etiqueta { font-size: 0.95rem; }
+
+.compte__input {
+  width: 100%;
+  padding: 0.8rem 1.2rem;
+  border: 1px solid #c9d3df;
+  border-radius: 999px;
+  background: #fff;
+  color: #111;
+  font: inherit;
+}
+
+.compte__input:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+.compte__error,
+.compte__ok {
+  margin: 0;
+  padding: 0.6rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.95rem;
+}
+
+.compte__error { border: 1px solid #ff8fa3; background: rgba(208, 64, 90, 0.12); }
+.compte__ok { border: 1px solid #8cc46a; background: rgba(140, 196, 106, 0.2); }
+
+.compte__boto {
+  align-self: flex-start;
+  margin-top: 0.5rem;
+  padding: 0.8rem 1.8rem;
+  border: 0;
+  border-radius: 999px;
+  color: #000;
+  font: inherit;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.compte__boto--principal { background: var(--yellow); }
+.compte__boto--sortir { background: #f4606f; }
+.compte__boto:hover:not(:disabled) { filter: brightness(1.05); }
+.compte__boto:disabled { opacity: 0.5; cursor: not-allowed; }
+.compte__boto:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
+@media (max-width: 800px) {
+  .compte { padding: 1rem 1rem 2rem; }
+  .compte__barra { padding: 1.25rem 0.5rem 0.5rem; }
+  .compte__targeta {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 1.5rem 1.25rem 2rem;
+    border-radius: 2rem;
+  }
+}
