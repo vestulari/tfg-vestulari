@@ -1,1 +1,10 @@
 Client de xarxa. Des d'aqui es fan les crides als endpoints
+
+- ApiClient.ts: la funció api(), que fan servir tots els altres. Hi afegeix el token de la sessió, i si
+  la resposta és un error, llença un ApiError amb el codi i el missatge del servidor.
+- UsuariApi.ts: crides de l'usuari (/me)
+- EntitatApi.ts: crides de les entitats
+- InvitacioAPI.ts: crides de les invitacions
+
+Cada fitxer fa la seva interfície de la carpeta interfaces.
+Les pantalles sempre criden l'API a través d'aquests fitxers, mai amb un fetch directe.

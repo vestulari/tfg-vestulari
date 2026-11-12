@@ -1,3 +1,5 @@
+// Tipus de les dades que viatgen entre el frontend i l'API (DTO).
+
 export type UsuariDto = {
   id: string
   nom: string
@@ -29,7 +31,7 @@ export type Genere = 'masculi' | 'femeni' | 'altres'
 export type AtributNouDto = { nom: string; tipus: TipusAtribut }
 export type ValorAtributDto = { atribut: string; valor: string }
 
-/** Perfil del creador. L'API sempre el fa administrador. */
+// Perfil del creador. L'API sempre el fa administrador.
 export type PerfilNouDto = {
   nom: string
   edat: number

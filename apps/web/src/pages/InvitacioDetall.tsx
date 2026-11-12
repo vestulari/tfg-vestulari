@@ -1,22 +1,28 @@
+// Detall d'una invitació, on es pot acceptar o rebutjar.
+
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import type { InvitacioDetallDto } from "@tfg-vestulari/shared";
 import { ApiError } from "../adapters/api/ApiClient";
 import { invitacioApi } from "../adapters/api/InvitacioAPI";
+import { useUsuari } from "../auth/UsuariProvider";
 import BotoEnrere from "../components/BotoEnrere";
 import Capcalera from "../components/Capcalera";
 import EntitatImatge from "../components/EntitatImatge";
 import "./InvitacioDetall.css";
 
+// Estats de la pantalla mentre es carrega la invitació
 type Estat =
   | { tipus: "carregant" }
   | { tipus: "no_disponible" }
   | { tipus: "error" }
   | { tipus: "ok"; invitacio: InvitacioDetallDto };
 
+// En obrir-la, l'API ja la marca com a oberta
 export default function InvitacioDetall() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { recarrega } = useUsuari();
   const idNum = Number(id);
 
   const [estat, setEstat] = useState<Estat>({ tipus: "carregant" });
@@ -30,7 +36,6 @@ export default function InvitacioDetall() {
     }
 
     let cancelat = false;
-    // En obrir-la, l'API la marca com a oberta
     invitacioApi
       .obre(idNum)
       .then((invitacio) => {
@@ -50,6 +55,8 @@ export default function InvitacioDetall() {
     };
   }, [idNum]);
 
+  // Accepta o rebutja la invitació. Després torna a carregar l'usuari,
+  // perquè el nombre d'invitacions pendents de la capçalera ha canviat.
   async function resol(accio: "accepta" | "rebutja") {
     setEnviant(true);
     setErrorAccio(null);
@@ -61,6 +68,7 @@ export default function InvitacioDetall() {
         await invitacioApi.rebutja(idNum);
         navigate("/invitacions");
       }
+      void recarrega();
     } catch (e) {
       setErrorAccio(e instanceof ApiError ? e.message : "No s'ha pogut completar l'acció.");
       setEnviant(false);

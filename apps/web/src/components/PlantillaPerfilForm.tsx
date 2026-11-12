@@ -1,3 +1,6 @@
+// Formulari de la plantilla de perfil: els atributs que tindran tots els perfils de l'entitat.
+// Serveix tant per crear-la (mode creacio) com per editar-la (mode edicio).
+
 import { useState, type FormEvent } from "react";
 import {
   ATRIBUTS_BASICS,
@@ -12,16 +15,17 @@ import "./Formulari.css";
 import "./PlantillaPerfilForm.css";
 
 type Props = {
-  /** `creacio`: text introductori. `edicio`: només l'avís dels canvis. */
+  // En mode creacio surt el text d'explicació, i en mode edicio només l'avís dels canvis
   mode: "creacio" | "edicio";
   atributs: AtributFila[];
   onCanvi: (atributs: AtributFila[]) => void;
-  /** Només es crida si el formulari és vàlid. */
+  // Només es crida si el formulari és vàlid.
   onConfirma: () => void;
   enviant?: boolean;
   errorServidor?: string | null;
 };
 
+// Només valida i avisa: les dades les guarda qui el fa servir, amb onCanvi i onConfirma
 export default function PlantillaPerfilForm({
   mode,
   atributs,
@@ -32,21 +36,25 @@ export default function PlantillaPerfilForm({
 }: Props) {
   const [error, setError] = useState<string | null>(null);
 
+  // Canvia el nom o el tipus d'un atribut
   function canviaFila(clau: number, parcial: Partial<AtributFila>) {
     onCanvi(atributs.map((a) => (a.clau === clau ? { ...a, ...parcial } : a)));
     setError(null);
   }
 
+  // Afegeix una fila buida al final
   function afegeix() {
     const seguent = Math.max(0, ...atributs.map((a) => a.clau)) + 1;
     onCanvi([...atributs, { clau: seguent, nom: "", tipus: "" }]);
   }
 
+  // Treu un atribut de la llista
   function elimina(clau: number) {
     onCanvi(atributs.filter((a) => a.clau !== clau));
     setError(null);
   }
 
+  // Valida els atributs i, si estan bé, confirma
   function envia(e: FormEvent) {
     e.preventDefault();
     const err = errorAtributs(atributsOmplerts(atributs));

@@ -1,0 +1,5 @@
+Utilitats del frontend que no són components
+
+- supabase.ts: el client de Supabase. Només el fem servir per a la sessió (login, registre i contrasenya).
+- contrasenya.ts: els requisits de la contrasenya, els mateixos que té Supabase.
+- enters.ts: per als camps on només es poden escriure números.

@@ -10,6 +10,7 @@ export async function troba(sql: Sql, userId: string) {
   return row
 }
 
+// Canvia el nom de l'usuari. Retorna false si l'usuari no existeix.
 export async function canviaNom(sql: Sql, userId: string, nom: string): Promise<boolean> {
   const rows = await sql`
     update public.usuaris set nom = ${nom} where id = ${userId} returning id

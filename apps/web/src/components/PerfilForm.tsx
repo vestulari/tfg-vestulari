@@ -1,3 +1,6 @@
+// Formulari d'un perfil: nom, edat, gènere, permisos i els atributs de la plantilla.
+// De moment es fa servir per al perfil del creador d'una entitat.
+
 import { useId, useState, type FormEvent } from "react";
 import {
   GENERES,
@@ -18,18 +21,19 @@ import "./PerfilForm.css";
 type AtributDefinit = AtributFila & { tipus: TipusAtribut };
 
 type Props = {
-  /** Atributs addicionals de la plantilla. */
+  // Atributs addicionals de la plantilla.
   atributs: AtributFila[];
   perfil: PerfilEsborrany;
   onCanvi: (perfil: PerfilEsborrany) => void;
-  /** Només es crida si el formulari és vàlid. */
+  // Només es crida si el formulari és vàlid.
   onConfirma: () => void;
-  /** El creador de l'entitat sempre és administrador i no ho pot deixar de ser. */
+  // El creador de l'entitat sempre és administrador i no ho pot deixar de ser.
   adminObligatori?: boolean;
   enviant?: boolean;
   errorServidor?: string | null;
 };
 
+// Només valida i avisa: les dades les guarda qui el fa servir, amb onCanvi i onConfirma
 export default function PerfilForm({
   atributs,
   perfil,
@@ -46,11 +50,13 @@ export default function PerfilForm({
   const definits = atributs.filter((a): a is AtributDefinit => a.tipus !== "");
   const esAdmin = adminObligatori || perfil.esAdministrador;
 
+  // Canvia un o més camps del perfil i treu l'error que hi hagués
   function canvia(parcial: Partial<PerfilEsborrany>) {
     onCanvi({ ...perfil, ...parcial });
     setError(null);
   }
 
+  // Valida tot el formulari i, si està bé, confirma
   function envia(e: FormEvent) {
     e.preventDefault();
 

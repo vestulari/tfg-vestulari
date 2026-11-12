@@ -1,1 +1,6 @@
 Contracte de dades. Aqui es verifica que les dades rebudes estiguin en el DTO.
+
+Hi ha una interfície per cada grup de crides (usuaris, entitats i invitacions), que diu quines funcions hi ha
+i quin DTO retorna cadascuna. Els DTO són al paquet shared.
+Si algun dia canviem la manera de parlar amb el servidor, només caldrà fer una implementació nova
+i les pantalles no s'hauran de tocar.

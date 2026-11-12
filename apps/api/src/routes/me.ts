@@ -17,6 +17,7 @@ export const me = new Hono<Env>()
 me.use('*', auth, bd)
 me.route('/invitacions', invitacions)
 
+// Junta les dades de l'usuari amb el nombre d'invitacions pendents
 async function carregaUsuari(c: Context<Env>): Promise<UsuariDto | null> {
   const sql = c.get('sql')
   const userId = c.get('userId')

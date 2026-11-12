@@ -1,8 +1,11 @@
+// Botó amb la fletxa per tornar a la pantalla anterior.
+
 import { Link } from "react-router-dom";
 import "./BotoEnrere.css";
 
 type Props = { to: string; etiqueta?: string };
 
+// Porta a la ruta que li passem. L'etiqueta és el que llegeixen els lectors de pantalla.
 export default function BotoEnrere({ to, etiqueta = "Torna enrere" }: Props) {
   return (
     <Link className="boto-enrere" to={to} aria-label={etiqueta}>

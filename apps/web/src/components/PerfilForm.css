@@ -1,3 +1,5 @@
+/* Estils del formulari de perfil */
+
 .perfil__ample { flex: 1 1 20rem; }
 .perfil__mig { flex: 0 1 18rem; }
 .perfil__curt { flex: 0 0 8.5rem; }
@@ -6,7 +8,7 @@
 
 .perfil__nota { padding-left: 12.25rem; }
 
-/* «i» d'informació amb una bombolla al costat */
+/* La i d'informació, amb la bombolla al costat */
 .perfil__ajuda { position: relative; display: inline-flex; }
 
 .perfil__info {

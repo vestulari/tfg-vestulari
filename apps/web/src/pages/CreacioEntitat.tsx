@@ -1,3 +1,5 @@
+// Primer pas de la creació d'una entitat: el nom, la data de creació i la descripció.
+
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -14,18 +16,22 @@ import { filtraEnter } from "../lib/enters";
 import "../components/Formulari.css";
 import "./CreacioEntitat.css";
 
+// Passa un text a número, o a null si és buit
 const aEnter = (s: string): number | null => (s.trim() === "" ? null : Number(s));
 
+// La imatge encara no es pot pujar: de moment només hi ha l'espai reservat
 export default function CreacioEntitat() {
   const { esborrany, actualitza } = useCreacioEntitat();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
 
+  // Desa el canvi a l'esborrany i treu l'error
   function canvia(parcial: Parameters<typeof actualitza>[0]) {
     actualitza(parcial);
     setError(null);
   }
 
+  // Valida aquest pas i, si està bé, passa a la plantilla
   function envia(e: FormEvent) {
     e.preventDefault();
 

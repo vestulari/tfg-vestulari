@@ -1,3 +1,5 @@
+/* Estils del primer pas de la creació d'una entitat */
+
 .entitat-nova__dalt {
   display: grid;
   grid-template-columns: 11rem minmax(0, 1fr);

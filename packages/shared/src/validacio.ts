@@ -6,12 +6,12 @@ import type { AtributNouDto, EntitatNovaDto, PerfilNouDto, TipusAtribut } from '
 export const NOM_MIN = 1
 export const NOM_MAX = 40
 
-/** Retorna el missatge d'error, o null si el nom d'usuari és vàlid. */
+// Retorna el missatge d'error, o null si el nom d'usuari és vàlid.
 export function errorNom(nom: string): string | null {
   const longitud = Array.from(nom).length
   if (longitud < NOM_MIN) return "El nom d'usuari és obligatori."
   if (longitud > NOM_MAX) return `El nom no pot tenir més de ${NOM_MAX} caràcters.`
-  if (nom !== nom.trimEnd()) return 'El nom no pot acabar amb un espai.'
+  if (nom !== nom.trim()) return 'El nom no pot començar ni acabar amb un espai.'
   return null
 }
 
@@ -26,11 +26,13 @@ export const EDAT_MIN = 0
 export const EDAT_MAX = 120
 export const ANY_MIN = 1000
 
+// Llargada real d'un text (compta bé els accents i els emojis)
 const longitud = (s: string) => Array.from(s).length
 // Per comparar noms sense distingir majúscules ni accents
 const clau = (s: string) =>
   s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase()
 
+// Validació comuna dels noms: obligatori, sense passar del màxim i sense espais al principi ni al final
 function errorNomText(
   nom: string,
   obligatori: string,
@@ -39,10 +41,11 @@ function errorNomText(
 ): string | null {
   if (nom.trim() === '') return obligatori
   if (longitud(nom) > max) return `${nomComplet} no pot tenir més de ${max} caràcters.`
-  if (nom !== nom.trimEnd()) return `${nomComplet} no pot acabar amb un espai.`
+  if (nom !== nom.trim()) return `${nomComplet} no pot començar ni acabar amb un espai.`
   return null
 }
 
+// Validació dels noms de l'entitat, del perfil i dels atributs
 export const errorNomEntitat = (nom: string) =>
   errorNomText(nom, "El nom de l'entitat és obligatori.", "El nom de l'entitat", ENTITAT_NOM_MAX)
 
@@ -52,13 +55,14 @@ export const errorNomPerfil = (nom: string) =>
 export const errorNomAtribut = (nom: string) =>
   errorNomText(nom, "El nom de l'atribut és obligatori.", "El nom de l'atribut", ATRIBUT_NOM_MAX)
 
+// La descripció és opcional, però té un màxim
 export function errorDescripcio(text: string): string | null {
   return longitud(text) > DESCRIPCIO_MAX
     ? `La descripció no pot tenir més de ${DESCRIPCIO_MAX} caràcters.`
     : null
 }
 
-/** Només l'any és obligatori. El dia exigeix el mes. */
+// Només l'any és obligatori. El dia exigeix el mes.
 export function errorDataCreacio(
   any: number | null,
   mes: number | null,
@@ -86,6 +90,7 @@ export function errorDataCreacio(
   return null
 }
 
+// L'edat és obligatòria i ha de ser un enter dins dels límits
 export function errorEdat(edat: number | null): string | null {
   if (edat === null || !Number.isInteger(edat)) {
     return "L'edat és obligatòria i ha de ser un número enter."
@@ -96,11 +101,12 @@ export function errorEdat(edat: number | null): string | null {
   return null
 }
 
+// El gènere ha de ser un dels de GENERES
 export function errorGenere(genere: string): string | null {
   return GENERES.some((g) => g.valor === genere) ? null : 'Cal triar un gènere.'
 }
 
-/** Els valors dels atributs addicionals són opcionals. */
+// Els valors dels atributs addicionals són opcionals.
 export function errorValor(nomAtribut: string, tipus: TipusAtribut, valor: string): string | null {
   const v = valor.trim()
   if (v === '') return null
@@ -113,6 +119,8 @@ export function errorValor(nomAtribut: string, tipus: TipusAtribut, valor: strin
   return null
 }
 
+// Comprova els atributs de la plantilla: que no n'hi hagi massa, que els noms i els tipus
+// siguin vàlids i que no se'n repeteixi cap (ni amb els bàsics, sense mirar majúscules ni accents)
 export function errorAtributs(atributs: { nom: string; tipus: string }[]): string | null {
   if (atributs.length > ATRIBUTS_MAX) {
     return `No pots tenir més de ${ATRIBUTS_MAX} atributs addicionals.`
@@ -131,6 +139,7 @@ export function errorAtributs(atributs: { nom: string; tipus: string }[]): strin
   return null
 }
 
+// Comprova el perfil i que els seus valors encaixin amb els atributs de la plantilla
 export function errorPerfil(p: PerfilNouDto, atributs: AtributNouDto[]): string | null {
   const err = errorNomPerfil(p.nom) ?? errorEdat(p.edat) ?? errorGenere(p.genere)
   if (err) return err
@@ -150,16 +159,19 @@ export function errorPerfil(p: PerfilNouDto, atributs: AtributNouDto[]): string 
 // ---------- Validació completa del cos d'una petició (l'API no es fia del navegador) ----------
 type Resultat = { ok: true; dades: EntitatNovaDto } | { ok: false; error: string }
 
+// Petites ajudes per validar el cos
 const invalid = (error: string): Resultat => ({ ok: false, error })
 
 const esObjecte = (v: unknown): v is Record<string, unknown> =>
   typeof v === 'object' && v !== null && !Array.isArray(v)
 
+// Retorna null si no hi és, el número si és un enter, o undefined si no és vàlid
 function enterOpcional(v: unknown): number | null | undefined {
   if (v === null || v === undefined) return null
   return typeof v === 'number' && Number.isInteger(v) ? v : undefined
 }
 
+// Comprova tot el cos d'un POST /entitats. Retorna les dades netes, o el primer error que troba.
 export function validaEntitatNova(cos: unknown, avui: Date = new Date()): Resultat {
   if (!esObjecte(cos)) return invalid('Dades no vàlides.')
 

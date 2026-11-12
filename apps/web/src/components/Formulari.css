@@ -1,3 +1,5 @@
+/* Estils comuns de les pantalles amb formulari (etiquetes, camps, errors i botó de confirmar) */
+
 .pantalla {
   min-height: 100vh;
   padding: 1.5rem 3rem 3rem;

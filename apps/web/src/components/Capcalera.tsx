@@ -1,29 +1,19 @@
+// Capçalera de les pantalles: el títol i el menú de l'usuari (compte, invitacions i tancar sessió).
+
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import type { UsuariDto } from "@tfg-vestulari/shared";
-import { usuariApi } from "../adapters/api/UsuariApi";
-import { useAuth } from "../auth/AuthProvider";
+import { Link } from "react-router-dom";
+import { useTancaSessio } from "../auth/AuthProvider";
+import { useUsuari } from "../auth/UsuariProvider";
 import "./Capcalera.css";
 
 type Props = { titol?: string; mostraUsuari?: boolean };
 
+// Amb mostraUsuari a false, només es veu el títol
 export default function Capcalera({ titol = "Escull entitat…", mostraUsuari = true }: Props) {
-  const { signOut } = useAuth();
-  const navigate = useNavigate();
-  const [usuari, setUsuari] = useState<UsuariDto | null>(null);
+  const { usuari } = useUsuari();
+  const tancaSessio = useTancaSessio();
   const [obert, setObert] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!mostraUsuari) return;
-    usuariApi
-      .getMe()
-      .then(setUsuari)
-      .catch((e) => {
-        console.error("Error carregant l'usuari", e);
-        setUsuari(null);
-      });
-  }, [mostraUsuari]);
 
   // Tanca el menú en clicar fora o en prémer Escape
   useEffect(() => {
@@ -45,13 +35,6 @@ export default function Capcalera({ titol = "Escull entitat…", mostraUsuari = 
   const nom = usuari?.nom ?? "";
   const inicial = nom.charAt(0).toUpperCase();
   const pendents = usuari?.invitacionsPendents ?? 0;
-
-  function tancaSessio() {
-    // Primer naveguem a la landing: si tanquéssim la sessió abans,
-    // RequireAuth ens enviaria un instant a /login.
-    navigate("/", { replace: true });
-    void signOut();
-  }
 
   return (
     <header className="capcalera">

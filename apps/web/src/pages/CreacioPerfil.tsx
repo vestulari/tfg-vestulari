@@ -1,42 +1,38 @@
+// Últim pas de la creació d'una entitat: el perfil del creador. En confirmar, es crea tot!
+
 import { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import type { EntitatNovaDto, Genere, TipusAtribut } from "@tfg-vestulari/shared";
 import { ApiError } from "../adapters/api/ApiClient";
 import { entitatApi } from "../adapters/api/EntitatApi";
-import { usuariApi } from "../adapters/api/UsuariApi";
+import { useUsuari } from "../auth/UsuariProvider";
 import BotoEnrere from "../components/BotoEnrere";
 import Capcalera from "../components/Capcalera";
 import PerfilForm from "../components/PerfilForm";
 import { atributsOmplerts, useCreacioEntitat } from "../context/CreacioEntitatContext";
 import "../components/Formulari.css";
 
+// Si s'hi arriba sense haver fet el primer pas (per exemple, en recarregar), torna al principi.
+// Proposa el nom de l'usuari com a nom del perfil, sense trepitjar el que ja s'hagi escrit.
 export default function CreacioPerfil() {
   const { esborrany, actualitza } = useCreacioEntitat();
   const navigate = useNavigate();
   const [enviant, setEnviant] = useState(false);
   const [errorServidor, setErrorServidor] = useState<string | null>(null);
 
-  // Proposem el nom de l'usuari com a nom del perfil
+  const { usuari } = useUsuari();
+  const nomUsuari = usuari?.nom;
   useEffect(() => {
-    if (esborrany.perfil.nom !== "") return;
-    let cancelat = false;
-    usuariApi
-      .getMe()
-      .then((u) => {
-        if (!cancelat) actualitza({ perfil: { ...esborrany.perfil, nom: u.nom } });
-      })
-      .catch(() => {});
-    return () => {
-      cancelat = true;
-    };
-    // només en muntar-se
+    if (!nomUsuari) return;
+    actualitza((e) => (e.perfil.nom !== "" ? {} : { perfil: { ...e.perfil, nom: nomUsuari } }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [nomUsuari]);
 
   if (esborrany.nom === "") return <Navigate to="/entitats/nova" replace />;
 
   const atributs = atributsOmplerts(esborrany.atributs);
 
+  // Munta les dades per a l'API amb tot l'esborrany i crea l'entitat
   async function confirma() {
     setEnviant(true);
     setErrorServidor(null);

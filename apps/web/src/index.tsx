@@ -8,6 +8,9 @@ import { RequireAuth } from "./auth/RequireAuth";
 import Landing from "./pages/LandingPage";
 import Login from "./pages/LogIn";
 import Inici from "./pages/Inici";
+// Font allotjada amb l'app (sense peticions a Google Fonts). Només els pesos que fa servir el CSS.
+import "@fontsource/space-grotesk/400.css";
+import "@fontsource/space-grotesk/700.css";
 import "./index.css";
 import InvitacioDetall from "./pages/InvitacioDetall";
 import Invitacions from "./pages/Invitacions";

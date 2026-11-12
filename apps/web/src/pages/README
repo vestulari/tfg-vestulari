@@ -1,1 +1,15 @@
 Vistes de la pàgina web
+
+Cada pantalla té la seva ruta, i les rutes estan definides a index.tsx:
+- LandingPage (/): la presentació de l'app
+- LogIn (/login): iniciar sessió i registrar-se
+- Inici (/inici): les entitats de l'usuari i el botó per crear-ne una
+- Compte (/compte): canviar el nom i la contrasenya, i tancar sessió
+- Invitacions (/invitacions): les invitacions pendents
+- InvitacioDetall (/invitacions/:id): acceptar o rebutjar una invitació
+- CreacioEntitat, CreacioPlantillaPerfil i CreacioPerfil (/entitats/nova...): els tres passos per crear una
+  entitat. Comparteixen l'esborrany del context, i l'entitat es crea a l'últim pas.
+- Entitat i EntradaEntitat: encara per fer
+
+Totes menys la landing i el login necessiten haver iniciat sessió.
+Cada pantalla té el seu css amb el mateix nom.

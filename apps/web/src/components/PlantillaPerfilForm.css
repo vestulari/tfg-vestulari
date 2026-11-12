@@ -1,3 +1,5 @@
+/* Estils del formulari de la plantilla de perfil */
+
 .plantilla__info,
 .plantilla__avis {
   margin: 0;
@@ -44,7 +46,7 @@
   list-style: none;
 }
 
-/* Cada fila: «Nom de l'atribut» + «Tipus de l'atribut» + botó d'eliminar */
+/* Cada fila té el nom de l'atribut, el tipus i el botó d'eliminar */
 .plantilla__fila {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 2.6rem;

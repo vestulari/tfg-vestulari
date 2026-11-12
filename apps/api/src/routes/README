@@ -1,1 +1,11 @@
 Definició dels endpoints
+
+Cada fitxer és un router de Hono, i tots es munten a index.ts:
+- me.ts: tot el que és de /me (les dades de l'usuari, canviar el nom i les seves entitats).
+  També hi penja invitacions.ts, a /me/invitacions.
+- invitacions.ts: llistar, obrir, acceptar i rebutjar invitacions.
+- entitats.ts: crear una entitat.
+
+Una ruta llegeix la petició, la valida amb el paquet shared, crida el repositori i decideix quin codi HTTP retorna.
+El SQL no va aquí, va als repositoris.
+Si hi ha algun error que no hem controlat, acaba a app.onError (a index.ts), que sempre respon en JSON.

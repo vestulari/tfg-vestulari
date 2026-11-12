@@ -1,3 +1,5 @@
+// Pantalla d'inici: les entitats de l'usuari i el botó per crear-ne una de nova.
+
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { EntitatResumDto } from "@tfg-vestulari/shared";
@@ -5,6 +7,7 @@ import { entitatApi } from "../adapters/api/EntitatApi";
 import Capcalera from "../components/Capcalera";
 import "./Inici.css";
 
+// Encara no es pot entrar a una entitat: la pàgina /entitat/:id està per fer
 export default function Inici() {
   const [entitats, setEntitats] = useState<EntitatResumDto[] | null>(null);
   const [error, setError] = useState(false);

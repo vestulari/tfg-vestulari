@@ -1,19 +1,23 @@
+// Desplegable propi, en lloc del <select> del navegador: es veu igual a tot arreu
+// i es pot fer servir amb el teclat.
+
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import "./Desplegable.css";
 
 export type OpcioDesplegable<T extends string> = { valor: T; etiqueta: string };
 
 type Props<T extends string> = {
-  /** Identificador del botó: perquè un <label htmlFor> el pugui etiquetar. */
+  // Identificador del botó: perquè un <label htmlFor> el pugui etiquetar.
   id: string;
   valor: T | "";
   opcions: OpcioDesplegable<T>[];
   onCanvi: (valor: T) => void;
-  /** Text mentre encara no hi ha cap valor triat. */
+  // Text mentre encara no hi ha cap valor triat.
   placeholder?: string;
   className?: string;
 };
 
+// Llista d'opcions on se'n tria una. Es tanca en triar o en clicar fora.
 export default function Desplegable<T extends string>({
   id,
   valor,
@@ -40,16 +44,19 @@ export default function Desplegable<T extends string>({
     return () => document.removeEventListener("mousedown", fora);
   }, [obert]);
 
+  // Obre la llista amb l'opció triada marcada
   function obre() {
     setActiu(indexTriat >= 0 ? indexTriat : 0);
     setObert(true);
   }
 
+  // Tria una opció i tanca la llista
   function tria(i: number) {
     onCanvi(opcions[i].valor);
     setObert(false);
   }
 
+  // Perquè es pugui fer servir només amb el teclat (fletxes, Inici, Fi, Enter i Escape)
   function onTecla(e: KeyboardEvent<HTMLButtonElement>) {
     if (!obert) {
       if (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Enter" || e.key === " ") {

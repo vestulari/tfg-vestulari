@@ -1,3 +1,5 @@
+// Llista de les invitacions pendents de l'usuari, amb un cercador per entitat.
+
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import type { InvitacioResumDto } from "@tfg-vestulari/shared";
@@ -11,6 +13,7 @@ import "./Invitacions.css";
 const normalitza = (s: string) =>
   s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
+// Les invitacions que encara no s'han obert es marquen amb un punt
 export default function Invitacions() {
   const [invitacions, setInvitacions] = useState<InvitacioResumDto[] | null>(null);
   const [error, setError] = useState(false);

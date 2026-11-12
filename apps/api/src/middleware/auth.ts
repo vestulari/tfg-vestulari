@@ -5,8 +5,11 @@ import { createMiddleware } from 'hono/factory'
 import { createRemoteJWKSet, jwtVerify, type JWTPayload } from 'jose'
 import type { Env } from '../types'
 
+// Claus públiques de Supabase per validar els tokens. Es demanen el primer cop i es reaprofiten.
 let jwks: ReturnType<typeof createRemoteJWKSet> | undefined
 
+// Comprova el token i desa l'id i el correu de l'usuari a la request.
+// Si falta o no és vàlid, respon 401 i no deixa passar.
 export const auth = createMiddleware<Env>(async (c, next) => {
   const header = c.req.header('Authorization')
   if (!header?.startsWith('Bearer ')) {

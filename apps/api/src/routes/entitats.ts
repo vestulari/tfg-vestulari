@@ -1,3 +1,5 @@
+// API REST de la gestió d'entitats.
+
 import { Hono } from 'hono'
 import { validaEntitatNova, type EntitatCreadaDto } from '@tfg-vestulari/shared'
 import type { Env } from '../types'
@@ -7,8 +9,10 @@ import * as entitatRepo from '../repositories/entitatRepository'
 
 export const entitats = new Hono<Env>()
 
+// Totes les rutes d'entitats necessiten l'usuari autenticat i la connexió a la BD
 entitats.use('*', auth, bd)
 
+// Crea una entitat nova, amb la plantilla de perfil i el perfil del creador.
 entitats.post('/', async (c) => {
   let cos: unknown
   try {
@@ -17,9 +21,7 @@ entitats.post('/', async (c) => {
     return c.json({ error: 'Cos de la petició no vàlid' }, 400)
   }
 
-  // Un dia de marge perquè la zona horària del servidor no rebutgi «avui» a algú que ja és demà
-  const marge = new Date(Date.now() + 24 * 60 * 60 * 1000)
-  const r = validaEntitatNova(cos, marge)
+  const r = validaEntitatNova(cos)
   if (!r.ok) return c.json({ error: r.error }, 400)
 
   const id = await entitatRepo.crea(c.get('sql'), c.get('userId'), r.dades)
