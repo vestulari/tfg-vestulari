@@ -1,7 +1,5 @@
-import { useState, type FormEvent } from "react";
+import { useId, useState, type FormEvent } from "react";
 import {
-  EDAT_MAX,
-  EDAT_MIN,
   GENERES,
   PERFIL_NOM_MAX,
   VALOR_MAX,
@@ -9,10 +7,11 @@ import {
   errorGenere,
   errorNomPerfil,
   errorValor,
-  type Genere,
   type TipusAtribut,
 } from "@tfg-vestulari/shared";
 import type { AtributFila, PerfilEsborrany } from "../context/CreacioEntitatContext";
+import { filtraEnter } from "../lib/enters";
+import Desplegable from "./Desplegable";
 import "./Formulari.css";
 import "./PerfilForm.css";
 
@@ -42,6 +41,7 @@ export default function PerfilForm({
 }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [infoOberta, setInfoOberta] = useState(false);
+  const idPermisos = useId();
 
   const definits = atributs.filter((a): a is AtributDefinit => a.tipus !== "");
   const esAdmin = adminObligatori || perfil.esAdministrador;
@@ -81,13 +81,14 @@ export default function PerfilForm({
   return (
     <form className="formulari" onSubmit={envia} noValidate>
       <div className="formulari__fila">
-        <label className="formulari__etiqueta perfil__etiqueta" htmlFor="perfil-nom">
+        <label className="formulari__etiqueta formulari__etiqueta--fixa" htmlFor="perfil-nom">
           Nom del perfil
         </label>
         <input
           id="perfil-nom"
           className="formulari__input perfil__ample"
           type="text"
+          autoComplete="off"
           value={perfil.nom}
           maxLength={PERFIL_NOM_MAX}
           onChange={(e) => canvia({ nom: e.target.value })}
@@ -95,94 +96,121 @@ export default function PerfilForm({
       </div>
 
       <div className="formulari__fila">
-        <label className="formulari__etiqueta perfil__etiqueta" htmlFor="perfil-edat">
+        <label className="formulari__etiqueta formulari__etiqueta--fixa" htmlFor="perfil-edat">
           Edat del perfil
         </label>
         <input
           id="perfil-edat"
-          className="formulari__input perfil__curt"
-          type="number"
+          className="formulari__input formulari__input--centrat perfil__curt"
+          type="text"
           inputMode="numeric"
-          step={1}
-          min={EDAT_MIN}
-          max={EDAT_MAX}
+          autoComplete="off"
+          maxLength={3}
           value={perfil.edat}
-          onChange={(e) => canvia({ edat: e.target.value })}
+          onChange={(e) => canvia({ edat: filtraEnter(e.target.value) })}
         />
 
-        <label className="formulari__etiqueta perfil__etiqueta" htmlFor="perfil-genere">
+        <label className="formulari__etiqueta perfil__etiqueta-genere" htmlFor="perfil-genere">
           Gènere del perfil
         </label>
-        <select
+        <Desplegable
           id="perfil-genere"
-          className="formulari__input perfil__mig"
-          value={perfil.genere}
-          onChange={(e) => canvia({ genere: e.target.value as Genere | "" })}
-        >
-          <option value="">Escull…</option>
-          {GENERES.map((g) => (
-            <option key={g.valor} value={g.valor}>{g.etiqueta}</option>
-          ))}
-        </select>
+          valor={perfil.genere}
+          opcions={GENERES}
+          placeholder="Escull…"
+          onCanvi={(genere) => canvia({ genere })}
+        />
       </div>
 
-      <fieldset className="perfil__permisos">
-        <legend className="formulari__etiqueta">Tipus de permisos d'aquest usuari:</legend>
-
-        <button
-          type="button"
-          className="perfil__info"
-          aria-label="Més informació sobre els permisos"
-          aria-expanded={infoOberta}
-          onClick={() => setInfoOberta(!infoOberta)}
+      <div className="formulari__fila">
+        <span
+          id={idPermisos}
+          className="formulari__etiqueta formulari__etiqueta--fixa"
         >
-          i
-        </button>
+          Tipus de permisos d'aquest usuari:
+        </span>
 
-        <label className="perfil__opcio">
-          <input
-            type="checkbox"
-            checked={perfil.esInterpret}
-            onChange={(e) => canvia({ esInterpret: e.target.checked })}
-          />
-          <span>Intèrpret</span>
-        </label>
+        <span
+          className="perfil__ajuda"
+          onKeyDown={(e) => {
+            if (e.key === "Escape") setInfoOberta(false);
+          }}
+          onBlur={(e) => {
+            if (!e.currentTarget.contains(e.relatedTarget)) setInfoOberta(false);
+          }}
+        >
+          <button
+            type="button"
+            className="perfil__info"
+            aria-label="Més informació sobre els permisos"
+            aria-expanded={infoOberta}
+            onClick={() => setInfoOberta(!infoOberta)}
+          >
+            i
+          </button>
+          {infoOberta && (
+            <span role="note" className="perfil__bombolla">
+              Un intèrpret participa en els espectacles de l'entitat. Un administrador, a més,
+              gestiona l'entitat (perfils, peces de roba, espectacles…). Un perfil pot ser les dues
+              coses.
+            </span>
+          )}
+        </span>
 
-        <label className="perfil__opcio">
-          <input
-            type="checkbox"
-            checked={esAdmin}
-            disabled={adminObligatori}
-            onChange={(e) => canvia({ esAdministrador: e.target.checked })}
-          />
-          <span>Administrador</span>
-        </label>
-      </fieldset>
+        <div className="perfil__opcions" role="group" aria-labelledby={idPermisos}>
+          <label className="perfil__opcio">
+            <input
+              type="checkbox"
+              checked={perfil.esInterpret}
+              onChange={(e) => canvia({ esInterpret: e.target.checked })}
+            />
+            <span>Intèrpret</span>
+          </label>
 
-      {infoOberta && (
-        <p className="formulari__nota perfil__explicacio" role="note">
-          Un intèrpret participa en els espectacles de l'entitat. Un administrador, a més, gestiona
-          l'entitat (perfils, peces de roba, espectacles…). Un perfil pot ser les dues coses.
-        </p>
-      )}
+          <label className="perfil__opcio">
+            <input
+              type="checkbox"
+              checked={esAdmin}
+              disabled={adminObligatori}
+              onChange={(e) => canvia({ esAdministrador: e.target.checked })}
+            />
+            <span>Administrador</span>
+          </label>
+        </div>
+      </div>
+
       {adminObligatori && (
-        <p className="formulari__nota">Com a creador de l'entitat, sempre ets administrador.</p>
+        <p className="formulari__nota perfil__nota">
+          Com a creador de l'entitat, sempre ets administrador.
+        </p>
       )}
 
       {definits.map((a) => (
         <div key={a.clau} className="formulari__fila">
-          <label className="formulari__etiqueta perfil__etiqueta" htmlFor={`valor-${a.clau}`}>
+          <label
+            className="formulari__etiqueta formulari__etiqueta--fixa"
+            htmlFor={`valor-${a.clau}`}
+          >
             {a.nom}
           </label>
           <input
             id={`valor-${a.clau}`}
             className="formulari__input perfil__mig"
-            type={a.tipus === "integer" ? "number" : "text"}
-            step={a.tipus === "integer" ? 1 : undefined}
+            type="text"
+            inputMode={a.tipus === "integer" ? "numeric" : "text"}
+            autoComplete="off"
             placeholder={a.tipus === "integer" ? "Número" : "Text"}
-            maxLength={VALOR_MAX}
+            maxLength={a.tipus === "integer" ? 10 : VALOR_MAX}
             value={perfil.valors[a.clau] ?? ""}
-            onChange={(e) => canvia({ valors: { ...perfil.valors, [a.clau]: e.target.value } })}
+            onChange={(e) =>
+              canvia({
+                valors: {
+                  ...perfil.valors,
+                  [a.clau]:
+                    a.tipus === "integer" ? filtraEnter(e.target.value, true) : e.target.value,
+                },
+              })
+            }
           />
         </div>
       ))}

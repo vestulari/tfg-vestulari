@@ -10,6 +10,7 @@ import {
 import BotoEnrere from "../components/BotoEnrere";
 import Capcalera from "../components/Capcalera";
 import { useCreacioEntitat } from "../context/CreacioEntitatContext";
+import { filtraEnter } from "../lib/enters";
 import "../components/Formulari.css";
 import "./CreacioEntitat.css";
 
@@ -19,6 +20,11 @@ export default function CreacioEntitat() {
   const { esborrany, actualitza } = useCreacioEntitat();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+
+  function canvia(parcial: Parameters<typeof actualitza>[0]) {
+    actualitza(parcial);
+    setError(null);
+  }
 
   function envia(e: FormEvent) {
     e.preventDefault();
@@ -49,6 +55,17 @@ export default function CreacioEntitat() {
           <div className="entitat-nova__dalt">
             {/* Espai reservat per a la imatge: encara no és funcional */}
             <div className="entitat-nova__imatge" aria-hidden="true">
+              <svg className="entitat-nova__icona" viewBox="0 0 80 64" focusable="false">
+                <rect x="3" y="3" width="74" height="58" rx="2" fill="none" stroke="currentColor" strokeWidth="4" />
+                <polyline
+                  points="3,48 24,26 40,42 54,30 77,52"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  strokeLinejoin="round"
+                />
+                <circle cx="56" cy="18" r="6" fill="none" stroke="currentColor" strokeWidth="4" />
+              </svg>
               <span>Insereix imatge</span>
             </div>
 
@@ -61,64 +78,61 @@ export default function CreacioEntitat() {
                   id="entitat-nom"
                   className="formulari__input entitat-nova__nom"
                   type="text"
+                  autoComplete="off"
                   placeholder="Escriu aquí…"
                   value={esborrany.nom}
                   maxLength={ENTITAT_NOM_MAX}
-                  onChange={(e) => {
-                    actualitza({ nom: e.target.value });
-                    setError(null);
-                  }}
+                  onChange={(e) => canvia({ nom: e.target.value })}
                 />
               </div>
 
               <div className="formulari__fila">
                 <div className="entitat-nova__etiqueta">
-                  <span className="formulari__etiqueta">Data de creació de l'entitat</span>
+                  <span className="formulari__etiqueta" id="etiqueta-data">
+                    Data de creació de l'entitat
+                  </span>
                   <span className="formulari__nota" id="nota-data">
                     D'aquests números l'únic obligatori és l'any
                   </span>
                 </div>
-                <div className="entitat-nova__data" role="group" aria-describedby="nota-data">
+                <div
+                  className="entitat-nova__data"
+                  role="group"
+                  aria-labelledby="etiqueta-data"
+                  aria-describedby="nota-data"
+                >
                   <input
-                    className="formulari__input"
-                    type="number"
+                    className="formulari__input formulari__input--centrat"
+                    type="text"
                     inputMode="numeric"
+                    autoComplete="off"
                     placeholder="Dia"
                     aria-label="Dia"
-                    min={1}
-                    max={31}
+                    maxLength={2}
                     value={esborrany.dia}
-                    onChange={(e) => {
-                      actualitza({ dia: e.target.value });
-                      setError(null);
-                    }}
+                    onChange={(e) => canvia({ dia: filtraEnter(e.target.value) })}
                   />
                   <input
-                    className="formulari__input"
-                    type="number"
+                    className="formulari__input formulari__input--centrat"
+                    type="text"
                     inputMode="numeric"
+                    autoComplete="off"
                     placeholder="Mes"
                     aria-label="Mes"
-                    min={1}
-                    max={12}
+                    maxLength={2}
                     value={esborrany.mes}
-                    onChange={(e) => {
-                      actualitza({ mes: e.target.value });
-                      setError(null);
-                    }}
+                    onChange={(e) => canvia({ mes: filtraEnter(e.target.value) })}
                   />
                   <input
-                    className="formulari__input"
-                    type="number"
+                    className="formulari__input formulari__input--centrat"
+                    type="text"
                     inputMode="numeric"
+                    autoComplete="off"
                     placeholder="Any"
                     aria-label="Any (obligatori)"
-                    required
+                    maxLength={4}
                     value={esborrany.any}
-                    onChange={(e) => {
-                      actualitza({ any: e.target.value });
-                      setError(null);
-                    }}
+                    onChange={(e) => canvia({ any: filtraEnter(e.target.value) })}
                   />
                 </div>
               </div>
@@ -136,11 +150,11 @@ export default function CreacioEntitat() {
             }
             maxLength={DESCRIPCIO_MAX}
             value={esborrany.descripcio}
-            onChange={(e) => {
-              actualitza({ descripcio: e.target.value });
-              setError(null);
-            }}
+            onChange={(e) => canvia({ descripcio: e.target.value })}
           />
+          <span className="formulari__comptador" aria-hidden="true">
+            {Array.from(esborrany.descripcio).length} / {DESCRIPCIO_MAX}
+          </span>
 
           {error && <p className="formulari__error" role="alert">{error}</p>}
 

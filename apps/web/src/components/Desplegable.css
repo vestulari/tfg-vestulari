@@ -1,0 +1,98 @@
+/* El contenidor manté l'alçada de la píndola tancada: en obrir-se, la targeta
+   es superposa i no mou la resta del formulari. */
+.desplegable {
+  --alcada: 3.6rem;
+  position: relative;
+  flex: 0 1 16rem;
+  min-width: 10rem;
+  height: var(--alcada);
+}
+
+.desplegable--obert { z-index: 30; }
+
+.desplegable__targeta {
+  position: absolute;
+  inset: 0 0 auto 0;
+  overflow: hidden;
+  border-radius: calc(var(--alcada) / 2);
+  background: #f1f5fa;
+  transition: background 0.15s;
+}
+
+.desplegable__targeta:hover { background: #eaf0f7; }
+
+.desplegable--obert .desplegable__targeta {
+  border-radius: 1.8rem;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+}
+
+.desplegable__boto {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: var(--alcada);
+  padding: 0 3rem;
+  border: 0;
+  background: none;
+  color: #111;
+  font: inherit;
+  cursor: pointer;
+}
+
+.desplegable__boto:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: -3px;
+  border-radius: inherit;
+}
+
+.desplegable__valor {
+  flex: 1;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.desplegable__valor--buit { color: #7b8088; }
+
+.desplegable__fletxa {
+  position: absolute;
+  top: 50%;
+  right: 1.3rem;
+  width: 1rem;
+  height: 0.65rem;
+  transform: translateY(-50%);
+  transition: transform 0.15s;
+}
+
+.desplegable--obert .desplegable__fletxa { transform: translateY(-50%) rotate(180deg); }
+
+.desplegable__llista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid #111;
+}
+
+.desplegable__opcio {
+  padding: 0.95rem 1rem;
+  border-bottom: 1px solid #111;
+  text-align: center;
+  cursor: pointer;
+}
+
+.desplegable__opcio--activa { background: #eef3f9; }
+.desplegable__opcio[aria-selected="true"] { font-weight: 700; }
+
+/* L'espai buit sota l'última opció, com al disseny */
+.desplegable__llista::after {
+  content: "";
+  display: block;
+  height: 1.1rem;
+}
+
+@media (max-width: 800px) {
+  .desplegable { flex: 1 1 100%; }
+}

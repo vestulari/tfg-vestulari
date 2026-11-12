@@ -5,9 +5,9 @@ import {
   ATRIBUT_NOM_MAX,
   TIPUS_ATRIBUT,
   errorAtributs,
-  type TipusAtribut,
 } from "@tfg-vestulari/shared";
 import { atributsOmplerts, type AtributFila } from "../context/CreacioEntitatContext";
+import Desplegable from "./Desplegable";
 import "./Formulari.css";
 import "./PlantillaPerfilForm.css";
 
@@ -83,39 +83,45 @@ export default function PlantillaPerfilForm({
         </p>
       )}
 
-      <p className="formulari__nota">
-        Atributs bàsics (sempre presents): <strong>{ATRIBUTS_BASICS.join(", ")}</strong>
-      </p>
+      <div className="plantilla__basics">
+        <span className="formulari__nota">Atributs bàsics, sempre presents:</span>
+        <ul className="plantilla__xips">
+          {ATRIBUTS_BASICS.map((b) => (
+            <li key={b} className="plantilla__xip">{b}</li>
+          ))}
+        </ul>
+      </div>
 
       <ul className="plantilla__atributs">
         {atributs.map((a, i) => (
           <li key={a.clau} className="plantilla__fila">
-            <label className="formulari__etiqueta" htmlFor={`atribut-nom-${a.clau}`}>
-              Nom de l'atribut
-            </label>
-            <input
-              id={`atribut-nom-${a.clau}`}
-              className="formulari__input plantilla__nom"
-              type="text"
-              value={a.nom}
-              maxLength={ATRIBUT_NOM_MAX}
-              onChange={(e) => canviaFila(a.clau, { nom: e.target.value })}
-            />
+            <div className="plantilla__parell">
+              <label className="formulari__etiqueta" htmlFor={`atribut-nom-${a.clau}`}>
+                Nom de l'atribut
+              </label>
+              <input
+                id={`atribut-nom-${a.clau}`}
+                className="formulari__input"
+                type="text"
+                autoComplete="off"
+                value={a.nom}
+                maxLength={ATRIBUT_NOM_MAX}
+                onChange={(e) => canviaFila(a.clau, { nom: e.target.value })}
+              />
+            </div>
 
-            <label className="formulari__etiqueta" htmlFor={`atribut-tipus-${a.clau}`}>
-              Tipus de l'atribut
-            </label>
-            <select
-              id={`atribut-tipus-${a.clau}`}
-              className="formulari__input plantilla__tipus"
-              value={a.tipus}
-              onChange={(e) => canviaFila(a.clau, { tipus: e.target.value as TipusAtribut | "" })}
-            >
-              <option value="">Escollir tipus</option>
-              {TIPUS_ATRIBUT.map((t) => (
-                <option key={t.valor} value={t.valor}>{t.etiqueta}</option>
-              ))}
-            </select>
+            <div className="plantilla__parell">
+              <label className="formulari__etiqueta" htmlFor={`atribut-tipus-${a.clau}`}>
+                Tipus de l'atribut
+              </label>
+              <Desplegable
+                id={`atribut-tipus-${a.clau}`}
+                valor={a.tipus}
+                opcions={TIPUS_ATRIBUT}
+                placeholder="Escollir tipus"
+                onCanvi={(tipus) => canviaFila(a.clau, { tipus })}
+              />
+            </div>
 
             <button
               type="button"
@@ -136,7 +142,7 @@ export default function PlantillaPerfilForm({
         disabled={atributs.length >= ATRIBUTS_MAX}
       >
         <span className="plantilla__mes" aria-hidden="true">+</span>
-        Afegir atribut nou
+        <span>Afegir atribut nou</span>
       </button>
 
       {missatge && <p className="formulari__error" role="alert">{missatge}</p>}
