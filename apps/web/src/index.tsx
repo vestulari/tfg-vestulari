@@ -12,6 +12,10 @@ import "./index.css";
 import InvitacioDetall from "./pages/InvitacioDetall";
 import Invitacions from "./pages/Invitacions";
 import Compte from "./pages/Compte";
+import CreacioPerfil from "./pages/CreacioPerfil";
+import CreacioPlantillaPerfil from "./pages/CreacioPlantillaPerfil";
+import CreacioEntitat from "./pages/CreacioEntitat";
+import { CreacioEntitatLayout } from "./context/CreacioEntitatContext";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -27,7 +31,13 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <Route path="/compte" element={<Compte />} />
             <Route path="/invitacions" element={<Invitacions />} />
             <Route path="/invitacions/:id" element={<InvitacioDetall />} />
+            <Route element={<CreacioEntitatLayout />}>
+              <Route path="/entitats/nova" element={<CreacioEntitat />} />
+              <Route path="/entitats/nova/plantilla" element={<CreacioPlantillaPerfil />} />
+              <Route path="/entitats/nova/perfil" element={<CreacioPerfil />} />
+            </Route>
           </Route>
+
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

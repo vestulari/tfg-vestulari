@@ -1,0 +1,64 @@
+.plantilla__info,
+.plantilla__avis {
+  margin: 0;
+  padding: 1.5rem 2.5rem;
+  border-radius: 2rem;
+  background: #f1f5fa;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.plantilla__info { display: grid; gap: 1.2rem; }
+.plantilla__info p { margin: 0; }
+
+.plantilla__atributs {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.plantilla__fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+}
+
+.plantilla__nom { flex: 1 1 14rem; }
+.plantilla__tipus { flex: 0 1 14rem; }
+
+.plantilla__elimina {
+  width: 2.4rem;
+  height: 2.4rem;
+  border: 0;
+  border-radius: 50%;
+  background: #f1f5fa;
+  color: #111;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.plantilla__elimina:hover { background: #f4606f; }
+.plantilla__elimina:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+.plantilla__afegeix {
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.9rem 3rem;
+  border: 0;
+  border-radius: 999px;
+  background: #f1f5fa;
+  color: #111;
+  font: inherit;
+  cursor: pointer;
+}
+
+.plantilla__mes { font-size: 2rem; line-height: 1; }
+.plantilla__afegeix:hover:not(:disabled) { filter: brightness(0.97); }
+.plantilla__afegeix:disabled { opacity: 0.5; cursor: not-allowed; }
+.plantilla__afegeix:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }

@@ -45,11 +45,10 @@ export default function Inici() {
       </main>
 
       <footer className="inici__peu">
-        {/* Encara sense acció */}
-        <button type="button" className="inici__crea">
+        <Link className="inici__crea" to="/entitats/nova">
           <span className="inici__crea-icona" aria-hidden="true">+</span>
           Crea una nova entitat
-        </button>
+        </Link>
       </footer>
     </div>
   );

@@ -1,0 +1,86 @@
+.pantalla {
+  min-height: 100vh;
+  padding: 1.5rem 3rem 3rem;
+  background: #e6eef6;
+}
+
+.pantalla__barra { padding: 2rem 4rem 0.5rem; }
+
+.pantalla__contingut {
+  max-width: 68rem;
+  margin: 0 auto;
+  padding: 1rem 1rem 2rem;
+}
+
+.formulari { display: flex; flex-direction: column; gap: 1.5rem; }
+
+.formulari__fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+}
+
+.formulari__etiqueta { font-size: 1.1rem; color: #111; }
+.formulari__nota { margin: 0; font-size: 0.85rem; color: #55595f; }
+
+.formulari__input {
+  min-width: 0;
+  padding: 0.85rem 1.4rem;
+  border: 0;
+  border-radius: 999px;
+  background: #f1f5fa;
+  color: #111;
+  font: inherit;
+}
+
+.formulari__input::placeholder { color: #7b8088; }
+.formulari__input:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+.formulari__textarea {
+  width: 100%;
+  min-height: 11rem;
+  padding: 1.4rem 1.6rem;
+  border: 0;
+  border-radius: 2rem;
+  background: #f1f5fa;
+  color: #111;
+  font: inherit;
+  resize: vertical;
+}
+
+.formulari__textarea::placeholder { color: #7b8088; }
+.formulari__textarea:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+.formulari__error {
+  margin: 0;
+  padding: 0.7rem 1.1rem;
+  border: 1px solid #ff8fa3;
+  border-radius: 1rem;
+  background: rgba(208, 64, 90, 0.12);
+}
+
+.formulari__accions { display: flex; justify-content: center; margin-top: 0.5rem; }
+
+.formulari__confirma {
+  min-width: 22rem;
+  padding: 0.8rem 2rem;
+  border: 0;
+  border-radius: 999px;
+  background: #aee06a;
+  color: #000;
+  font: inherit;
+  font-size: 1.9rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.formulari__confirma:hover:not(:disabled) { filter: brightness(1.05); }
+.formulari__confirma:disabled { opacity: 0.6; cursor: not-allowed; }
+.formulari__confirma:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
+@media (max-width: 800px) {
+  .pantalla { padding: 1rem 1rem 2rem; }
+  .pantalla__barra { padding: 1.25rem 0.5rem 0.5rem; }
+  .formulari__confirma { min-width: 0; width: 100%; font-size: 1.5rem; }
+}

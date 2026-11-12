@@ -78,6 +78,7 @@
   font: inherit;
   font-size: 1.2rem;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .inici__crea-icona { font-size: 1.8rem; font-weight: 700; line-height: 1; }
