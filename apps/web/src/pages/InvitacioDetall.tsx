@@ -9,6 +9,7 @@ import { useUsuari } from "../auth/UsuariProvider";
 import BotoEnrere from "../components/BotoEnrere";
 import Capcalera from "../components/Capcalera";
 import EntitatImatge from "../components/EntitatImatge";
+import { useEstatTornada } from "../lib/tornada";
 import "./InvitacioDetall.css";
 
 // Estats de la pantalla mentre es carrega la invitació
@@ -19,10 +20,12 @@ type Estat =
   | { tipus: "ok"; invitacio: InvitacioDetallDto };
 
 // En obrir-la, l'API ja la marca com a oberta
+// En tornar a la llista, li retorna d'on s'havien obert les invitacions.
 export default function InvitacioDetall() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { recarrega } = useUsuari();
+  const estatTornada = useEstatTornada();
   const idNum = Number(id);
 
   const [estat, setEstat] = useState<Estat>({ tipus: "carregant" });
@@ -55,18 +58,18 @@ export default function InvitacioDetall() {
     };
   }, [idNum]);
 
-  // Accepta o rebutja la invitació. Després torna a carregar l'usuari,
+  // Accepta la invitació (i entra a l'entitat) o la rebutja. Després torna a carregar l'usuari,
   // perquè el nombre d'invitacions pendents de la capçalera ha canviat.
   async function resol(accio: "accepta" | "rebutja") {
     setEnviant(true);
     setErrorAccio(null);
     try {
       if (accio === "accepta") {
-        await invitacioApi.accepta(idNum);
-        navigate("/inici");
+        const { entitatId } = await invitacioApi.accepta(idNum);
+        navigate(`/entitat/${entitatId}`);
       } else {
         await invitacioApi.rebutja(idNum);
-        navigate("/invitacions");
+        navigate("/invitacions", { state: estatTornada });
       }
       void recarrega();
     } catch (e) {
@@ -81,7 +84,7 @@ export default function InvitacioDetall() {
 
       <main className="invitacio__targeta">
         <div className="invitacio__enrere">
-          <BotoEnrere to="/invitacions" />
+          <BotoEnrere to="/invitacions" state={estatTornada} />
         </div>
 
         {estat.tipus === "carregant" && <p className="invitacio__missatge">Carregant…</p>}

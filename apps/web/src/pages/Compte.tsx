@@ -10,15 +10,18 @@ import BotoEnrere from "../components/BotoEnrere";
 import Capcalera from "../components/Capcalera";
 import RequisitsContrasenya from "../components/RequisitsContrasenya";
 import { contrasenyaValida } from "../lib/contrasenya";
+import { useTornada } from "../lib/tornada";
 import { NOM_MAX, errorNom } from "@tfg-vestulari/shared";
 import "./Compte.css";
 
 // L'usuari és el mateix que el de la capçalera: en desar el nom, s'actualitza a tot arreu.
 // Els comptes que només entren amb Google no tenen contrasenya pròpia, i no en veuen la part.
+// La fletxa d'enrere torna a la pantalla des d'on s'ha obert el compte.
 export default function Compte() {
   const { user } = useAuth();
   const tancaSessio = useTancaSessio();
   const { usuari, error: errorCarrega, estableix } = useUsuari();
+  const tornada = useTornada();
 
   // Nom
   const [nom, setNom] = useState(usuari?.nom ?? "");
@@ -102,7 +105,7 @@ export default function Compte() {
       <Capcalera titol="El meu compte" />
 
       <div className="compte__barra">
-        <BotoEnrere to="/inici" />
+        <BotoEnrere to={tornada} />
       </div>
 
       <main className="compte__targeta">

@@ -1,6 +1,7 @@
 Components visuals de React reutilitzables
 
-- Capcalera: el títol de la pantalla i el menú de l'usuari
+- Capcalera: el títol de la pantalla i el menú de l'usuari. Els enllaços del menú recorden d'on venim
+  (per tornar-hi amb la fletxa), i amb bloquejat el menú no s'obre (ho fem servir mentre es crea una entitat)
 - BotoEnrere: la fletxa per tornar enrere
 - Desplegable: el nostre desplegable (el fem servir en lloc del select del navegador)
 - EntitatImatge: la imatge d'una entitat (de moment, la inicial del nom)

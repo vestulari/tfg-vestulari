@@ -19,6 +19,8 @@ import CreacioPerfil from "./pages/CreacioPerfil";
 import CreacioPlantillaPerfil from "./pages/CreacioPlantillaPerfil";
 import CreacioEntitat from "./pages/CreacioEntitat";
 import { CreacioEntitatLayout } from "./context/CreacioEntitatContext";
+import Entitat from "./pages/Entitat";
+import EntradaEntitat from "./pages/EntradaEntitat";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -38,6 +40,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
               <Route path="/entitats/nova" element={<CreacioEntitat />} />
               <Route path="/entitats/nova/plantilla" element={<CreacioPlantillaPerfil />} />
               <Route path="/entitats/nova/perfil" element={<CreacioPerfil />} />
+            </Route>
+
+            {/* Dins d'una entitat: Entitat la carrega i les pantalles de dins la fan servir */}
+            <Route path="/entitat/:id" element={<Entitat />}>
+              <Route index element={<EntradaEntitat />} />
             </Route>
           </Route>
 

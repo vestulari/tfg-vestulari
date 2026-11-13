@@ -32,7 +32,7 @@ export default function CreacioPerfil() {
 
   const atributs = atributsOmplerts(esborrany.atributs);
 
-  // Munta les dades per a l'API amb tot l'esborrany i crea l'entitat
+  // Munta les dades per a l'API amb tot l'esborrany, crea l'entitat i hi entra
   async function confirma() {
     setEnviant(true);
     setErrorServidor(null);
@@ -57,8 +57,8 @@ export default function CreacioPerfil() {
     };
 
     try {
-      await entitatApi.crea(dades);
-      navigate("/inici");
+      const { id } = await entitatApi.crea(dades);
+      navigate(`/entitat/${id}`);
     } catch (e) {
       setErrorServidor(e instanceof ApiError ? e.message : "No s'ha pogut crear l'entitat.");
       setEnviant(false);
@@ -67,7 +67,7 @@ export default function CreacioPerfil() {
 
   return (
     <div className="pantalla">
-      <Capcalera titol="Crea el teu perfil" />
+      <Capcalera titol="Crea el teu perfil" bloquejat />
 
       <div className="pantalla__barra">
         <BotoEnrere to="/entitats/nova/plantilla" />

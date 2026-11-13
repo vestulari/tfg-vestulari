@@ -2,7 +2,7 @@ Capa d'accés a les dades (on es fan les sentències SQL)
 
 Hi ha un fitxer per cada cosa de la base de dades:
 - usuariRepository.ts: buscar un usuari i canviar-li el nom
-- entitatRepository.ts: llistar les entitats d'un usuari i crear-ne una de nova
+- entitatRepository.ts: llistar les entitats d'un usuari, veure'n una i crear-ne una de nova
 - invitacioRepository.ts: comptar, llistar, obrir, acceptar i rebutjar invitacions
 
 Algunes normes que seguim:

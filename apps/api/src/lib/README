@@ -2,5 +2,6 @@ Llibreries auxiliars, utilitats generals i configuracions de Supabase
 
 - db.ts: obre la connexió amb la base de dades. N'obrim una a cada petició, perquè als Workers de Cloudflare
   no es poden reaprofitar. Qui l'obre i la tanca és el middleware bd.ts.
+- params.ts: per llegir els paràmetres de les rutes, com els identificadors de la URL.
 
 Aquí va el codi que fan servir diverses parts de l'API i que no és ni una ruta, ni SQL, ni un middleware.

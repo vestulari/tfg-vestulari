@@ -2,15 +2,10 @@
 
 import { Hono } from 'hono'
 import type { Env } from '../types'
+import { llegeixId } from '../lib/params'
 import * as invitacioRepo from '../repositories/invitacioRepository'
 
 export const invitacions = new Hono<Env>()
-
-// Llegeix un identificador d'invitació.
-function llegeixId(valor: string): number | null {
-  const n = Number(valor)
-  return Number.isInteger(n) && n > 0 ? n : null
-}
 
 // Missatges d'error per a cada motiu de rebuig
 const MISSATGES: Record<invitacioRepo.MotiuRebuig, string> = {

@@ -33,7 +33,7 @@ export default function CreacioPlantillaPerfil() {
 
   return (
     <div className="pantalla">
-      <Capcalera titol="Crea la plantilla de perfil" />
+      <Capcalera titol="Crea la plantilla de perfil" bloquejat />
 
       <div className="pantalla__barra">
         <BotoEnrere to="/entitats/nova" />

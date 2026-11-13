@@ -50,7 +50,7 @@ export default function CreacioEntitat() {
 
   return (
     <div className="pantalla">
-      <Capcalera titol="Creant una entitat…" />
+      <Capcalera titol="Creant una entitat…" bloquejat />
 
       <div className="pantalla__barra">
         <BotoEnrere to="/inici" />

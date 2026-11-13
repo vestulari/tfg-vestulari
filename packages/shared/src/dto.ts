@@ -12,6 +12,19 @@ export type EntitatResumDto = {
   nom: string
 }
 
+// Una entitat vista per un dels seus membres, amb el perfil que hi té i els seus permisos
+export type EntitatDetallDto = {
+  id: number
+  nom: string
+  descripcio: string | null
+  perfil: {
+    id: number
+    nom: string
+    esAdministrador: boolean
+    esInterpret: boolean
+  }
+}
+
 export type InvitacioResumDto = {
   id: number
   entitatId: number
