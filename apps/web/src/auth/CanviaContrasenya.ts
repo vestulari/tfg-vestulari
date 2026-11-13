@@ -4,7 +4,6 @@ import { supabase } from "../lib/supabase";
 
 export type ResultatCanvi = { ok: true } | { ok: false; error: string };
 
-// Canvia la contrasenya. Abans comprova l'actual tornant a iniciar sessió amb ella.
 // La contrasenya no passa per l'API: la gestiona Supabase Auth, que també en valida la força.
 export async function canviaContrasenya(
   email: string,
