@@ -1,1 +1,27 @@
 Vistes de la pàgina web
+
+Cada pantalla té la seva ruta, i les rutes estan definides a index.tsx:
+- LandingPage (/): la presentació de l'app
+- LogIn (/login): iniciar sessió i registrar-se
+- Inici (/inici): les entitats de l'usuari i el botó per crear-ne una
+- Compte (/compte): canviar el nom i la contrasenya, i tancar sessió
+- Invitacions (/invitacions): les invitacions pendents
+  Compte i Invitacions s'obren des del menú de la capçalera, i la fletxa d'enrere torna a la pantalla
+  d'on s'han obert (si no se'n sap cap, a /inici).
+- InvitacioDetall (/invitacions/:id): acceptar o rebutjar una invitació
+- CreacioEntitat, CreacioPlantillaPerfil i CreacioPerfil (/entitats/nova...): els tres passos per crear una
+  entitat. Comparteixen l'esborrany del context, i l'entitat es crea a l'últim pas.
+  Mentre es crea, el menú de la capçalera està bloquejat, perquè no es perdi l'esborrany.
+- Entitat (/entitat/:id): no és una pantalla, és la ruta pare de tot el que hi ha dins d'una entitat.
+  Carrega l'entitat un cop i la deixa al context (useEntitat).
+- EntradaEntitat (/entitat/:id): l'inici de l'entitat, amb els botons de Vestuari, Espectacles,
+  Intèrprets (o El meu perfil, si no ets administrador), Configuració i Canviar d'entitat (torna a /inici).
+  Després de crear una entitat o d'acceptar una invitació, s'entra directament aquí.
+  Els botons que encara no tenen pantalla surten desactivats amb "Properament".
+- ConfiguracioEntitat (/entitat/:id/configuracio): cadascú hi veu el que el seu rol li deixa fer.
+  Els administradors canvien les dades de l'entitat (amb el mateix formulari que en crear-la).
+  El creador, a més, pot passar el rol a un altre administrador i eliminar l'entitat.
+  Tothom menys el creador pot sortir de l'entitat. Totes les accions es confirmen abans de fer-les.
+
+Totes menys la landing i el login necessiten haver iniciat sessió.
+Cada pantalla té el seu css amb el mateix nom.

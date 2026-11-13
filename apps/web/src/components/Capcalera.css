@@ -1,3 +1,5 @@
+/* Estils de la capçalera i del menú de l'usuari */
+
 .capcalera {
   position: relative;
   display: flex;
@@ -49,6 +51,12 @@
   font: inherit;
   font-weight: 700;
   cursor: pointer;
+}
+
+/* Menú bloquejat: es veu l'usuari, però apagat i sense poder-lo obrir */
+.capcalera__toggle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .capcalera__usuari--obert .capcalera__toggle {
@@ -131,4 +139,31 @@
 @media (max-width: 480px) {
   .capcalera { padding-left: 1.25rem; }
   .capcalera__nom { display: none; }
+}
+/* Dins d'una entitat: la imatge rodona i blanca, i el nom al costat */
+.capcalera__titol--entitat {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-left: -1.5rem;
+  min-width: 0;
+  /* Que el nom no quedi tapat pel bloc de l'usuari, que va per sobre */
+  padding-right: 18rem;
+}
+
+.capcalera__titol--entitat .entitat-imatge {
+  border-radius: 50%;
+  border-color: #fff;
+  background: #fff;
+  color: var(--blue);
+}
+
+.capcalera__nom-entitat {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* En pantalles petites el nom de l'usuari s'amaga i el seu bloc és més estret */
+@media (max-width: 480px) {
+  .capcalera__titol--entitat { margin-left: -0.75rem; padding-right: 7.5rem; }
 }

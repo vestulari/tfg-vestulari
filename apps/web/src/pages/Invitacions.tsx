@@ -1,3 +1,5 @@
+// Llista de les invitacions pendents de l'usuari, amb un cercador per entitat.
+
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import type { InvitacioResumDto } from "@tfg-vestulari/shared";
@@ -5,16 +7,21 @@ import { invitacioApi } from "../adapters/api/InvitacioAPI";
 import BotoEnrere from "../components/BotoEnrere";
 import Capcalera from "../components/Capcalera";
 import EntitatImatge from "../components/EntitatImatge";
+import { useEstatTornada, useTornada } from "../lib/tornada";
 import "./Invitacions.css";
 
 // Per cercar sense distingir majúscules ni accents
 const normalitza = (s: string) =>
   s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
+// Les invitacions que encara no s'han obert es marquen amb un punt
+// La fletxa d'enrere torna d'on s'han obert, i el detall se n'emporta la tornada per no perdre-la.
 export default function Invitacions() {
   const [invitacions, setInvitacions] = useState<InvitacioResumDto[] | null>(null);
   const [error, setError] = useState(false);
   const [cerca, setCerca] = useState("");
+  const tornada = useTornada();
+  const estatTornada = useEstatTornada();
 
   useEffect(() => {
     invitacioApi
@@ -37,7 +44,7 @@ export default function Invitacions() {
       <Capcalera titol="Invitacions" />
 
       <div className="invitacions__barra">
-        <BotoEnrere to="/inici" />
+        <BotoEnrere to={tornada} />
 
         <label className="invitacions__cerca">
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -72,7 +79,11 @@ export default function Invitacions() {
           <ul className="invitacions__llista">
             {visibles.map((i) => (
               <li key={i.id}>
-                <Link className="invitacions__fila" to={`/invitacions/${i.id}`}>
+                <Link
+                  className="invitacions__fila"
+                  to={`/invitacions/${i.id}`}
+                  state={estatTornada}
+                >
                   <span className="invitacions__sobre">
                     <svg viewBox="0 0 56 38" aria-hidden="true" focusable="false">
                       <rect x="1.5" y="1.5" width="53" height="35" fill="none" stroke="currentColor" strokeWidth="2" />

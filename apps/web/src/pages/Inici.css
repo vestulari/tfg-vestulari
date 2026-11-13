@@ -1,3 +1,5 @@
+/* Estils de la pantalla d'inici */
+
 .inici {
   min-height: 100vh;
   display: flex;
@@ -78,6 +80,7 @@
   font: inherit;
   font-size: 1.2rem;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .inici__crea-icona { font-size: 1.8rem; font-weight: 700; line-height: 1; }

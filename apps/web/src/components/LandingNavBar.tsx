@@ -9,6 +9,7 @@ const links = [
   { to: "/mes", label: "Més" },
 ];
 
+// Barra amb el nom de l'app i els enllaços de la landing
 export default function LandingNavBar() {
   return (
     <header className="landing-navbar">

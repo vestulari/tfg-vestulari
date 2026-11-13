@@ -10,9 +10,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@fontsource/space-grotesk": "^5.3.0",
     "@supabase/supabase-js": "^2.118.0",
     "@tfg-vestulari/shared": "*",
-    "bootstrap": "^5.2.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.18.4"

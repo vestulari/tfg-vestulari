@@ -3,18 +3,18 @@
 import type { InvitacioDetallDto, InvitacioResumDto } from '@tfg-vestulari/shared'
 import type { Sql } from '../lib/db'
 
-// Retorna el nombre d'invitacions pendents (rebudes o reenviades) de l'usuari
+// Retorna el nombre d'invitacions pendents (rebudes) de l'usuari
 export async function comptaPendents(sql: Sql, userId: string): Promise<number> {
   const [row] = await sql<{ n: number }[]>`
     select count(*)::int as n
     from public.invitacions
     where usuari_id = ${userId}
-      and estat in ('rebuda', 'reenviada')
+      and estat = 'rebuda'
   `
   return row?.n ?? 0
 }
 
-// Retorna la llista d'invitacions pendents (rebudes o reenviades) de l'usuari
+// Retorna la llista d'invitacions pendents (rebudes) de l'usuari
 export async function llistaPendents(sql: Sql, userId: string): Promise<InvitacioResumDto[]> {
   const rows = await sql<
     { id: number; entitat_id: number; entitat_nom: string; oberta: boolean }[]
@@ -26,7 +26,7 @@ export async function llistaPendents(sql: Sql, userId: string): Promise<Invitaci
     from public.invitacions i
     join public.entitats e on e.id = i.entitat_id
     where i.usuari_id = ${userId}
-      and i.estat in ('rebuda', 'reenviada')
+      and i.estat = 'rebuda'
     order by i.data desc
   `
   return rows.map((r) => ({
@@ -51,7 +51,7 @@ export async function obre(
       set oberta_el = coalesce(oberta_el, now())
       where id = ${id}
         and usuari_id = ${userId}
-        and estat in ('rebuda', 'reenviada')
+        and estat = 'rebuda'
       returning id, entitat_id
     )
     select i.id,
@@ -74,7 +74,6 @@ export async function obre(
 // Tipus de rebuig d'una invitació [Errors]
 export type MotiuRebuig =
   | 'no_trobada'
-  | 'perfils_ambigus'
   | 'ja_membre'
   | 'perfil_no_disponible'
 
@@ -88,21 +87,16 @@ export type ResultatAcceptar =
 export function accepta(sql: Sql, userId: string, id: number): Promise<ResultatAcceptar> {
   return sql.begin(async (tx): Promise<ResultatAcceptar> => {
     // `for update` bloqueja la invitació perquè no s'accepti dues vegades alhora
-    const [inv] = await tx<{ entitat_id: number }[]>`
-      select entitat_id
+    const [inv] = await tx<{ entitat_id: number; perfil_id: number }[]>`
+      select entitat_id, perfil_id
       from public.invitacions
       where id = ${id}
         and usuari_id = ${userId}
-        and estat in ('rebuda', 'reenviada')
+        and estat = 'rebuda'
       for update
     `
     if (!inv) return { ok: false, motiu: 'no_trobada' }
-
-    const perfils = await tx<{ perfil_id: number }[]>`
-      select perfil_id from public.invitacio_perfils where invitacio_id = ${id}
-    `
-    if (perfils.length !== 1) return { ok: false, motiu: 'perfils_ambigus' }
-    const perfilId = perfils[0].perfil_id
+    const perfilId = inv.perfil_id
 
     const jaMembre = await tx`
       select 1 from public.perfils
@@ -136,7 +130,7 @@ export async function rebutja(sql: Sql, userId: string, id: number): Promise<boo
     set estat = 'rebutjada', oberta_el = coalesce(oberta_el, now())
     where id = ${id}
       and usuari_id = ${userId}
-      and estat in ('rebuda', 'reenviada')
+      and estat = 'rebuda'
     returning id
   `
   return rows.length > 0

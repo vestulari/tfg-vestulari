@@ -5,6 +5,7 @@ const SIMBOLS = /[!@#$%^&*()_+\-=[\]{};'\\:"|<>?,.\/`~]/;
 
 export type Requisit = { text: string; complert: boolean };
 
+// Retorna cada requisit i si ja es compleix
 export function requisitsContrasenya(p: string): Requisit[] {
   return [
     { text: `Mínim ${LONGITUD_MINIMA} caràcters`, complert: p.length >= LONGITUD_MINIMA },
@@ -15,6 +16,7 @@ export function requisitsContrasenya(p: string): Requisit[] {
   ];
 }
 
+// Diu si la contrasenya compleix tots els requisits
 export function contrasenyaValida(p: string): boolean {
   return requisitsContrasenya(p).every((r) => r.complert);
 }

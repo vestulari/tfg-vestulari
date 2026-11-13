@@ -1,0 +1,11 @@
+Sessió i usuari que ha entrat
+
+- AuthProvider.tsx: guarda la sessió de Supabase. useAuth() la retorna, i useTancaSessio() tanca la sessió
+  i porta a la landing.
+- RequireAuth.tsx: protegeix les rutes que necessiten sessió. Si no n'hi ha, envia al login, i després
+  de fer login es torna on es volia anar.
+- UsuariProvider.tsx: demana l'usuari a l'API un sol cop i el comparteix amb totes les pantalles.
+  useUsuari() el retorna, i recarrega() el torna a demanar.
+- CanviaContrasenya.ts: el canvi de contrasenya, que va directe a Supabase i no passa per l'API.
+
+El login i el registre els fa Supabase. Les dades de l'usuari (el nom, les invitacions...) les traiem sempre de la nostra API.

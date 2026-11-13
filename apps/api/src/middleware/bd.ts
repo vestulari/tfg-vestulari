@@ -5,6 +5,7 @@ import { createMiddleware } from 'hono/factory'
 import { obreConnexio } from '../lib/db'
 import type { Env } from '../types'
 
+// Deixa la connexió a c.get('sql') i la tanca quan s'acaba la petició
 export const bd = createMiddleware<Env>(async (c, next) => {
   const sql = obreConnexio(c.env.DATABASE_URL)
   c.set('sql', sql)

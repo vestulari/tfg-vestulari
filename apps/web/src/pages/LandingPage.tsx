@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import LandingNavBar from "../components/LandingNavBar";
 import "./LandingPage.css";
 
+// Pantalla de presentació, amb el botó per iniciar sessió
 export default function Landing() {
   const navigate = useNavigate();
 

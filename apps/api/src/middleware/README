@@ -1,1 +1,8 @@
 Funcions intermediàries que s'executen abans de processar una petició.
+
+- auth.ts: mira que el token de Supabase sigui vàlid i guarda l'id i el correu de l'usuari a la request.
+  Si no ho és, respon 401 i la petició no arriba mai a la ruta.
+- bd.ts: obre la connexió amb la base de dades, la deixa a c.get('sql') i la tanca quan s'acaba.
+
+Cada router els posa al principi, i en aquest ordre: router.use('*', auth, bd)
+Els routers no van aquí, van a routes.

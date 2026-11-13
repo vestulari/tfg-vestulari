@@ -1,28 +1,30 @@
+// Pantalla del compte: canviar el nom d'usuari i la contrasenya, i tancar la sessió.
+
 import { useEffect, useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
-import type { UsuariDto } from "@tfg-vestulari/shared";
 import { ApiError } from "../adapters/api/ApiClient";
 import { usuariApi } from "../adapters/api/UsuariApi";
-import { useAuth } from "../auth/AuthProvider";
+import { useAuth, useTancaSessio } from "../auth/AuthProvider";
+import { useUsuari } from "../auth/UsuariProvider";
 import { canviaContrasenya } from "../auth/CanviaContrasenya";
 import BotoEnrere from "../components/BotoEnrere";
 import Capcalera from "../components/Capcalera";
 import RequisitsContrasenya from "../components/RequisitsContrasenya";
 import { contrasenyaValida } from "../lib/contrasenya";
+import { useTornada } from "../lib/tornada";
 import { NOM_MAX, errorNom } from "@tfg-vestulari/shared";
 import "./Compte.css";
 
+// L'usuari és el mateix que el de la capçalera: en desar el nom, s'actualitza a tot arreu.
+// Els comptes que només entren amb Google no tenen contrasenya pròpia, i no en veuen la part.
+// La fletxa d'enrere torna a la pantalla des d'on s'ha obert el compte.
 export default function Compte() {
-  const { user, signOut } = useAuth();
-  const navigate = useNavigate();
-
-  const [usuari, setUsuari] = useState<UsuariDto | null>(null);
-  const [errorCarrega, setErrorCarrega] = useState(false);
-  // En canviar-lo, la capçalera es torna a muntar i recarrega el nom nou
-  const [versioCapcalera, setVersioCapcalera] = useState(0);
+  const { user } = useAuth();
+  const tancaSessio = useTancaSessio();
+  const { usuari, error: errorCarrega, estableix } = useUsuari();
+  const tornada = useTornada();
 
   // Nom
-  const [nom, setNom] = useState("");
+  const [nom, setNom] = useState(usuari?.nom ?? "");
   const [desantNom, setDesantNom] = useState(false);
   const [okNom, setOkNom] = useState(false);
   const [errorDesarNom, setErrorDesarNom] = useState<string | null>(null);
@@ -35,21 +37,14 @@ export default function Compte() {
   const [okContrasenya, setOkContrasenya] = useState(false);
   const [errorContrasenya, setErrorContrasenya] = useState<string | null>(null);
 
+  // Si l'usuari encara no havia arribat en muntar la pantalla, omplim el camp quan arriba
+  const idUsuari = usuari?.id;
   useEffect(() => {
-    usuariApi
-      .getMe()
-      .then((u) => {
-        setUsuari(u);
-        setNom(u.nom);
-      })
-      .catch((e) => {
-        console.error("Error carregant el compte", e);
-        setErrorCarrega(true);
-      });
-  }, []);
+    if (usuari) setNom(usuari.nom);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idUsuari]);
 
   const email = user?.email ?? usuari?.email ?? "";
-  // Un compte que només entra amb Google no té contrasenya pròpia
   const teContrasenya = user?.identities?.some((i) => i.provider === "email") ?? true;
 
   // ----- Nom -----
@@ -57,6 +52,7 @@ export default function Compte() {
   const nomCanviat = usuari !== null && nom !== usuari.nom;
   const potDesarNom = nomCanviat && errNom === null && !desantNom;
 
+  // Desa el nom nou
   async function desaNom(e: FormEvent) {
     e.preventDefault();
     setOkNom(false);
@@ -66,10 +62,9 @@ export default function Compte() {
     setDesantNom(true);
     try {
       const actualitzat = await usuariApi.canviaNom(nom);
-      setUsuari(actualitzat);
+      estableix(actualitzat);
       setNom(actualitzat.nom);
       setOkNom(true);
-      setVersioCapcalera((v) => v + 1);
     } catch (err) {
       setErrorDesarNom(err instanceof ApiError ? err.message : "No s'ha pogut desar el nom.");
     } finally {
@@ -84,6 +79,7 @@ export default function Compte() {
   const potCanviar =
     actual.length > 0 && novaValida && coincideix && !igualQueActual && !canviant;
 
+  // Canvia la contrasenya i, si va bé, buida els camps
   async function canviaContra(e: FormEvent) {
     e.preventDefault();
     setOkContrasenya(false);
@@ -104,19 +100,12 @@ export default function Compte() {
     }
   }
 
-  function tancaSessio() {
-    // Primer naveguem a la landing: si tanquéssim la sessió abans,
-    // RequireAuth ens enviaria un instant a /login.
-    navigate("/", { replace: true });
-    void signOut();
-  }
-
   return (
     <div className="compte">
-      <Capcalera key={versioCapcalera} titol="El meu compte" />
+      <Capcalera titol="El meu compte" />
 
       <div className="compte__barra">
-        <BotoEnrere to="/inici" />
+        <BotoEnrere to={tornada} />
       </div>
 
       <main className="compte__targeta">

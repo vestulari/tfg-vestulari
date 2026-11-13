@@ -2,25 +2,19 @@
 
 import { Hono } from 'hono'
 import type { Env } from '../types'
+import { llegeixId } from '../lib/params'
 import * as invitacioRepo from '../repositories/invitacioRepository'
 
 export const invitacions = new Hono<Env>()
 
-// Llegeix un identificador d'invitació.
-function llegeixId(valor: string): number | null {
-  const n = Number(valor)
-  return Number.isInteger(n) && n > 0 ? n : null
-}
-
 // Missatges d'error per a cada motiu de rebuig
 const MISSATGES: Record<invitacioRepo.MotiuRebuig, string> = {
   no_trobada: "Aquesta invitació ja no està disponible.",
-  perfils_ambigus: "Aquesta invitació no és vàlida.",
   ja_membre: "Ja formes part d'aquesta entitat.",
   perfil_no_disponible: "El perfil que t'ofereixen ja no està disponible.",
 }
 
-// Retorna la llista d'invitacions pendents (rebudes o reenviades) de l'usuari
+// Retorna la llista d'invitacions pendents (rebudes) de l'usuari
 invitacions.get('/', async (c) => {
   const llista = await invitacioRepo.llistaPendents(c.get('sql'), c.get('userId'))
   return c.json(llista)

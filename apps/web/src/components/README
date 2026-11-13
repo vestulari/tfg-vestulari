@@ -1,1 +1,20 @@
 Components visuals de React reutilitzables
+
+- Capcalera: el títol de la pantalla i el menú de l'usuari. Els enllaços del menú recorden d'on venim
+  (per tornar-hi amb la fletxa), i amb bloquejat el menú no s'obre (ho fem servir mentre es crea una entitat)
+- BotoEnrere: la fletxa per tornar enrere
+- Desplegable: el nostre desplegable (el fem servir en lloc del select del navegador)
+- EntitatImatge: la imatge d'una entitat (de moment, la inicial del nom)
+- LandingNavBar: la barra de navegació de la landing
+- RequisitsContrasenya: la llista de requisits de la contrasenya
+- PerfilForm: el formulari d'un perfil
+- EntitatForm: el formulari de les dades d'una entitat (nom, data i descripció), per crear-la o editar-la
+- Confirmacio: la finestra per confirmar una acció abans de fer-la (amb el botó vermell si no es pot desfer)
+- PlantillaPerfilForm: el formulari de la plantilla de perfil, per crear-la o editar-la
+- Formulari.css: els estils que comparteixen totes les pantalles amb formulari
+
+Els formularis només validen i avisen dels errors, no criden l'API.
+Les dades les guarda la pantalla que els fa servir (amb onCanvi i onConfirma).
+
+Compte: la Capcalera fa servir l'usuari de UsuariProvider, així que només funciona dins de les rutes
+que necessiten sessió. Si es posa a la landing o al login, petarà.

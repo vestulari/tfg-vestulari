@@ -1,0 +1,119 @@
+/* Estils comuns de les pantalles amb formulari (etiquetes, camps, errors i botó de confirmar) */
+
+.pantalla {
+  min-height: 100vh;
+  padding: 1.5rem 3rem 3rem;
+  background: #e6eef6;
+}
+
+.pantalla__barra { padding: 2rem 4rem 0.5rem; }
+
+.pantalla__contingut {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 1rem 1rem 2rem;
+}
+
+.formulari { display: flex; flex-direction: column; gap: 1.6rem; }
+
+.formulari__fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+}
+
+.formulari__etiqueta { font-size: 1.1rem; color: #111; }
+
+/* Etiqueta d'amplada fixa, alineada a la dreta, perquè els camps quedin en columna */
+.formulari__etiqueta--fixa { flex: 0 0 11rem; text-align: right; }
+
+.formulari__nota { margin: 0; font-size: 0.85rem; color: #55595f; }
+
+/* Camp de text en forma de píndola */
+.formulari__input {
+  height: 3.6rem;
+  min-width: 0;
+  padding: 0 1.6rem;
+  border: 0;
+  border-radius: 999px;
+  background: #f1f5fa;
+  color: #111;
+  font: inherit;
+  transition: background 0.15s;
+}
+
+.formulari__input:hover { background: #eaf0f7; }
+.formulari__input::placeholder { color: #7b8088; }
+
+.formulari__input:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
+  background: #fff;
+}
+
+.formulari__input--centrat { padding: 0 0.75rem; text-align: center; }
+
+.formulari__textarea {
+  width: 100%;
+  min-height: 11rem;
+  padding: 1.4rem 1.8rem;
+  border: 0;
+  border-radius: 2rem;
+  background: #f1f5fa;
+  color: #111;
+  font: inherit;
+  line-height: 1.5;
+  resize: vertical;
+  transition: background 0.15s;
+}
+
+.formulari__textarea:hover { background: #eaf0f7; }
+.formulari__textarea::placeholder { color: #7b8088; }
+
+.formulari__textarea:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
+  background: #fff;
+}
+
+.formulari__comptador {
+  align-self: flex-end;
+  margin: -1rem 1rem 0 0;
+  font-size: 0.85rem;
+  color: #55595f;
+}
+
+.formulari__error {
+  margin: 0;
+  padding: 0.7rem 1.1rem;
+  border: 1px solid #ff8fa3;
+  border-radius: 1rem;
+  background: rgba(208, 64, 90, 0.12);
+}
+
+.formulari__accions { display: flex; justify-content: center; margin-top: 0.5rem; }
+
+.formulari__confirma {
+  min-width: 24rem;
+  padding: 0.85rem 2rem;
+  border: 0;
+  border-radius: 999px;
+  background: #aee06a;
+  color: #000;
+  font: inherit;
+  font-size: 1.9rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.formulari__confirma:hover:not(:disabled) { filter: brightness(1.05); }
+.formulari__confirma:disabled { opacity: 0.6; cursor: not-allowed; }
+.formulari__confirma:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
+@media (max-width: 800px) {
+  .pantalla { padding: 1rem 1rem 2rem; }
+  .pantalla__barra { padding: 1.25rem 0.5rem 0.5rem; }
+  .formulari__etiqueta--fixa { flex-basis: 100%; text-align: left; }
+  .formulari__confirma { min-width: 0; width: 100%; font-size: 1.5rem; }
+}

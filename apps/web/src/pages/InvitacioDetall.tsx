@@ -1,22 +1,31 @@
+// Detall d'una invitació, on es pot acceptar o rebutjar.
+
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import type { InvitacioDetallDto } from "@tfg-vestulari/shared";
 import { ApiError } from "../adapters/api/ApiClient";
 import { invitacioApi } from "../adapters/api/InvitacioAPI";
+import { useUsuari } from "../auth/UsuariProvider";
 import BotoEnrere from "../components/BotoEnrere";
 import Capcalera from "../components/Capcalera";
 import EntitatImatge from "../components/EntitatImatge";
+import { useEstatTornada } from "../lib/tornada";
 import "./InvitacioDetall.css";
 
+// Estats de la pantalla mentre es carrega la invitació
 type Estat =
   | { tipus: "carregant" }
   | { tipus: "no_disponible" }
   | { tipus: "error" }
   | { tipus: "ok"; invitacio: InvitacioDetallDto };
 
+// En obrir-la, l'API ja la marca com a oberta
+// En tornar a la llista, li retorna d'on s'havien obert les invitacions.
 export default function InvitacioDetall() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { recarrega } = useUsuari();
+  const estatTornada = useEstatTornada();
   const idNum = Number(id);
 
   const [estat, setEstat] = useState<Estat>({ tipus: "carregant" });
@@ -30,7 +39,6 @@ export default function InvitacioDetall() {
     }
 
     let cancelat = false;
-    // En obrir-la, l'API la marca com a oberta
     invitacioApi
       .obre(idNum)
       .then((invitacio) => {
@@ -50,17 +58,20 @@ export default function InvitacioDetall() {
     };
   }, [idNum]);
 
+  // Accepta la invitació (i entra a l'entitat) o la rebutja. Després torna a carregar l'usuari,
+  // perquè el nombre d'invitacions pendents de la capçalera ha canviat.
   async function resol(accio: "accepta" | "rebutja") {
     setEnviant(true);
     setErrorAccio(null);
     try {
       if (accio === "accepta") {
-        await invitacioApi.accepta(idNum);
-        navigate("/inici");
+        const { entitatId } = await invitacioApi.accepta(idNum);
+        navigate(`/entitat/${entitatId}`);
       } else {
         await invitacioApi.rebutja(idNum);
-        navigate("/invitacions");
+        navigate("/invitacions", { state: estatTornada });
       }
+      void recarrega();
     } catch (e) {
       setErrorAccio(e instanceof ApiError ? e.message : "No s'ha pogut completar l'acció.");
       setEnviant(false);
@@ -73,7 +84,7 @@ export default function InvitacioDetall() {
 
       <main className="invitacio__targeta">
         <div className="invitacio__enrere">
-          <BotoEnrere to="/invitacions" />
+          <BotoEnrere to="/invitacions" state={estatTornada} />
         </div>
 
         {estat.tipus === "carregant" && <p className="invitacio__missatge">Carregant…</p>}

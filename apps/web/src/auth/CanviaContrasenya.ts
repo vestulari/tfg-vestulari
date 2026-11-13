@@ -1,3 +1,5 @@
+// Canvi de contrasenya de l'usuari.
+
 import { supabase } from "../lib/supabase";
 
 export type ResultatCanvi = { ok: true } | { ok: false; error: string };
@@ -8,7 +10,6 @@ export async function canviaContrasenya(
   actual: string,
   nova: string
 ): Promise<ResultatCanvi> {
-  // Comprovem la contrasenya actual tornant a iniciar sessió amb ella
   const { error: errActual } = await supabase.auth.signInWithPassword({
     email,
     password: actual,

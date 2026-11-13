@@ -1,0 +1,10 @@
+Codi que comparteixen el frontend i l'API
+
+- src/dto.ts: els tipus de les dades que s'envien entre el frontend i l'API (DTO)
+- src/constants.ts: constants comunes, com els atributs bàsics, els gèneres o els tipus d'atribut
+- src/validacio.ts: les regles de validació. Les funcions errorXxx() retornen el missatge d'error, o null
+  si està tot bé. validaEntitatNova() mira el cos sencer d'una petició.
+
+Les regles són les mateixes als dos costats: el frontend les fa servir per avisar l'usuari, i l'API per no
+fiar-se del que li arriba. Si canvia una regla, només s'ha de canviar aquí.
+S'importa com a @tfg-vestulari/shared.

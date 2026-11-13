@@ -1,0 +1,9 @@
+Migracions de la base de dades
+
+Cada fitxer és un canvi a l'esquema, i s'apliquen per ordre de nom (que comença per la data i l'hora).
+Una migració que ja s'ha aplicat no es toca mai: si s'ha de canviar alguna cosa, se'n fa una de nova.
+
+A les migracions hi va l'estructura (taules, columnes, claus foranes i índexs).
+Les regles de negoci les controlem al backend. Només hi deixem algun índex únic com a seguretat,
+per si arriben dues peticions alhora.
+Totes les taules tenen RLS activat i sense permisos públics, així que només s'hi pot accedir des de l'API.
