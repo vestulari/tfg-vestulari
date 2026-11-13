@@ -21,6 +21,7 @@ import CreacioEntitat from "./pages/CreacioEntitat";
 import { CreacioEntitatLayout } from "./context/CreacioEntitatContext";
 import Entitat from "./pages/Entitat";
 import EntradaEntitat from "./pages/EntradaEntitat";
+import ConfiguracioEntitat from "./pages/ConfiguracioEntitat";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -45,6 +46,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             {/* Dins d'una entitat: Entitat la carrega i les pantalles de dins la fan servir */}
             <Route path="/entitat/:id" element={<Entitat />}>
               <Route index element={<EntradaEntitat />} />
+              <Route path="configuracio" element={<ConfiguracioEntitat />} />
             </Route>
           </Route>
 

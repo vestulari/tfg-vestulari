@@ -5,7 +5,9 @@ Cada fitxer és un router de Hono, i tots es munten a index.ts:
   També hi penja invitacions.ts, a /me/invitacions.
 - invitacions.ts: llistar, obrir, acceptar i rebutjar invitacions.
 - entitats.ts: crear una entitat, i veure'n una (amb el perfil i els permisos de l'usuari).
-  Si l'usuari no n'és membre, respon 404.
+  També la configuració: canviar-ne les dades (administradors), eliminar-la i passar el rol de creador
+  (només el creador), i sortir-ne (tothom menys el creador).
+  Si l'usuari no n'és membre, respon 404, i si no té permís per fer una cosa, 403.
 
 Una ruta llegeix la petició, la valida amb el paquet shared, crida el repositori i decideix quin codi HTTP retorna.
 El SQL no va aquí, va als repositoris.

@@ -51,7 +51,9 @@ export default function Entitat() {
 
   if (estat.tipus === "ok") {
     return (
-      <EntitatContext.Provider value={estat.entitat}>
+      <EntitatContext.Provider
+        value={{ entitat: estat.entitat, actualitza: (entitat) => setEstat({ tipus: "ok", entitat }) }}
+      >
         <Outlet />
       </EntitatContext.Provider>
     );

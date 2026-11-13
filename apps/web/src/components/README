@@ -8,6 +8,8 @@ Components visuals de React reutilitzables
 - LandingNavBar: la barra de navegació de la landing
 - RequisitsContrasenya: la llista de requisits de la contrasenya
 - PerfilForm: el formulari d'un perfil
+- EntitatForm: el formulari de les dades d'una entitat (nom, data i descripció), per crear-la o editar-la
+- Confirmacio: la finestra per confirmar una acció abans de fer-la (amb el botó vermell si no es pot desfer)
 - PlantillaPerfilForm: el formulari de la plantilla de perfil, per crear-la o editar-la
 - Formulari.css: els estils que comparteixen totes les pantalles amb formulari
 

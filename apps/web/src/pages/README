@@ -18,6 +18,10 @@ Cada pantalla té la seva ruta, i les rutes estan definides a index.tsx:
   Intèrprets (o El meu perfil, si no ets administrador), Configuració i Canviar d'entitat (torna a /inici).
   Després de crear una entitat o d'acceptar una invitació, s'entra directament aquí.
   Els botons que encara no tenen pantalla surten desactivats amb "Properament".
+- ConfiguracioEntitat (/entitat/:id/configuracio): cadascú hi veu el que el seu rol li deixa fer.
+  Els administradors canvien les dades de l'entitat (amb el mateix formulari que en crear-la).
+  El creador, a més, pot passar el rol a un altre administrador i eliminar l'entitat.
+  Tothom menys el creador pot sortir de l'entitat. Totes les accions es confirmen abans de fer-les.
 
 Totes menys la landing i el login necessiten haver iniciat sessió.
 Cada pantalla té el seu css amb el mateix nom.

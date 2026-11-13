@@ -17,12 +17,33 @@ export type EntitatDetallDto = {
   id: number
   nom: string
   descripcio: string | null
+  anyCreacio: number
+  mesCreacio: number | null
+  diaCreacio: number | null
   perfil: {
     id: number
     nom: string
     esAdministrador: boolean
     esInterpret: boolean
+    esCreador: boolean
   }
+}
+
+// ---------- Configuració d'una entitat ----------
+// Les dades de l'entitat que un administrador pot canviar
+export type EntitatEditadaDto = {
+  nom: string
+  descripcio: string
+  anyCreacio: number
+  mesCreacio: number | null
+  diaCreacio: number | null
+}
+
+// Un administrador de l'entitat, a qui el creador pot passar el rol
+export type AdministradorDto = {
+  perfilId: number
+  perfilNom: string
+  usuariNom: string
 }
 
 export type InvitacioResumDto = {

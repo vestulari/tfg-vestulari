@@ -1,0 +1,51 @@
+/* Estils del formulari de les dades d'una entitat (imatge, nom, data i descripció) */
+
+.entitat-form__dalt {
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr);
+  gap: 2rem 3rem;
+  align-items: start;
+}
+
+.entitat-form__imatge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  width: 11rem;
+  aspect-ratio: 1;
+  border-radius: 2rem;
+  background: #f1f5fa;
+  color: #7b8088;
+  font-size: 1.15rem;
+  line-height: 1.2;
+  text-align: center;
+  user-select: none;
+}
+
+.entitat-form__icona { width: 4.2rem; height: auto; color: #b9bec5; }
+
+.entitat-form__camps { display: grid; gap: 1.25rem; }
+
+.entitat-form__etiqueta {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 14rem;
+}
+
+.entitat-form__nom { flex: 1 1 18rem; }
+
+.entitat-form__data {
+  display: flex;
+  flex: 1 1 18rem;
+  gap: 0.9rem;
+}
+
+.entitat-form__data .formulari__input { flex: 1 1 0; width: 0; }
+
+@media (max-width: 800px) {
+  .entitat-form__dalt { grid-template-columns: minmax(0, 1fr); }
+  .entitat-form__imatge { width: 9rem; }
+  .entitat-form__etiqueta { flex-basis: 100%; }
+}

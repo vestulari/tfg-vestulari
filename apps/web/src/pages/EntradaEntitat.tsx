@@ -39,11 +39,10 @@ export default function EntradaEntitat() {
           )}
 
           <div className="entitat__peu">
-            <button type="button" className="entitat__boto entitat__boto--configuracio" disabled>
+            <Link className="entitat__boto entitat__boto--configuracio" to="configuracio">
               <span className="entitat__icona-petita" aria-hidden="true"><IconaEngranatge /></span>
               <span className="entitat__text">Configuració</span>
-              <span className="entitat__properament">Properament</span>
-            </button>
+            </Link>
 
             <Link className="entitat__boto entitat__boto--sortir" to="/inici">
               <span className="entitat__icona-petita" aria-hidden="true"><IconaPorta /></span>

@@ -4,5 +4,6 @@ Estat que comparteixen diverses pantalles
   pels tres passos, i es perd quan en surt. Amb useCreacioEntitat() es pot llegir i actualitzar.
 - EntitatContext.tsx: l'entitat on és l'usuari ara mateix, amb el seu perfil i els permisos.
   La posa la pantalla Entitat, i les pantalles de dins de l'entitat la llegeixen amb useEntitat().
+  Si una pantalla la canvia (com la configuració), la substitueix amb useActualitzaEntitat().
 
 La sessió i l'usuari no són aquí, són a la carpeta auth.

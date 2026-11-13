@@ -1,6 +1,12 @@
 // Regles de validació compartides entre el frontend i l'API.
 import { ATRIBUTS_BASICS, GENERES } from './constants'
-import type { AtributNouDto, EntitatNovaDto, PerfilNouDto, TipusAtribut } from './dto'
+import type {
+  AtributNouDto,
+  EntitatEditadaDto,
+  EntitatNovaDto,
+  PerfilNouDto,
+  TipusAtribut,
+} from './dto'
 
 // ---------- Nom d'usuari ----------
 export const NOM_MIN = 1
@@ -157,10 +163,10 @@ export function errorPerfil(p: PerfilNouDto, atributs: AtributNouDto[]): string 
 }
 
 // ---------- Validació completa del cos d'una petició (l'API no es fia del navegador) ----------
-type Resultat = { ok: true; dades: EntitatNovaDto } | { ok: false; error: string }
+type Resultat<T> = { ok: true; dades: T } | { ok: false; error: string }
 
 // Petites ajudes per validar el cos
-const invalid = (error: string): Resultat => ({ ok: false, error })
+const invalid = (error: string): { ok: false; error: string } => ({ ok: false, error })
 
 const esObjecte = (v: unknown): v is Record<string, unknown> =>
   typeof v === 'object' && v !== null && !Array.isArray(v)
@@ -171,8 +177,12 @@ function enterOpcional(v: unknown): number | null | undefined {
   return typeof v === 'number' && Number.isInteger(v) ? v : undefined
 }
 
-// Comprova tot el cos d'un POST /entitats. Retorna les dades netes, o el primer error que troba.
-export function validaEntitatNova(cos: unknown, avui: Date = new Date()): Resultat {
+// Comprova el nom, la descripció i la data de creació de l'entitat.
+// És el cos d'un PATCH /entitats/:id, i també la primera part del POST /entitats.
+export function validaEntitatEditada(
+  cos: unknown,
+  avui: Date = new Date()
+): Resultat<EntitatEditadaDto> {
   if (!esObjecte(cos)) return invalid('Dades no vàlides.')
 
   const nom = cos.nom
@@ -186,9 +196,27 @@ export function validaEntitatNova(cos: unknown, avui: Date = new Date()): Result
   if (typeof anyCreacio !== 'number') return invalid("Falta l'any de creació.")
   if (mes === undefined || dia === undefined) return invalid('La data de creació no és vàlida.')
 
-  if (!Array.isArray(cos.atributs)) return invalid('Els atributs no són vàlids.')
+  const error =
+    errorNomEntitat(nom) ??
+    errorDescripcio(descripcio) ??
+    errorDataCreacio(anyCreacio, mes, dia, avui)
+  if (error) return invalid(error)
+
+  return {
+    ok: true,
+    dades: { nom, descripcio: descripcio.trim(), anyCreacio, mesCreacio: mes, diaCreacio: dia },
+  }
+}
+
+// Comprova tot el cos d'un POST /entitats. Retorna les dades netes, o el primer error que troba.
+export function validaEntitatNova(cos: unknown, avui: Date = new Date()): Resultat<EntitatNovaDto> {
+  const entitat = validaEntitatEditada(cos, avui)
+  if (!entitat.ok) return entitat
+  const c = cos as Record<string, unknown> // ja sabem que és un objecte
+
+  if (!Array.isArray(c.atributs)) return invalid('Els atributs no són vàlids.')
   const atributs: AtributNouDto[] = []
-  for (const a of cos.atributs) {
+  for (const a of c.atributs) {
     if (!esObjecte(a)) return invalid('Algun atribut no és vàlid.')
     const nomAtribut = a.nom
     const tipus = a.tipus
@@ -198,7 +226,7 @@ export function validaEntitatNova(cos: unknown, avui: Date = new Date()): Result
     atributs.push({ nom: nomAtribut, tipus })
   }
 
-  const p = cos.perfil
+  const p = c.perfil
   if (!esObjecte(p)) return invalid('Falta el perfil.')
   const nomPerfil = p.nom
   const edat = p.edat
@@ -231,24 +259,8 @@ export function validaEntitatNova(cos: unknown, avui: Date = new Date()): Result
     valors,
   }
 
-  const error =
-    errorNomEntitat(nom) ??
-    errorDescripcio(descripcio) ??
-    errorDataCreacio(anyCreacio, mes, dia, avui) ??
-    errorAtributs(atributs) ??
-    errorPerfil(perfil, atributs)
+  const error = errorAtributs(atributs) ?? errorPerfil(perfil, atributs)
   if (error) return invalid(error)
 
-  return {
-    ok: true,
-    dades: {
-      nom,
-      descripcio: descripcio.trim(),
-      anyCreacio,
-      mesCreacio: mes,
-      diaCreacio: dia,
-      atributs,
-      perfil,
-    },
-  }
+  return { ok: true, dades: { ...entitat.dades, atributs, perfil } }
 }

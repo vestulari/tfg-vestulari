@@ -81,6 +81,7 @@
 }
 
 .entitat__boto--configuracio { background: #d1d4d9; }
+.entitat__boto--configuracio:hover { background: #c4c8ce; }
 .entitat__boto--sortir { background: #db97a0; }
 .entitat__boto--sortir:hover { background: #d3848f; }
 
