@@ -1,32 +1,29 @@
 // API REST de la gestió d'entitats.
 
-import { Hono, type Context } from 'hono'
+import { Hono } from 'hono'
 import {
   validaEntitatEditada,
   validaEntitatNova,
+  validaPlantilla,
   type EntitatCreadaDto,
 } from '@tfg-vestulari/shared'
 import type { Env } from '../types'
 import { auth } from '../middleware/auth'
 import { bd } from '../middleware/bd'
-import { llegeixId } from '../lib/params'
+import { membre, nomesAdmin } from '../middleware/entitat'
+import { llegeixCos } from '../lib/params'
 import * as entitatRepo from '../repositories/entitatRepository'
+import * as plantillaRepo from '../repositories/plantillaRepository'
+import { perfils } from './perfils'
 
 export const entitats = new Hono<Env>()
 
-// Totes les rutes d'entitats necessiten l'usuari autenticat i la connexió a la BD
+// Totes les rutes d'entitats necessiten l'usuari autenticat i la connexió a la BD.
+// Les de /:id, a més, que l'usuari sigui membre de l'entitat (el middleware deixa l'entitat a c.get('entitat')).
+// A Hono, '/:id/*' també inclou la mateixa '/:id'.
 entitats.use('*', auth, bd)
-
-// Llegeix el cos JSON de la petició. Retorna undefined si no és JSON.
-async function llegeixCos(c: Context<Env>): Promise<unknown> {
-  try {
-    return await c.req.json()
-  } catch {
-    return undefined
-  }
-}
-
-const NO_TROBADA = "Aquesta entitat no existeix o no hi tens accés."
+entitats.use('/:id/*', membre)
+entitats.route('/:id/perfils', perfils)
 
 // Crea una entitat nova, amb la plantilla de perfil i el perfil del creador.
 entitats.post('/', async (c) => {
@@ -42,89 +39,54 @@ entitats.post('/', async (c) => {
 })
 
 // Retorna una entitat, amb el perfil que hi té l'usuari i els seus permisos.
-// Si l'usuari no n'és membre, respon 404, com si l'entitat no existís.
-entitats.get('/:id', async (c) => {
-  const id = llegeixId(c.req.param('id'))
-  if (id === null) return c.json({ error: 'Identificador no vàlid' }, 400)
-
-  const entitat = await entitatRepo.detallPerUsuari(c.get('sql'), c.get('userId'), id)
-  if (!entitat) return c.json({ error: NO_TROBADA }, 404)
-  return c.json(entitat)
-})
+// Si l'usuari no n'és membre, el middleware ja ha respost 404, com si l'entitat no existís.
+entitats.get('/:id', (c) => c.json(c.get('entitat')))
 
 // Canvia el nom, la descripció i la data de l'entitat. Només ho poden fer els administradors.
 // Retorna l'entitat ja canviada.
-entitats.patch('/:id', async (c) => {
-  const id = llegeixId(c.req.param('id'))
-  if (id === null) return c.json({ error: 'Identificador no vàlid' }, 400)
-
+entitats.patch('/:id', nomesAdmin, async (c) => {
   const cos = await llegeixCos(c)
   if (cos === undefined) return c.json({ error: 'Cos de la petició no vàlid' }, 400)
-
-  const sql = c.get('sql')
-  const userId = c.get('userId')
-  const entitat = await entitatRepo.detallPerUsuari(sql, userId, id)
-  if (!entitat) return c.json({ error: NO_TROBADA }, 404)
-  if (!entitat.perfil.esAdministrador) {
-    return c.json({ error: "Només els administradors poden canviar les dades de l'entitat." }, 403)
-  }
 
   const r = validaEntitatEditada(cos)
   if (!r.ok) return c.json({ error: r.error }, 400)
 
+  const sql = c.get('sql')
+  const id = c.get('entitat').id
   await entitatRepo.edita(sql, id, r.dades)
-  return c.json(await entitatRepo.detallPerUsuari(sql, userId, id))
+  return c.json(await entitatRepo.detallPerUsuari(sql, c.get('userId'), id))
 })
 
 // Elimina l'entitat i tot el que hi ha a dins. Només ho pot fer el creador.
 entitats.delete('/:id', async (c) => {
-  const id = llegeixId(c.req.param('id'))
-  if (id === null) return c.json({ error: 'Identificador no vàlid' }, 400)
-
-  const sql = c.get('sql')
-  const entitat = await entitatRepo.detallPerUsuari(sql, c.get('userId'), id)
-  if (!entitat) return c.json({ error: NO_TROBADA }, 404)
+  const entitat = c.get('entitat')
   if (!entitat.perfil.esCreador) {
     return c.json({ error: "Només el creador pot eliminar l'entitat." }, 403)
   }
 
-  await entitatRepo.elimina(sql, id)
+  await entitatRepo.elimina(c.get('sql'), entitat.id)
   return c.body(null, 204)
 })
 
 // Retorna els altres administradors de l'entitat, a qui el creador pot passar el rol.
 entitats.get('/:id/administradors', async (c) => {
-  const id = llegeixId(c.req.param('id'))
-  if (id === null) return c.json({ error: 'Identificador no vàlid' }, 400)
-
-  const sql = c.get('sql')
-  const userId = c.get('userId')
-  const entitat = await entitatRepo.detallPerUsuari(sql, userId, id)
-  if (!entitat) return c.json({ error: NO_TROBADA }, 404)
+  const entitat = c.get('entitat')
   if (!entitat.perfil.esCreador) {
     return c.json({ error: 'Només el creador pot passar el rol de creador.' }, 403)
   }
 
-  return c.json(await entitatRepo.altresAdministradors(sql, userId, id))
+  return c.json(await entitatRepo.altresAdministradors(c.get('sql'), c.get('userId'), entitat.id))
 })
 
 // Passa el rol de creador a un altre administrador. El cos és { perfilId }.
 entitats.post('/:id/creador', async (c) => {
-  const id = llegeixId(c.req.param('id'))
-  if (id === null) return c.json({ error: 'Identificador no vàlid' }, 400)
-
   const cos = await llegeixCos(c)
   const perfilId = (cos as { perfilId?: unknown } | undefined)?.perfilId
   if (typeof perfilId !== 'number' || !Number.isInteger(perfilId)) {
     return c.json({ error: 'Cal triar a qui vols passar el rol.' }, 400)
   }
 
-  const sql = c.get('sql')
-  const userId = c.get('userId')
-  const entitat = await entitatRepo.detallPerUsuari(sql, userId, id)
-  if (!entitat) return c.json({ error: NO_TROBADA }, 404)
-
-  const r = await entitatRepo.passaCreador(sql, userId, id, perfilId)
+  const r = await entitatRepo.passaCreador(c.get('sql'), c.get('userId'), c.get('entitat').id, perfilId)
   if (!r.ok) {
     return r.motiu === 'no_creador'
       ? c.json({ error: 'Només el creador pot passar el rol de creador.' }, 403)
@@ -135,17 +97,34 @@ entitats.post('/:id/creador', async (c) => {
 
 // Desvincula l'usuari de l'entitat. El creador no en pot sortir.
 entitats.post('/:id/sortir', async (c) => {
-  const id = llegeixId(c.req.param('id'))
-  if (id === null) return c.json({ error: 'Identificador no vàlid' }, 400)
-
-  const r = await entitatRepo.surt(c.get('sql'), c.get('userId'), id)
+  const r = await entitatRepo.surt(c.get('sql'), c.get('userId'), c.get('entitat').id)
   if (!r.ok) {
     return r.motiu === 'es_creador'
       ? c.json(
           { error: "Com a creador no pots sortir de l'entitat. Primer passa el rol a un altre administrador." },
           409
         )
-      : c.json({ error: NO_TROBADA }, 404)
+      : c.json({ error: 'Aquesta entitat no existeix o no hi tens accés.' }, 404)
   }
   return c.body(null, 204)
+})
+
+// Retorna els atributs de la plantilla de perfil. La poden veure tots els membres.
+entitats.get('/:id/plantilla', async (c) => {
+  return c.json(await plantillaRepo.llista(c.get('sql'), c.get('entitat').id))
+})
+
+// Desa la plantilla sencera (només administradors). Els atributs que falten s'esborren amb els seus
+// valors, els que tenen id canvien de nom i els nous es creen. Retorna la plantilla ja desada.
+entitats.put('/:id/plantilla', nomesAdmin, async (c) => {
+  const cos = await llegeixCos(c)
+  if (cos === undefined) return c.json({ error: 'Cos de la petició no vàlid' }, 400)
+
+  const sql = c.get('sql')
+  const id = c.get('entitat').id
+  const r = validaPlantilla(cos, await plantillaRepo.llista(sql, id))
+  if (!r.ok) return c.json({ error: r.error }, 400)
+
+  await plantillaRepo.desa(sql, id, r.dades)
+  return c.json(await plantillaRepo.llista(sql, id))
 })

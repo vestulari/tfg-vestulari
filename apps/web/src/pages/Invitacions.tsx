@@ -6,13 +6,11 @@ import type { InvitacioResumDto } from "@tfg-vestulari/shared";
 import { invitacioApi } from "../adapters/api/InvitacioAPI";
 import BotoEnrere from "../components/BotoEnrere";
 import Capcalera from "../components/Capcalera";
+import Cercador from "../components/Cercador";
 import EntitatImatge from "../components/EntitatImatge";
+import { coincideix } from "../lib/cerca";
 import { useEstatTornada, useTornada } from "../lib/tornada";
 import "./Invitacions.css";
-
-// Per cercar sense distingir majúscules ni accents
-const normalitza = (s: string) =>
-  s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
 // Les invitacions que encara no s'han obert es marquen amb un punt
 // La fletxa d'enrere torna d'on s'han obert, i el detall se n'emporta la tornada per no perdre-la.
@@ -35,8 +33,7 @@ export default function Invitacions() {
 
   const visibles = useMemo(() => {
     if (!invitacions) return [];
-    const q = normalitza(cerca.trim());
-    return invitacions.filter((i) => normalitza(i.entitatNom).includes(q));
+    return invitacions.filter((i) => coincideix(i.entitatNom, cerca));
   }, [invitacions, cerca]);
 
   return (
@@ -46,19 +43,12 @@ export default function Invitacions() {
       <div className="invitacions__barra">
         <BotoEnrere to={tornada} />
 
-        <label className="invitacions__cerca">
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" strokeWidth="2" />
-            <path d="M15.5 15.5 L22 22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-          <input
-            type="search"
-            placeholder="Cerca per entitat…"
-            aria-label="Cerca per entitat"
-            value={cerca}
-            onChange={(e) => setCerca(e.target.value)}
-          />
-        </label>
+        <Cercador
+          valor={cerca}
+          onCanvi={setCerca}
+          placeholder="Cerca per entitat…"
+          etiqueta="Cerca per entitat"
+        />
       </div>
 
       <main>

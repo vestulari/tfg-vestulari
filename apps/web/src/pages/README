@@ -22,6 +22,15 @@ Cada pantalla té la seva ruta, i les rutes estan definides a index.tsx:
   Els administradors canvien les dades de l'entitat (amb el mateix formulari que en crear-la).
   El creador, a més, pot passar el rol a un altre administrador i eliminar l'entitat.
   Tothom menys el creador pot sortir de l'entitat. Totes les accions es confirmen abans de fer-les.
+- Interprets (/entitat/:id/interprets, només administradors): tots els perfils, amb el cercador i el toggle
+  Administradors / Intèrprets (o l'un o l'altre). Des d'aquí s'insereix un intèrpret o es modifica la plantilla.
+- PerfilDetall (/entitat/:id/perfils/:perfilId): les dades d'un perfil. Els administradors el poden editar,
+  compartir, descompartir (clicant "Compartit amb...") o cancel·lar-ne la invitació. També és la pantalla
+  de "El meu perfil", on els que no són administradors només poden mirar.
+- NouPerfil (/entitat/:id/perfils/nou) i EditaPerfil (/entitat/:id/perfils/:perfilId/editar): el formulari
+  de perfil, buit o amb les dades omplertes. Només administradors.
+- EditaPlantilla (/entitat/:id/plantilla): modificar els atributs dels perfils. Els que es treuen no
+  s'esborren fins a Guardar, que torna a preguntar. Només administradors.
 
 Totes menys la landing i el login necessiten haver iniciat sessió.
 Cada pantalla té el seu css amb el mateix nom.

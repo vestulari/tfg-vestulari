@@ -22,6 +22,12 @@ import { CreacioEntitatLayout } from "./context/CreacioEntitatContext";
 import Entitat from "./pages/Entitat";
 import EntradaEntitat from "./pages/EntradaEntitat";
 import ConfiguracioEntitat from "./pages/ConfiguracioEntitat";
+import RutaAdmin from "./components/RutaAdmin";
+import Interprets from "./pages/Interprets";
+import PerfilDetall from "./pages/PerfilDetall";
+import NouPerfil from "./pages/NouPerfil";
+import EditaPerfil from "./pages/EditaPerfil";
+import EditaPlantilla from "./pages/EditaPlantilla";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -47,6 +53,16 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <Route path="/entitat/:id" element={<Entitat />}>
               <Route index element={<EntradaEntitat />} />
               <Route path="configuracio" element={<ConfiguracioEntitat />} />
+              {/* "El meu perfil" també és aquesta pantalla: l'API decideix qui pot veure cada perfil */}
+              <Route path="perfils/:perfilId" element={<PerfilDetall />} />
+
+              {/* Només per als administradors */}
+              <Route element={<RutaAdmin />}>
+                <Route path="interprets" element={<Interprets />} />
+                <Route path="perfils/nou" element={<NouPerfil />} />
+                <Route path="perfils/:perfilId/editar" element={<EditaPerfil />} />
+                <Route path="plantilla" element={<EditaPlantilla />} />
+              </Route>
             </Route>
           </Route>
 

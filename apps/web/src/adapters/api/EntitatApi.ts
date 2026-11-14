@@ -2,6 +2,7 @@
 
 import type {
   AdministradorDto,
+  AtributDto,
   EntitatCreadaDto,
   EntitatDetallDto,
   EntitatResumDto,
@@ -21,4 +22,10 @@ export const entitatApi: EntitatGateway = {
   passaCreador: (id, perfilId) =>
     api<void>(`/entitats/${id}/creador`, { method: 'POST', body: JSON.stringify({ perfilId }) }),
   surt: (id) => api<void>(`/entitats/${id}/sortir`, { method: 'POST' }),
+  plantilla: (id) => api<AtributDto[]>(`/entitats/${id}/plantilla`),
+  desaPlantilla: (id, atributs) =>
+    api<AtributDto[]>(`/entitats/${id}/plantilla`, {
+      method: 'PUT',
+      body: JSON.stringify({ atributs }),
+    }),
 }

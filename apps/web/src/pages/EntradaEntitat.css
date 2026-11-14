@@ -123,3 +123,7 @@
   .entitat__boto { flex: none; min-height: 4.4rem; }
   .entitat__icona-petita { width: 2.4rem; }
 }
+
+/* Els botons que ja tenen pantalla són enllaços */
+a.entitat__seccio { text-decoration: none; }
+a.entitat__seccio:hover { background: #e6edf5; }

@@ -3,4 +3,6 @@ Utilitats del frontend que no són components
 - supabase.ts: el client de Supabase. Només el fem servir per a la sessió (login, registre i contrasenya).
 - contrasenya.ts: els requisits de la contrasenya, els mateixos que té Supabase.
 - enters.ts: per als camps on només es poden escriure números.
+- cerca.ts: coincideix(), per filtrar llistes amb el cercador sense mirar majúscules ni accents.
+- perfils.ts: passa els perfils i la plantilla del format de l'API al dels formularis, i al revés.
 - tornada.ts: recorda d'on s'ha obert el compte o les invitacions, perquè la fletxa d'enrere hi torni.

@@ -10,6 +10,7 @@ import {
   errorAtributs,
 } from "@tfg-vestulari/shared";
 import { atributsOmplerts, type AtributFila } from "../context/CreacioEntitatContext";
+import Confirmacio from "./Confirmacio";
 import Desplegable from "./Desplegable";
 import "./Formulari.css";
 import "./PlantillaPerfilForm.css";
@@ -23,9 +24,12 @@ type Props = {
   onConfirma: () => void;
   enviant?: boolean;
   errorServidor?: string | null;
+  textBoto?: string;
 };
 
-// Només valida i avisa: les dades les guarda qui el fa servir, amb onCanvi i onConfirma
+// Només valida i avisa: les dades les guarda qui el fa servir, amb onCanvi i onConfirma.
+// Els atributs que ja estan guardats no poden canviar de tipus, i abans de treure'ls es demana confirmació
+// (però no s'esborren de debò fins que es desa la plantilla).
 export default function PlantillaPerfilForm({
   mode,
   atributs,
@@ -33,8 +37,10 @@ export default function PlantillaPerfilForm({
   onConfirma,
   enviant = false,
   errorServidor = null,
+  textBoto = "Confirmar",
 }: Props) {
   const [error, setError] = useState<string | null>(null);
+  const [perTreure, setPerTreure] = useState<AtributFila | null>(null);
 
   // Canvia el nom o el tipus d'un atribut
   function canviaFila(clau: number, parcial: Partial<AtributFila>) {
@@ -52,6 +58,12 @@ export default function PlantillaPerfilForm({
   function elimina(clau: number) {
     onCanvi(atributs.filter((a) => a.clau !== clau));
     setError(null);
+  }
+
+  // Si l'atribut ja estava guardat, primer pregunta; si és nou, el treu directament
+  function demanaEliminar(a: AtributFila) {
+    if (a.id === undefined) elimina(a.clau);
+    else setPerTreure(a);
   }
 
   // Valida els atributs i, si estan bé, confirma
@@ -87,7 +99,7 @@ export default function PlantillaPerfilForm({
         <p className="plantilla__avis" role="note">
           Els canvis afecten tots els perfils de l'entitat: si elimines un atribut, se n'esborraran
           els valors a tots els perfils, i si n'afegeixes un de nou, els perfils que ja existeixen
-          el tindran buit.
+          el tindran buit. El tipus dels atributs que ja existeixen no es pot canviar.
         </p>
       )}
 
@@ -127,6 +139,7 @@ export default function PlantillaPerfilForm({
                 valor={a.tipus}
                 opcions={TIPUS_ATRIBUT}
                 placeholder="Escollir tipus"
+                disabled={a.id !== undefined}
                 onCanvi={(tipus) => canviaFila(a.clau, { tipus })}
               />
             </div>
@@ -134,7 +147,7 @@ export default function PlantillaPerfilForm({
             <button
               type="button"
               className="plantilla__elimina"
-              onClick={() => elimina(a.clau)}
+              onClick={() => demanaEliminar(a)}
               aria-label={`Elimina l'atribut ${i + 1}`}
             >
               ×
@@ -157,9 +170,22 @@ export default function PlantillaPerfilForm({
 
       <div className="formulari__accions">
         <button type="submit" className="formulari__confirma" disabled={enviant}>
-          {enviant ? "Un moment…" : "Confirmar"}
+          {enviant ? "Un moment…" : textBoto}
         </button>
       </div>
+
+      <Confirmacio
+        obert={perTreure !== null}
+        titol={`Vols treure «${perTreure?.nom ?? ""}»?`}
+        missatge="Quan guardis la plantilla, s'esborrarà aquest atribut i el seu valor a tots els perfils de l'entitat."
+        textAccepta="Treure l'atribut"
+        perillosa
+        onAccepta={() => {
+          if (perTreure) elimina(perTreure.clau);
+          setPerTreure(null);
+        }}
+        onCancela={() => setPerTreure(null)}
+      />
     </form>
   );
 }

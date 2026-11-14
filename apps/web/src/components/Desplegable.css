@@ -43,6 +43,10 @@
   cursor: pointer;
 }
 
+/* Desactivat: es veu el valor, però no es pot obrir */
+.desplegable__boto:disabled { cursor: not-allowed; color: #6b6f75; }
+.desplegable__boto:disabled .desplegable__fletxa { opacity: 0.35; }
+
 .desplegable__boto:focus-visible {
   outline: 3px solid var(--blue);
   outline-offset: -3px;

@@ -2,6 +2,8 @@
 // També comprova que el return sigui el tipus esperat.
 import type {
   AdministradorDto,
+  AtributDto,
+  AtributPlantillaDto,
   EntitatCreadaDto,
   EntitatDetallDto,
   EntitatEditadaDto,
@@ -18,4 +20,6 @@ export interface EntitatGateway {
   administradors(id: number): Promise<AdministradorDto[]>
   passaCreador(id: number, perfilId: number): Promise<void>
   surt(id: number): Promise<void>
+  plantilla(id: number): Promise<AtributDto[]>
+  desaPlantilla(id: number, atributs: AtributPlantillaDto[]): Promise<AtributDto[]>
 }

@@ -1,0 +1,26 @@
+/* Estils de la barra de cerca */
+
+.cercador {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: min(27rem, 100%);
+  padding: 0.55rem 1.25rem;
+  border-radius: 999px;
+  background: #f1f5fa;
+  color: #000;
+}
+
+.cercador:focus-within { outline: 3px solid var(--blue); outline-offset: 2px; }
+.cercador svg { flex: none; width: 1.6rem; height: 1.6rem; }
+
+.cercador input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  color: #000;
+  font: inherit;
+  font-size: 1.1rem;
+  outline: none;
+}
