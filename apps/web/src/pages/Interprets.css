@@ -1,0 +1,105 @@
+/* Estils de la llista d'intèrprets */
+
+.interprets {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 3rem 2.5rem;
+  background: #e6eef6;
+}
+
+.interprets__barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  padding: 2rem 4rem 1.5rem;
+}
+
+/* El toggle va a la dreta de la barra */
+.interprets__filtres { display: flex; gap: 1rem; margin-left: auto; }
+
+.interprets__filtre {
+  padding: 0.5rem 1.2rem;
+  border: 0;
+  border-radius: 999px;
+  background: #f1f5fa;
+  color: #111;
+  font: inherit;
+  font-size: 1.05rem;
+  cursor: pointer;
+}
+
+.interprets__filtre[aria-pressed="true"] { background: #cce8b5; font-weight: 700; }
+.interprets__filtre:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+.interprets__contingut { flex: 1; padding: 1rem 4rem 2rem 9.5rem; }
+.interprets__missatge { margin: 0; color: #3d3a36; }
+
+.interprets__graella {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.interprets__perfil {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  width: 10.5rem;
+  padding: 0.9rem 1rem 1.3rem;
+  border-radius: 2rem;
+  background: #f0f4f9;
+  color: #111;
+  text-decoration: none;
+}
+
+.interprets__perfil:hover { background: #e3ebf4; }
+.interprets__perfil:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
+.interprets__icona { width: 6.5rem; height: auto; color: #000; }
+
+.interprets__nom {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.interprets__peu {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 1.5rem;
+}
+
+.interprets__boto {
+  display: inline-flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 0.7rem 1.8rem;
+  border-radius: 999px;
+  background: var(--yellow);
+  color: #111;
+  font-size: 1.4rem;
+  text-decoration: none;
+}
+
+.interprets__boto:hover { filter: brightness(1.04); }
+.interprets__boto:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+.interprets__mes { font-size: 2.2rem; font-weight: 800; line-height: 1; }
+
+@media (max-width: 800px) {
+  .interprets { padding: 1rem 1rem 2rem; }
+  .interprets__barra { padding: 1.25rem 0.5rem 1rem; }
+  .interprets__filtres { margin-left: 0; }
+  .interprets__contingut { padding: 1rem 0.5rem 2rem; }
+  .interprets__graella { gap: 1rem; justify-content: center; }
+  .interprets__perfil { width: 8.5rem; }
+  .interprets__icona { width: 4.5rem; }
+  .interprets__boto { font-size: 1.15rem; gap: 1rem; }
+}

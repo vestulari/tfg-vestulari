@@ -13,6 +13,8 @@ type Props = {
   mostraUsuari?: boolean;
   // Dins d'una entitat, en lloc del títol surten la seva imatge i el seu nom
   entitat?: { nom: string };
+  // La part de l'entitat on som, que surt després del nom ("Esbart Maragall - Intèrprets")
+  seccio?: string;
   mostraInvitacions?: boolean;
   bloquejat?: boolean;
 };
@@ -25,6 +27,7 @@ export default function Capcalera({
   titol = "Escull entitat…",
   mostraUsuari = true,
   entitat,
+  seccio,
   mostraInvitacions = true,
   bloquejat = false,
 }: Props) {
@@ -60,7 +63,9 @@ export default function Capcalera({
       {entitat ? (
         <h1 className="capcalera__titol capcalera__titol--entitat">
           <EntitatImatge nom={entitat.nom} />
-          <span className="capcalera__nom-entitat">{entitat.nom}</span>
+          <span className="capcalera__nom-entitat">
+            {seccio ? `${entitat.nom} - ${seccio}` : entitat.nom}
+          </span>
         </h1>
       ) : (
         <h1 className="capcalera__titol">{titol}</h1>

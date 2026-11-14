@@ -1,0 +1,122 @@
+/* Estils del detall d'un perfil */
+
+.perfil-detall {
+  min-height: 100vh;
+  padding: 1.5rem 3rem 3rem;
+  background: #e6eef6;
+}
+
+.perfil-detall__targeta {
+  max-width: 80rem;
+  margin: 2.5rem auto 0;
+  padding: 2.5rem 3.5rem 3rem;
+  border-radius: 2.5rem;
+  background: #f0f4f9;
+}
+
+.perfil-detall__missatge { margin: 1.5rem 0 0; color: #3d3a36; }
+
+/* La fletxa a l'esquerra i el nom centrat */
+.perfil-detall__cap {
+  display: grid;
+  grid-template-columns: 5rem 1fr 5rem;
+  align-items: center;
+}
+
+.perfil-detall__nom {
+  grid-column: 2;
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-weight: 400;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.perfil-detall__rols { margin: 0.4rem 0 0; text-align: center; color: #55595f; }
+
+.perfil-detall__camps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+  gap: 1.8rem 4rem;
+  margin: 3.5rem 2rem 0;
+}
+
+.perfil-detall__camp {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1.4rem;
+}
+
+.perfil-detall__camp dt { flex: 1; text-align: right; font-size: 1.1rem; }
+
+.perfil-detall__camp dd {
+  flex: 0 0 15rem;
+  margin: 0;
+  padding: 1.1rem 1.2rem;
+  border-radius: 999px;
+  background: #fff;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.perfil-detall__accions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem 5rem;
+  margin-top: 4rem;
+}
+
+.perfil-detall__boto {
+  min-width: 17rem;
+  padding: 0.8rem 1.8rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--yellow);
+  color: #111;
+  font: inherit;
+  font-size: 1.4rem;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.perfil-detall__boto:hover { filter: brightness(1.04); }
+.perfil-detall__boto:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
+/* Ja compartit: es pot clicar per descompartir */
+.perfil-detall__boto--compartit { background: #cce8b5; font-size: 1.1rem; }
+
+.perfil-detall__compartit,
+.perfil-detall__invitacio p { margin: 0; font-size: 1.1rem; }
+
+.perfil-detall__invitacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.perfil-detall__cancela {
+  padding: 0.4rem 1rem;
+  border: 0;
+  border-radius: 999px;
+  background: #db97a0;
+  color: #111;
+  font: inherit;
+  cursor: pointer;
+}
+
+.perfil-detall__cancela:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
+@media (max-width: 800px) {
+  .perfil-detall { padding: 1rem 1rem 2rem; }
+  .perfil-detall__targeta { margin-top: 1.25rem; padding: 1.5rem 1.25rem 2rem; border-radius: 2rem; }
+  .perfil-detall__cap { grid-template-columns: 3.5rem 1fr 3.5rem; }
+  .perfil-detall__camps { grid-template-columns: 1fr; margin: 2rem 0 0; gap: 1rem; }
+  .perfil-detall__camp dd { flex-basis: 55%; }
+  .perfil-detall__accions { gap: 1rem; margin-top: 2.5rem; }
+  .perfil-detall__boto { min-width: 0; width: 100%; font-size: 1.2rem; }
+}

@@ -7,8 +7,17 @@ import Capcalera from "../components/Capcalera";
 import { useEntitat } from "../context/EntitatContext";
 import "./EntradaEntitat.css";
 
-// Un botó gran de l'entitat. Mentre la seva pantalla no existeixi, surt desactivat amb "Properament".
-function BotoSeccio({ icona, text }: { icona: ReactNode; text: string }) {
+// Un botó gran de l'entitat. Si encara no té pantalla (sense to), surt desactivat amb "Properament".
+function BotoSeccio({ icona, text, to }: { icona: ReactNode; text: string; to?: string }) {
+  if (to) {
+    return (
+      <Link className="entitat__seccio" to={to}>
+        <span className="entitat__icona" aria-hidden="true">{icona}</span>
+        <span className="entitat__text">{text}</span>
+      </Link>
+    );
+  }
+
   return (
     <button type="button" className="entitat__seccio" disabled>
       <span className="entitat__icona" aria-hidden="true">{icona}</span>
@@ -33,9 +42,9 @@ export default function EntradaEntitat() {
           <BotoSeccio icona={<IconaPenjador />} text="Vestuari" />
           <BotoSeccio icona={<IconaTelo />} text="Espectacles" />
           {veuInterprets ? (
-            <BotoSeccio icona={<IconaPersona />} text="Intèrprets" />
+            <BotoSeccio icona={<IconaPersona />} text="Intèrprets" to="interprets" />
           ) : (
-            <BotoSeccio icona={<IconaPersona />} text="El meu perfil" />
+            <BotoSeccio icona={<IconaPersona />} text="El meu perfil" to={`perfils/${entitat.perfil.id}`} />
           )}
 
           <div className="entitat__peu">

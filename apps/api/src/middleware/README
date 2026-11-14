@@ -4,5 +4,9 @@ Funcions intermediàries que s'executen abans de processar una petició.
   Si no ho és, respon 401 i la petició no arriba mai a la ruta.
 - bd.ts: obre la connexió amb la base de dades, la deixa a c.get('sql') i la tanca quan s'acaba.
 
-Cada router els posa al principi, i en aquest ordre: router.use('*', auth, bd)
+- entitat.ts: per a les rutes /entitats/:id/... El middleware membre carrega l'entitat amb el perfil i els
+  permisos de l'usuari i la deixa a c.get('entitat') (si no n'és membre, respon 404). nomesAdmin deixa
+  passar només els administradors (si no, 403), i s'ha de posar després de membre.
+
+Cada router posa auth i bd al principi, i en aquest ordre: router.use('*', auth, bd)
 Els routers no van aquí, van a routes.

@@ -1,0 +1,14 @@
+/* Estils de la finestra per compartir un perfil */
+
+.compartir { display: flex; flex-direction: column; gap: 0.8rem; }
+.compartir .formulari__input { width: 100%; }
+
+.compartir__resposta {
+  margin: 0;
+  padding: 0.7rem 1.1rem;
+  border-radius: 1rem;
+  background: #f1f5fa;
+}
+
+.compartir__resposta--ok { background: #e3f3d4; }
+.compartir .confirmacio__missatge { margin: 0 0 0.4rem; }

@@ -29,8 +29,11 @@ type Props = {
   onConfirma: () => void;
   // El creador de l'entitat sempre és administrador i no ho pot deixar de ser.
   adminObligatori?: boolean;
+  // El text que explica per què és obligatori (per defecte, el del creador que crea l'entitat)
+  notaAdmin?: string;
   enviant?: boolean;
   errorServidor?: string | null;
+  textBoto?: string;
 };
 
 // Només valida i avisa: les dades les guarda qui el fa servir, amb onCanvi i onConfirma
@@ -40,8 +43,10 @@ export default function PerfilForm({
   onCanvi,
   onConfirma,
   adminObligatori = false,
+  notaAdmin = "Com a creador de l'entitat, sempre ets administrador.",
   enviant = false,
   errorServidor = null,
+  textBoto = "Confirmar",
 }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [infoOberta, setInfoOberta] = useState(false);
@@ -186,9 +191,7 @@ export default function PerfilForm({
       </div>
 
       {adminObligatori && (
-        <p className="formulari__nota perfil__nota">
-          Com a creador de l'entitat, sempre ets administrador.
-        </p>
+        <p className="formulari__nota perfil__nota">{notaAdmin}</p>
       )}
 
       {definits.map((a) => (
@@ -225,7 +228,7 @@ export default function PerfilForm({
 
       <div className="formulari__accions">
         <button type="submit" className="formulari__confirma" disabled={enviant}>
-          {enviant ? "Un moment…" : "Confirmar"}
+          {enviant ? "Un moment…" : textBoto}
         </button>
       </div>
     </form>

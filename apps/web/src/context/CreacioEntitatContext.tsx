@@ -6,7 +6,8 @@ import { Outlet } from "react-router-dom";
 import type { Genere, TipusAtribut } from "@tfg-vestulari/shared";
 
 // Una fila de la plantilla de perfil. La clau només serveix per identificar la fila a la pantalla.
-export type AtributFila = { clau: number; nom: string; tipus: TipusAtribut | "" };
+// L'id és el de la base de dades, i només el tenen els atributs que ja estan guardats.
+export type AtributFila = { clau: number; id?: number; nom: string; tipus: TipusAtribut | "" };
 
 export type PerfilEsborrany = {
   nom: string;

@@ -1,6 +1,7 @@
 // Finestra per confirmar una acció abans de fer-la ("Estàs segur que…?").
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useId, useRef, type ReactNode } from "react";
+import "./Formulari.css";
 import "./Confirmacio.css";
 
 type Props = {
@@ -30,6 +31,8 @@ export default function Confirmacio({
   onCancela,
 }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
+  // Ids propis, per si hi ha més d'una finestra a la mateixa pantalla
+  const id = useId();
 
   useEffect(() => {
     const d = ref.current;
@@ -42,15 +45,15 @@ export default function Confirmacio({
     <dialog
       ref={ref}
       className="confirmacio"
-      aria-labelledby="confirmacio-titol"
-      aria-describedby="confirmacio-missatge"
+      aria-labelledby={`${id}-titol`}
+      aria-describedby={`${id}-missatge`}
       onCancel={(e) => {
         e.preventDefault();
         if (!enviant) onCancela();
       }}
     >
-      <h2 id="confirmacio-titol" className="confirmacio__titol">{titol}</h2>
-      <div id="confirmacio-missatge" className="confirmacio__missatge">{missatge}</div>
+      <h2 id={`${id}-titol`} className="confirmacio__titol">{titol}</h2>
+      <div id={`${id}-missatge`} className="confirmacio__missatge">{missatge}</div>
 
       {error && <p className="formulari__error" role="alert">{error}</p>}
 

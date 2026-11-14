@@ -15,6 +15,8 @@ type Props<T extends string> = {
   // Text mentre encara no hi ha cap valor triat.
   placeholder?: string;
   className?: string;
+  // Es veu el valor però no es pot canviar
+  disabled?: boolean;
 };
 
 // Llista d'opcions on se'n tria una. Es tanca en triar o en clicar fora.
@@ -25,6 +27,7 @@ export default function Desplegable<T extends string>({
   onCanvi,
   placeholder = "Escull…",
   className = "",
+  disabled = false,
 }: Props<T>) {
   const [obert, setObert] = useState(false);
   const [actiu, setActiu] = useState(0);
@@ -109,6 +112,7 @@ export default function Desplegable<T extends string>({
           type="button"
           role="combobox"
           className="desplegable__boto"
+          disabled={disabled}
           aria-haspopup="listbox"
           aria-expanded={obert}
           aria-controls={obert ? llistaId : undefined}

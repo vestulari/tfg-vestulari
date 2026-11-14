@@ -1,7 +1,11 @@
 // Regles de validació compartides entre el frontend i l'API.
 import { ATRIBUTS_BASICS, GENERES } from './constants'
 import type {
+  AtributDto,
   AtributNouDto,
+  AtributPlantillaDto,
+  PerfilDadesDto,
+  ValorPerfilDto,
   EntitatEditadaDto,
   EntitatNovaDto,
   PerfilNouDto,
@@ -263,4 +267,101 @@ export function validaEntitatNova(cos: unknown, avui: Date = new Date()): Result
   if (error) return invalid(error)
 
   return { ok: true, dades: { ...entitat.dades, atributs, perfil } }
+}
+
+// ---------- Plantilla de perfil ----------
+// Comprova el cos d'un PUT /entitats/:id/plantilla.
+// Els atributs amb id han de ser dels que ja existeixen, i no poden canviar de tipus.
+export function validaPlantilla(
+  cos: unknown,
+  existents: AtributDto[]
+): Resultat<AtributPlantillaDto[]> {
+  if (!esObjecte(cos) || !Array.isArray(cos.atributs)) return invalid('Els atributs no són vàlids.')
+
+  const atributs: AtributPlantillaDto[] = []
+  const idsVistos = new Set<number>()
+  for (const a of cos.atributs) {
+    if (!esObjecte(a)) return invalid('Algun atribut no és vàlid.')
+    const { id, nom, tipus } = a
+    if (typeof nom !== 'string' || (tipus !== 'string' && tipus !== 'integer')) {
+      return invalid('Algun atribut no és vàlid.')
+    }
+    if (id === null || id === undefined) {
+      atributs.push({ id: null, nom, tipus })
+      continue
+    }
+
+    const vell = typeof id === 'number' ? existents.find((e) => e.id === id) : undefined
+    if (!vell || idsVistos.has(vell.id)) return invalid('Algun atribut no és vàlid.')
+    if (vell.tipus !== tipus) return invalid(`No es pot canviar el tipus de l'atribut «${vell.nom}».`)
+    idsVistos.add(vell.id)
+    atributs.push({ id: vell.id, nom, tipus })
+  }
+
+  const error = errorAtributs(atributs)
+  if (error) return invalid(error)
+  return { ok: true, dades: atributs }
+}
+
+// ---------- Perfils ----------
+// Un perfil ha de ser intèrpret, administrador o les dues coses
+export function errorPermisos(esAdministrador: boolean, esInterpret: boolean): string | null {
+  return esAdministrador || esInterpret ? null : 'Cal triar almenys un tipus de permís.'
+}
+
+// Comprova el cos d'un POST o PUT d'un perfil, amb els atributs de la plantilla de l'entitat.
+// Els valors buits no es guarden.
+export function validaPerfil(cos: unknown, atributs: AtributDto[]): Resultat<PerfilDadesDto> {
+  if (!esObjecte(cos)) return invalid('Dades no vàlides.')
+  const { nom, edat, genere, esAdministrador, esInterpret } = cos
+  if (
+    typeof nom !== 'string' ||
+    typeof edat !== 'number' ||
+    typeof genere !== 'string' ||
+    typeof esAdministrador !== 'boolean' ||
+    typeof esInterpret !== 'boolean' ||
+    !Array.isArray(cos.valors)
+  ) {
+    return invalid('El perfil no és vàlid.')
+  }
+
+  const err =
+    errorNomPerfil(nom) ??
+    errorEdat(edat) ??
+    errorGenere(genere) ??
+    errorPermisos(esAdministrador, esInterpret)
+  if (err) return invalid(err)
+
+  const valors: ValorPerfilDto[] = []
+  const vistos = new Set<number>()
+  for (const v of cos.valors) {
+    if (!esObjecte(v) || typeof v.atributId !== 'number' || typeof v.valor !== 'string') {
+      return invalid('Algun valor no és vàlid.')
+    }
+    const def = atributs.find((a) => a.id === v.atributId)
+    if (!def) return invalid('Algun atribut ja no existeix. Torna a carregar la pàgina.')
+    if (vistos.has(def.id)) return invalid(`El valor de «${def.nom}» està repetit.`)
+    vistos.add(def.id)
+
+    const e = errorValor(def.nom, def.tipus, v.valor)
+    if (e) return invalid(e)
+    const valor = v.valor.trim()
+    if (valor !== '') valors.push({ atributId: def.id, valor })
+  }
+
+  return {
+    ok: true,
+    dades: { nom, edat, genere: genere as PerfilDadesDto['genere'], esAdministrador, esInterpret, valors },
+  }
+}
+
+// ---------- Correu ----------
+export const CORREU_MAX = 254
+
+// Mira que el correu tingui una forma vàlida (alguna cosa @ alguna cosa . alguna cosa)
+export function errorCorreu(correu: string): string | null {
+  const c = correu.trim()
+  if (c === '') return 'Cal escriure un correu.'
+  if (c.length > CORREU_MAX || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c)) return 'El correu no és vàlid.'
+  return null
 }

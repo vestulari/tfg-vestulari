@@ -7,7 +7,11 @@ Cada fitxer és un router de Hono, i tots es munten a index.ts:
 - entitats.ts: crear una entitat, i veure'n una (amb el perfil i els permisos de l'usuari).
   També la configuració: canviar-ne les dades (administradors), eliminar-la i passar el rol de creador
   (només el creador), i sortir-ne (tothom menys el creador).
+  També la plantilla de perfil (/entitats/:id/plantilla): la veuen tots els membres i la desen els administradors.
   Si l'usuari no n'és membre, respon 404, i si no té permís per fer una cosa, 403.
+- perfils.ts: penja d'entitats.ts, a /entitats/:id/perfils. Llistar, inserir i editar perfils, i compartir-los
+  (enviar una invitació a un correu), cancel·lar la invitació o descompartir-los. Tot això només els
+  administradors. El detall d'un perfil el poden veure els administradors, i cadascú el seu ("El meu perfil").
 
 Una ruta llegeix la petició, la valida amb el paquet shared, crida el repositori i decideix quin codi HTTP retorna.
 El SQL no va aquí, va als repositoris.

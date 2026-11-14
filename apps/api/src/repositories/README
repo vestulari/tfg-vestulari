@@ -6,6 +6,12 @@ Hi ha un fitxer per cada cosa de la base de dades:
   dades, eliminar-la, passar el rol de creador i sortir-ne. Sortir vol dir que el perfil queda sense usuari
   (lliure) i la invitació que s'havia acceptat passa a rebutjada, perquè el puguin tornar a convidar.
 - invitacioRepository.ts: comptar, llistar, obrir, acceptar i rebutjar invitacions
+- plantillaRepository.ts: llistar i desar els atributs de la plantilla de perfil. En desar, els atributs que
+  falten s'esborren (amb els seus valors), els que hi són canvien de nom i els nous es creen.
+- perfilRepository.ts: llistar, veure, crear i editar perfils, i compartir-los o descompartir-los.
+  Compartir busca el correu a auth.users: si no hi és, no s'envia res. Si la persona ja havia rebutjat
+  aquell perfil, es reaprofita la mateixa invitació (torna a estar rebuda).
+  Al perfil del creador no se li pot treure l'admin ni es pot descompartir, i ningú pot descompartir el seu.
 
 Algunes normes que seguim:
 - Totes les funcions reben la connexió (sql) primer, i després l'usuari si els cal.

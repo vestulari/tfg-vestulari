@@ -13,30 +13,6 @@
   padding: 2rem 4rem 1.5rem;
 }
 
-.invitacions__cerca {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  width: min(27rem, 100%);
-  padding: 0.55rem 1.25rem;
-  border-radius: 999px;
-  background: #f1f5fa;
-  color: #000;
-}
-
-.invitacions__cerca:focus-within { outline: 3px solid var(--blue); outline-offset: 2px; }
-.invitacions__cerca svg { flex: none; width: 1.6rem; height: 1.6rem; }
-
-.invitacions__cerca input {
-  flex: 1;
-  min-width: 0;
-  border: 0;
-  background: none;
-  color: #000;
-  font: inherit;
-  font-size: 1.1rem;
-  outline: none;
-}
 
 .invitacions__llista {
   display: grid;
