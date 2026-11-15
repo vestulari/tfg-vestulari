@@ -44,6 +44,37 @@
   user-select: none;
 }
 
+/* Botons de la foto: semblen enllaços */
+.compte__foto-accions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.2rem;
+}
+
+.compte__boto-foto {
+  position: relative;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--blue);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.compte__boto-foto:focus-within { outline: 2px solid var(--blue); outline-offset: 3px; }
+
+.compte__boto-foto:disabled,
+.compte__boto-foto--desactivat { color: #7b8088; cursor: default; }
+
+/* L'input de fitxer no es veu: s'obre clicant el text */
+.compte__fitxer {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
 .compte__correu { margin: 0; color: #3d3a36; overflow-wrap: anywhere; }
 
 .compte__form { display: flex; flex-direction: column; gap: 0.6rem; }

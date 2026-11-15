@@ -1,5 +1,5 @@
 // Regles de validació compartides entre el frontend i l'API.
-import { ATRIBUTS_BASICS, GENERES } from './constants'
+import { ATRIBUTS_BASICS, GENERES, IMATGE_TIPUS } from './constants'
 import type {
   AtributDto,
   AtributNouDto,
@@ -363,5 +363,21 @@ export function errorCorreu(correu: string): string | null {
   const c = correu.trim()
   if (c === '') return 'Cal escriure un correu.'
   if (c.length > CORREU_MAX || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c)) return 'El correu no és vàlid.'
+  return null
+}
+
+// ---------- Imatges ----------
+// Mira el format i la mida d'una imatge. El frontend la fa servir amb la foto original
+// (IMATGE_ORIGINAL_MAX), i l'API amb la ja comprimida (el midaMax de IMATGE_PERFILS).
+// L'API, a més, mira els primers bytes del fitxer, perquè el tipus el diu el navegador i es pot falsejar.
+export function errorImatge(tipus: string, mida: number, midaMax: number): string | null {
+  if (!(IMATGE_TIPUS as readonly string[]).includes(tipus)) {
+    return 'La imatge ha de ser JPG, PNG o WEBP.'
+  }
+  if (mida > midaMax) {
+    const text = midaMax >= 1024 * 1024 ? `${midaMax / (1024 * 1024)} MB` : `${midaMax / 1024} KB`
+    return `La imatge no pot ocupar més de ${text}.`
+  }
+  if (mida === 0) return 'La imatge està buida.'
   return null
 }

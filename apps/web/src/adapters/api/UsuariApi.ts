@@ -8,4 +8,10 @@ export const usuariApi: UsuariGateway = {
   getMe: () => api<UsuariDto>('/me'),
   canviaNom: (nom) =>
     api<UsuariDto>('/me', { method: 'PATCH', body: JSON.stringify({ nom }) }),
+  canviaImatge: (imatge) => {
+    const cos = new FormData()
+    cos.append('imatge', imatge)
+    return api<UsuariDto>('/me/imatge', { method: 'PUT', body: cos })
+  },
+  treuImatge: () => api<UsuariDto>('/me/imatge', { method: 'DELETE' }),
 }

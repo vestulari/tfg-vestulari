@@ -1,17 +1,23 @@
 Definició dels endpoints
 
 Cada fitxer és un router de Hono, i tots es munten a index.ts:
-- me.ts: tot el que és de /me (les dades de l'usuari, canviar el nom i les seves entitats).
+- me.ts: tot el que és de /me (les dades de l'usuari, canviar el nom, canviar o treure la foto (/me/imatge)
+  i les seves entitats).
   També hi penja invitacions.ts, a /me/invitacions.
 - invitacions.ts: llistar, obrir, acceptar i rebutjar invitacions.
 - entitats.ts: crear una entitat, i veure'n una (amb el perfil i els permisos de l'usuari).
   També la configuració: canviar-ne les dades (administradors), eliminar-la i passar el rol de creador
   (només el creador), i sortir-ne (tothom menys el creador).
+  També la imatge (/entitats/:id/imatge): la canvien (PUT, amb un formulari multipart) o la treuen (DELETE) els
+  administradors. Quan s'elimina l'entitat, també s'esborren totes les seves imatges de l'R2.
   També la plantilla de perfil (/entitats/:id/plantilla): la veuen tots els membres i la desen els administradors.
   Si l'usuari no n'és membre, respon 404, i si no té permís per fer una cosa, 403.
 - perfils.ts: penja d'entitats.ts, a /entitats/:id/perfils. Llistar, inserir i editar perfils, i compartir-los
   (enviar una invitació a un correu), cancel·lar la invitació o descompartir-los. Tot això només els
   administradors. El detall d'un perfil el poden veure els administradors, i cadascú el seu ("El meu perfil").
+
+Les imatges: els repositoris retornen la clau de la imatge, i la ruta la canvia per una URL temporal
+(amb ambUrl o urlImatge de lib/imatges.ts) just abans de respondre.
 
 Una ruta llegeix la petició, la valida amb el paquet shared, crida el repositori i decideix quin codi HTTP retorna.
 El SQL no va aquí, va als repositoris.

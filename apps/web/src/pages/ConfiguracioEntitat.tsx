@@ -25,6 +25,7 @@ function aDades(e: EntitatDetallDto): DadesEntitat {
     any: String(e.anyCreacio),
     mes: e.mesCreacio === null ? "" : String(e.mesCreacio),
     dia: e.diaCreacio === null ? "" : String(e.diaCreacio),
+    imatge: null,
   };
 }
 
@@ -87,9 +88,12 @@ export default function ConfiguracioEntitat() {
     setAccio(a);
   }
 
+  // Les dades (sense la imatge) han canviat respecte de les guardades
+  const dadesCanviades = JSON.stringify(aDto(dades)) !== JSON.stringify(aDto(aDades(entitat)));
+
   // Abans de confirmar el desat, mira que hi hagi algun canvi
   function confirmaDades() {
-    if (JSON.stringify(aDto(dades)) === JSON.stringify(aDto(aDades(entitat)))) {
+    if (!dadesCanviades && dades.imatge === null) {
       setErrorDades("No has canviat res.");
       return;
     }
@@ -103,9 +107,21 @@ export default function ConfiguracioEntitat() {
     setErrorAccio(null);
     try {
       if (accio === "desa") {
-        const nova = await entitatApi.edita(entitat.id, aDto(dades));
-        actualitzaEntitat(nova);
-        setDades(aDades(nova));
+        // Primer les dades i després la imatge. Cada pas retorna l'entitat ja canviada, i es desa de seguida:
+        // si la imatge falla, les dades ja queden guardades i la imatge continua pendent per tornar-ho a provar.
+        if (dadesCanviades) {
+          const nova = await entitatApi.edita(entitat.id, aDto(dades));
+          actualitzaEntitat(nova);
+          setDades({ ...aDades(nova), imatge: dades.imatge });
+        }
+        if (dades.imatge !== null) {
+          const nova =
+            dades.imatge === "treu"
+              ? await entitatApi.treuImatge(entitat.id)
+              : await entitatApi.canviaImatge(entitat.id, dades.imatge);
+          actualitzaEntitat(nova);
+          setDades(aDades(nova));
+        }
         setAvis("S'han desat els canvis.");
       } else if (accio === "creador" && triat) {
         await entitatApi.passaCreador(entitat.id, triat.perfilId);
@@ -132,7 +148,7 @@ export default function ConfiguracioEntitat() {
   const confirmacions: Record<Accio, { titol: string; missatge: string; boto: string; perillosa: boolean }> = {
     desa: {
       titol: "Vols desar els canvis?",
-      missatge: `Tots els membres de l'entitat veuran el nou nom, la data i la descripció de «${dades.nom}».`,
+      missatge: `Tots els membres de l'entitat veuran els canvis de «${dades.nom}».`,
       boto: "Desar canvis",
       perillosa: false,
     },
@@ -179,6 +195,7 @@ export default function ConfiguracioEntitat() {
             <h2 id="titol-dades" className="configuracio__subtitol">Dades de l'entitat</h2>
             <EntitatForm
               dades={dades}
+              imatgeActual={entitat.imatgeUrl}
               onCanvi={(parcial) => {
                 setDades((d) => ({ ...d, ...parcial }));
                 setErrorDades(null);

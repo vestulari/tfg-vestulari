@@ -6,13 +6,14 @@ import { useTancaSessio } from "../auth/AuthProvider";
 import { useUsuari } from "../auth/UsuariProvider";
 import { useEstatTornada } from "../lib/tornada";
 import EntitatImatge from "./EntitatImatge";
+import UsuariAvatar from "./UsuariAvatar";
 import "./Capcalera.css";
 
 type Props = {
   titol?: string;
   mostraUsuari?: boolean;
   // Dins d'una entitat, en lloc del títol surten la seva imatge i el seu nom
-  entitat?: { nom: string };
+  entitat?: { nom: string; imatgeUrl?: string | null };
   // La part de l'entitat on som, que surt després del nom ("Esbart Maragall - Intèrprets")
   seccio?: string;
   mostraInvitacions?: boolean;
@@ -55,14 +56,13 @@ export default function Capcalera({
   }, [obert]);
 
   const nom = usuari?.nom ?? "";
-  const inicial = nom.charAt(0).toUpperCase();
   const pendents = usuari?.invitacionsPendents ?? 0;
 
   return (
     <header className="capcalera">
       {entitat ? (
         <h1 className="capcalera__titol capcalera__titol--entitat">
-          <EntitatImatge nom={entitat.nom} />
+          <EntitatImatge nom={entitat.nom} url={entitat.imatgeUrl} />
           <span className="capcalera__nom-entitat">
             {seccio ? `${entitat.nom} - ${seccio}` : entitat.nom}
           </span>
@@ -85,7 +85,7 @@ export default function Capcalera({
             onClick={() => setObert(!obert)}
           >
             <span className="capcalera__nom">{nom}</span>
-            <span className="capcalera__avatar" aria-hidden="true">{inicial}</span>
+            <UsuariAvatar nom={nom} url={usuari?.imatgeUrl} className="capcalera__avatar" />
             <span className="capcalera__fletxa" aria-hidden="true">{obert ? "⌃" : "⌄"}</span>
           </button>
 

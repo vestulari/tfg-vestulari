@@ -18,6 +18,12 @@ export const entitatApi: EntitatGateway = {
   edita: (id, dades) =>
     api<EntitatDetallDto>(`/entitats/${id}`, { method: 'PATCH', body: JSON.stringify(dades) }),
   elimina: (id) => api<void>(`/entitats/${id}`, { method: 'DELETE' }),
+  canviaImatge: (id, imatge) => {
+    const cos = new FormData()
+    cos.append('imatge', imatge)
+    return api<EntitatDetallDto>(`/entitats/${id}/imatge`, { method: 'PUT', body: cos })
+  },
+  treuImatge: (id) => api<EntitatDetallDto>(`/entitats/${id}/imatge`, { method: 'DELETE' }),
   administradors: (id) => api<AdministradorDto[]>(`/entitats/${id}/administradors`),
   passaCreador: (id, perfilId) =>
     api<void>(`/entitats/${id}/creador`, { method: 'POST', body: JSON.stringify({ perfilId }) }),

@@ -1,17 +1,19 @@
 // API REST de la gestió d'entitats.
 
-import { Hono } from 'hono'
+import { Hono, type Context } from 'hono'
 import {
   validaEntitatEditada,
   validaEntitatNova,
   validaPlantilla,
   type EntitatCreadaDto,
+  type EntitatDetallDto,
 } from '@tfg-vestulari/shared'
 import type { Env } from '../types'
 import { auth } from '../middleware/auth'
 import { bd } from '../middleware/bd'
 import { membre, nomesAdmin } from '../middleware/entitat'
 import { llegeixCos } from '../lib/params'
+import * as imatges from '../lib/imatges'
 import * as entitatRepo from '../repositories/entitatRepository'
 import * as plantillaRepo from '../repositories/plantillaRepository'
 import { perfils } from './perfils'
@@ -40,7 +42,7 @@ entitats.post('/', async (c) => {
 
 // Retorna una entitat, amb el perfil que hi té l'usuari i els seus permisos.
 // Si l'usuari no n'és membre, el middleware ja ha respost 404, com si l'entitat no existís.
-entitats.get('/:id', (c) => c.json(c.get('entitat')))
+entitats.get('/:id', async (c) => c.json(await imatges.ambUrl<EntitatDetallDto>(c.env, c.get('entitat'))))
 
 // Canvia el nom, la descripció i la data de l'entitat. Només ho poden fer els administradors.
 // Retorna l'entitat ja canviada.
@@ -54,10 +56,46 @@ entitats.patch('/:id', nomesAdmin, async (c) => {
   const sql = c.get('sql')
   const id = c.get('entitat').id
   await entitatRepo.edita(sql, id, r.dades)
-  return c.json(await entitatRepo.detallPerUsuari(sql, c.get('userId'), id))
+  return c.json(await detallAmbUrl(c, id))
 })
 
-// Elimina l'entitat i tot el que hi ha a dins. Només ho pot fer el creador.
+// Torna a carregar l'entitat (amb la URL de la imatge) després de canviar-la
+async function detallAmbUrl(c: Context<Env>, id: number): Promise<EntitatDetallDto | null> {
+  const e = await entitatRepo.detallPerUsuari(c.get('sql'), c.get('userId'), id)
+  return e && imatges.ambUrl<EntitatDetallDto>(c.env, e)
+}
+
+// Canvia la imatge de l'entitat. Només ho poden fer els administradors.
+// El cos és un formulari (multipart/form-data) amb el fitxer al camp imatge. Retorna l'entitat ja canviada.
+entitats.put('/:id/imatge', nomesAdmin, async (c) => {
+  const cos = await imatges.llegeix(c, 'entitat')
+  if (!cos.ok) return cos.resposta
+
+  const id = c.get('entitat').id
+  const r = await imatges.desa(c.env, 'entitat', `entitats/${id}`, cos.fitxer)
+  if (!r.ok) return c.json({ error: r.error }, 400)
+
+  // Si no es pot guardar a la BD, la imatge que s'acaba de pujar sobra
+  let vella: string | null
+  try {
+    vella = await entitatRepo.canviaImatge(c.get('sql'), id, r.clau)
+  } catch (e) {
+    await imatges.esborra(c.env, r.clau)
+    throw e
+  }
+  await imatges.esborra(c.env, vella)
+  return c.json(await detallAmbUrl(c, id))
+})
+
+// Treu la imatge de l'entitat (es tornarà a veure la inicial). Només ho poden fer els administradors.
+entitats.delete('/:id/imatge', nomesAdmin, async (c) => {
+  const id = c.get('entitat').id
+  const vella = await entitatRepo.canviaImatge(c.get('sql'), id, null)
+  await imatges.esborra(c.env, vella)
+  return c.json(await detallAmbUrl(c, id))
+})
+
+// Elimina l'entitat i tot el que hi ha a dins, imatges incloses. Només ho pot fer el creador.
 entitats.delete('/:id', async (c) => {
   const entitat = c.get('entitat')
   if (!entitat.perfil.esCreador) {
@@ -65,6 +103,7 @@ entitats.delete('/:id', async (c) => {
   }
 
   await entitatRepo.elimina(c.get('sql'), entitat.id)
+  await imatges.esborraCarpeta(c.env, `entitats/${entitat.id}`)
   return c.body(null, 204)
 })
 

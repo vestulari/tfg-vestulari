@@ -17,6 +17,8 @@ export interface EntitatGateway {
   crea(dades: EntitatNovaDto): Promise<EntitatCreadaDto>
   edita(id: number, dades: EntitatEditadaDto): Promise<EntitatDetallDto>
   elimina(id: number): Promise<void>
+  canviaImatge(id: number, imatge: File): Promise<EntitatDetallDto>
+  treuImatge(id: number): Promise<EntitatDetallDto>
   administradors(id: number): Promise<AdministradorDto[]>
   passaCreador(id: number, perfilId: number): Promise<void>
   surt(id: number): Promise<void>

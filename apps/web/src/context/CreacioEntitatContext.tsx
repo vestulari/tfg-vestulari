@@ -4,6 +4,7 @@
 import { createContext, useContext, useMemo, useState } from "react";
 import { Outlet } from "react-router-dom";
 import type { Genere, TipusAtribut } from "@tfg-vestulari/shared";
+import type { CanviImatge } from "../components/EntitatForm";
 
 // Una fila de la plantilla de perfil. La clau només serveix per identificar la fila a la pantalla.
 // L'id és el de la base de dades, i només el tenen els atributs que ja estan guardats.
@@ -24,6 +25,8 @@ export type Esborrany = {
   any: string;
   mes: string;
   dia: string;
+  // La imatge es puja després de crear l'entitat, perquè abans no té id
+  imatge: CanviImatge;
   atributs: AtributFila[];
   perfil: PerfilEsborrany;
 };
@@ -34,6 +37,7 @@ const NOU: Esborrany = {
   any: "",
   mes: "",
   dia: "",
+  imatge: null,
   atributs: [{ clau: 1, nom: "", tipus: "" }],
   perfil: {
     nom: "",
