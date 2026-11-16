@@ -1,0 +1,52 @@
+/* Estils de la finestra de confirmació */
+
+.confirmacio {
+  width: min(34rem, calc(100vw - 2rem));
+  padding: 2rem 2.2rem 1.8rem;
+  border: 0;
+  border-radius: 2rem;
+  background: #fff;
+  color: #111;
+  box-shadow: 0 1.2rem 3rem rgba(0, 0, 0, 0.25);
+}
+
+.confirmacio::backdrop { background: rgba(20, 30, 45, 0.45); }
+
+.confirmacio__titol { margin: 0 0 0.9rem; font-size: 1.5rem; }
+
+.confirmacio__missatge { margin-bottom: 1.4rem; line-height: 1.5; color: #3d3a36; }
+.confirmacio__missatge p { margin: 0 0 0.6rem; }
+
+.confirmacio__accions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 1.2rem;
+}
+
+.confirmacio__boto {
+  min-width: 9rem;
+  padding: 0.7rem 1.4rem;
+  border: 0;
+  border-radius: 999px;
+  color: #111;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.confirmacio__boto--cancela { background: #e1e5ea; }
+.confirmacio__boto--cancela:hover:not(:disabled) { background: #d3d8de; }
+.confirmacio__boto--accepta { background: #aee06a; }
+.confirmacio__boto--accepta:hover:not(:disabled) { filter: brightness(1.05); }
+.confirmacio__boto--perill { background: #d0405a; color: #fff; }
+.confirmacio__boto--perill:hover:not(:disabled) { background: #b8344c; }
+
+.confirmacio__boto:disabled { opacity: 0.6; cursor: not-allowed; }
+.confirmacio__boto:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
+@media (max-width: 500px) {
+  .confirmacio { padding: 1.5rem 1.4rem 1.4rem; }
+  .confirmacio__boto { flex: 1 1 100%; }
+}

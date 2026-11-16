@@ -1,0 +1,30 @@
+Components visuals de React reutilitzables
+
+- Capcalera: el títol de la pantalla i el menú de l'usuari. Els enllaços del menú recorden d'on venim
+  (per tornar-hi amb la fletxa), i amb bloquejat el menú no s'obre (ho fem servir mentre es crea una entitat)
+- BotoEnrere: la fletxa per tornar enrere
+- Desplegable: el nostre desplegable (el fem servir en lloc del select del navegador). Amb disabled es veu
+  el valor però no es pot canviar
+- EntitatImatge: la imatge d'una entitat. Si no en té, o la URL temporal ha caducat, mostra la inicial del nom
+- UsuariAvatar: la foto d'un usuari (a la capçalera i al compte). Si no en té, o la URL temporal ha caducat,
+  mostra la inicial del nom. La mida i els colors els posa qui el fa servir
+- LandingNavBar: la barra de navegació de la landing
+- RequisitsContrasenya: la llista de requisits de la contrasenya
+- PerfilForm: el formulari d'un perfil
+- EntitatForm: el formulari de les dades d'una entitat (imatge, nom, data i descripció), per crear-la o editar-la.
+  La imatge triada la comprimeix (lib/imatges.ts), però només en diu el canvi (una de nova, treure-la o res):
+  la puja la pantalla que el fa servir
+- Confirmacio: la finestra per confirmar una acció abans de fer-la (amb el botó vermell si no es pot desfer)
+- PlantillaPerfilForm: el formulari de la plantilla de perfil, per crear-la o editar-la. Els atributs que ja
+  estan guardats (els que tenen id) no poden canviar de tipus, i abans de treure'ls es demana confirmació
+- Cercador: la barra de cerca amb la lupa (la fan servir les invitacions i els intèrprets)
+- CompartirPerfil: la finestra per compartir un perfil amb un correu. Diu si el correu té compte i si s'ha
+  enviat la invitació
+- RutaAdmin: ruta pare de les pantalles d'una entitat que només poden veure els administradors
+- Formulari.css: els estils que comparteixen totes les pantalles amb formulari
+
+Els formularis només validen i avisen dels errors, no criden l'API.
+Les dades les guarda la pantalla que els fa servir (amb onCanvi i onConfirma).
+
+Compte: la Capcalera fa servir l'usuari de UsuariProvider, així que només funciona dins de les rutes
+que necessiten sessió. Si es posa a la landing o al login, petarà.

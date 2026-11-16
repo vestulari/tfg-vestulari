@@ -1,0 +1,12 @@
+/* Estils comuns de la foto d'un usuari (la mida i els colors van a cada pantalla) */
+
+.usuari-avatar {
+  overflow: hidden;
+  user-select: none;
+}
+
+.usuari-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

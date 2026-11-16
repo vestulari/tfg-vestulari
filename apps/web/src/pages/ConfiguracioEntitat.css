@@ -1,0 +1,78 @@
+/* Estils de la configuració d'una entitat */
+
+.configuracio { display: flex; flex-direction: column; gap: 2rem; }
+
+.configuracio__titol { margin: 0; font-size: 2rem; }
+
+.configuracio__avis {
+  margin: 0;
+  padding: 0.7rem 1.1rem;
+  border: 1px solid #8fcf4f;
+  border-radius: 1rem;
+  background: rgba(174, 224, 106, 0.25);
+}
+
+.configuracio__seccio {
+  padding: 1.8rem 2rem 2rem;
+  border-radius: 2rem;
+  background: #f7f9fc;
+}
+
+.configuracio__subtitol { margin: 0 0 1.4rem; font-size: 1.4rem; }
+
+/* Una acció: l'explicació a l'esquerra i el botó a la dreta */
+.configuracio__accio {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  padding: 1.2rem 0;
+  border-top: 1px solid #dde3ea;
+}
+
+.configuracio__accio:first-of-type { border-top: 0; padding-top: 0; }
+
+.configuracio__explicacio { flex: 1 1 18rem; }
+.configuracio__explicacio h3 { margin: 0 0 0.3rem; font-size: 1.1rem; }
+.configuracio__explicacio p { margin: 0; color: #55595f; line-height: 1.45; }
+
+.configuracio__nota { flex: 1 1 18rem; margin: 0; font-size: 0.9rem; color: #55595f; }
+
+.configuracio__control {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.configuracio__desplegable { min-width: 16rem; }
+
+.configuracio__boto {
+  min-width: 12rem;
+  min-height: 3.2rem;
+  padding: 0.6rem 1.6rem;
+  border: 0;
+  border-radius: 999px;
+  color: #111;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.configuracio__boto--avis { background: #f3cf7a; }
+.configuracio__boto--avis:hover:not(:disabled) { background: #ecc25c; }
+.configuracio__boto--perill { background: #d0405a; color: #fff; }
+.configuracio__boto--perill:hover:not(:disabled) { background: #b8344c; }
+.configuracio__boto--sortir { background: #db97a0; }
+.configuracio__boto--sortir:hover:not(:disabled) { background: #d3848f; }
+
+.configuracio__boto:disabled { opacity: 0.55; cursor: not-allowed; }
+.configuracio__boto:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
+@media (max-width: 800px) {
+  .configuracio__seccio { padding: 1.4rem 1.2rem 1.5rem; }
+  .configuracio__control,
+  .configuracio__desplegable,
+  .configuracio__boto { width: 100%; min-width: 0; }
+}

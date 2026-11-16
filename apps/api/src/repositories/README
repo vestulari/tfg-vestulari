@@ -1,0 +1,21 @@
+Capa d'accés a les dades (on es fan les sentències SQL)
+
+Hi ha un fitxer per cada cosa de la base de dades:
+- usuariRepository.ts: buscar un usuari i canviar-li el nom o la foto
+- entitatRepository.ts: llistar les entitats d'un usuari, veure'n una, crear-ne una de nova, canviar-ne les
+  dades i la imatge, eliminar-la, passar el rol de creador i sortir-ne. Sortir vol dir que el perfil queda sense usuari
+  (lliure) i la invitació que s'havia acceptat passa a rebutjada, perquè el puguin tornar a convidar.
+- invitacioRepository.ts: comptar, llistar, obrir, acceptar i rebutjar invitacions
+- plantillaRepository.ts: llistar i desar els atributs de la plantilla de perfil. En desar, els atributs que
+  falten s'esborren (amb els seus valors), els que hi són canvien de nom i els nous es creen.
+- perfilRepository.ts: llistar, veure, crear i editar perfils, i compartir-los o descompartir-los.
+  Compartir busca el correu a auth.users: si no hi és, no s'envia res. Si la persona ja havia rebutjat
+  aquell perfil, es reaprofita la mateixa invitació (torna a estar rebuda).
+  Al perfil del creador no se li pot treure l'admin ni es pot descompartir, i ningú pot descompartir el seu.
+
+Algunes normes que seguim:
+- Totes les funcions reben la connexió (sql) primer, i després l'usuari si els cal.
+- Retornen DTOs del paquet shared, o un resultat amb el motiu de l'error. Si hi ha una imatge, en lloc de la
+  URL retornen la clau (imatgeClau), perquè signar la URL necessita les claus de l'R2 i això ho fa la ruta. No saben res d'HTTP:
+  si és un 404 o un 409 ho decideix la ruta.
+- Si s'han de fer diversos canvis alhora, van dins d'una transacció (sql.begin), així o es fa tot o no es fa res.

@@ -1,1 +1,0 @@
-/* Pàgina encarregada del login dels usuaris */

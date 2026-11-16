@@ -1,0 +1,13 @@
+Llibreries auxiliars, utilitats generals i configuracions de Supabase
+
+- db.ts: obre la connexió amb la base de dades. N'obrim una a cada petició, perquè als Workers de Cloudflare
+  no es poden reaprofitar. Qui l'obre i la tanca és el middleware bd.ts.
+- imatges.ts: les imatges guardades a Cloudflare R2. Són privades: es pugen i s'esborren des de l'API
+  (amb el binding IMATGES), i per veure-les es generen URL temporals signades, amb les quals el navegador les
+  baixa directament de l'R2. En pujar-ne una, en mira els primers bytes per saber si és de debò JPG, PNG o WEBP,
+  i que no passi de la mida màxima del seu tipus (usuari, entitat o vestuari). Les imatges ja arriben
+  comprimides del navegador: l'API no les pot comprimir, perquè els Workers no tenen eines per fer-ho.
+  A la BD només hi guardem la clau de l'objecte (per exemple entitats/3/<uuid>), mai la URL.
+- params.ts: per llegir el que arriba a les rutes: els identificadors de la URL (llegeixId) i el cos JSON (llegeixCos).
+
+Aquí va el codi que fan servir diverses parts de l'API i que no és ni una ruta, ni SQL, ni un middleware.

@@ -1,0 +1,2 @@
+# Configuració de Supabase CLI.
+# (La Edge Function d'exemple get-entities s'ha eliminat: tota la lògica viu a l'API.)

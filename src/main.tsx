@@ -1,1 +1,0 @@
-// Pàgina inicial de la nostra aplicació

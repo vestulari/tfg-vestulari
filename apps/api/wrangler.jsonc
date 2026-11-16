@@ -1,0 +1,15 @@
+{
+  "name": "tfg-vestulari-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-07",
+  "compatibility_flags": ["nodejs_compat"],
+  "routes": [
+    { "pattern": "api.vestulari.cat", "custom_domain": true }
+  ],
+  // Bucket de les imatges. Amb remote, en local també es fa servir el bucket real,
+  // perquè les URL signades (que sempre van a l'R2 real) trobin les imatges que s'hi pugen.
+  "r2_buckets": [
+    { "binding": "IMATGES", "bucket_name": "imatges-vestulari", "remote": true }
+  ],
+  "previews": {}
+}
