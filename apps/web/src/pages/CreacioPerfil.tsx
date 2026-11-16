@@ -32,7 +32,7 @@ export default function CreacioPerfil() {
 
   const atributs = atributsOmplerts(esborrany.atributs);
 
-  // Munta les dades per a l'API amb tot l'esborrany, crea l'entitat i hi entra
+  // Munta les dades per a l'API amb tot l'esborrany, crea l'entitat, hi puja la imatge i hi entra
   async function confirma() {
     setEnviant(true);
     setErrorServidor(null);
@@ -58,6 +58,11 @@ export default function CreacioPerfil() {
 
     try {
       const { id } = await entitatApi.crea(dades);
+      // L'entitat ja està creada: si la imatge no es pot pujar, s'hi entra igualment
+      // (no es pot tornar a enviar, o es crearia dues vegades) i es pot posar des de la configuració.
+      if (esborrany.imatge instanceof File) {
+        await entitatApi.canviaImatge(id, esborrany.imatge).catch(() => undefined);
+      }
       navigate(`/entitat/${id}`);
     } catch (e) {
       setErrorServidor(e instanceof ApiError ? e.message : "No s'ha pogut crear l'entitat.");

@@ -5,11 +5,15 @@ Components visuals de React reutilitzables
 - BotoEnrere: la fletxa per tornar enrere
 - Desplegable: el nostre desplegable (el fem servir en lloc del select del navegador). Amb disabled es veu
   el valor però no es pot canviar
-- EntitatImatge: la imatge d'una entitat (de moment, la inicial del nom)
+- EntitatImatge: la imatge d'una entitat. Si no en té, o la URL temporal ha caducat, mostra la inicial del nom
+- UsuariAvatar: la foto d'un usuari (a la capçalera i al compte). Si no en té, o la URL temporal ha caducat,
+  mostra la inicial del nom. La mida i els colors els posa qui el fa servir
 - LandingNavBar: la barra de navegació de la landing
 - RequisitsContrasenya: la llista de requisits de la contrasenya
 - PerfilForm: el formulari d'un perfil
-- EntitatForm: el formulari de les dades d'una entitat (nom, data i descripció), per crear-la o editar-la
+- EntitatForm: el formulari de les dades d'una entitat (imatge, nom, data i descripció), per crear-la o editar-la.
+  La imatge triada la comprimeix (lib/imatges.ts), però només en diu el canvi (una de nova, treure-la o res):
+  la puja la pantalla que el fa servir
 - Confirmacio: la finestra per confirmar una acció abans de fer-la (amb el botó vermell si no es pot desfer)
 - PlantillaPerfilForm: el formulari de la plantilla de perfil, per crear-la o editar-la. Els atributs que ja
   estan guardats (els que tenen id) no poden canviar de tipus, i abans de treure'ls es demana confirmació

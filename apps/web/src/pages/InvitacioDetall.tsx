@@ -110,7 +110,11 @@ export default function InvitacioDetall() {
             </section>
 
             <section className="invitacio__accions">
-              <EntitatImatge nom={estat.invitacio.entitatNom} mida="gran" />
+              <EntitatImatge
+                nom={estat.invitacio.entitatNom}
+                url={estat.invitacio.entitatImatgeUrl}
+                mida="gran"
+              />
 
               {errorAccio && (
                 <p className="invitacio__error" role="alert">{errorAccio}</p>

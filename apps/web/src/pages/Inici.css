@@ -41,7 +41,7 @@
 .entitat-card:hover { box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12); }
 .entitat-card:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
 
-/* Placeholder fins que hi hagi imatges de les entitats */
+/* Mida i estil de la imatge a les targetes (la imatge la posa EntitatImatge) */
 .entitat-card__imatge {
   display: grid;
   place-items: center;

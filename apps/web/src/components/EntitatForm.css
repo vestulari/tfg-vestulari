@@ -24,6 +24,47 @@
   user-select: none;
 }
 
+.entitat-form__columna-imatge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.entitat-form__imatge {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.entitat-form__imatge:focus-within { outline: 2px solid var(--blue); outline-offset: 3px; }
+
+/* L'input de fitxer no es veu: s'obre clicant el requadre */
+.entitat-form__fitxer {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.entitat-form__previsualitzacio {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.entitat-form__treu {
+  border: none;
+  background: none;
+  color: #7b8088;
+  font: inherit;
+  font-size: 0.95rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .entitat-form__icona { width: 4.2rem; height: auto; color: #b9bec5; }
 
 .entitat-form__camps { display: grid; gap: 1.25rem; }

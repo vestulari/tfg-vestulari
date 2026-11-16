@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { EntitatResumDto } from "@tfg-vestulari/shared";
 import { entitatApi } from "../adapters/api/EntitatApi";
+import EntitatImatge from "../components/EntitatImatge";
 import Capcalera from "../components/Capcalera";
 import "./Inici.css";
 
@@ -36,9 +37,7 @@ export default function Inici() {
             {entitats.map((e) => (
               <li key={e.id}>
                 <Link className="entitat-card" to={`/entitat/${e.id}`}>
-                  <span className="entitat-card__imatge" aria-hidden="true">
-                    {e.nom.charAt(0).toUpperCase()}
-                  </span>
+                  <EntitatImatge nom={e.nom} url={e.imatgeUrl} className="entitat-card__imatge" />
                   <span className="entitat-card__nom">{e.nom}</span>
                 </Link>
               </li>

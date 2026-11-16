@@ -19,13 +19,14 @@ export class ApiError extends Error {
 }
 
 // Fa una crida a l'API amb el token de la sessió. Respecta les capçaleres que li passin.
+// Si el cos és un FormData (per pujar fitxers), el Content-Type el posa el navegador.
 // Si la resposta és un error, llença un ApiError.
 export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   const { data } = await supabase.auth.getSession()
   const token = data.session?.access_token
 
   const headers = new Headers(init.headers)
-  if (init.body !== undefined && !headers.has('Content-Type')) {
+  if (init.body !== undefined && !(init.body instanceof FormData) && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json')
   }
   if (token) headers.set('Authorization', `Bearer ${token}`)

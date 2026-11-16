@@ -1,17 +1,22 @@
 // Formulari de les dades d'una entitat: la imatge, el nom, la data de creació i la descripció.
 // Es fa servir per crear una entitat i per canviar-ne les dades a la configuració.
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
   DESCRIPCIO_MAX,
   ENTITAT_NOM_MAX,
+  IMATGE_TIPUS,
   errorDataCreacio,
   errorDescripcio,
   errorNomEntitat,
 } from "@tfg-vestulari/shared";
 import { filtraEnter } from "../lib/enters";
+import { comprimeix } from "../lib/imatges";
 import "./Formulari.css";
 import "./EntitatForm.css";
+
+// Què es vol fer amb la imatge: posar-ne una de nova, treure la que hi ha, o res (null)
+export type CanviImatge = File | "treu" | null;
 
 // Els números es guarden com a text mentre s'escriuen
 export type DadesEntitat = {
@@ -20,10 +25,13 @@ export type DadesEntitat = {
   any: string;
   mes: string;
   dia: string;
+  imatge: CanviImatge;
 };
 
 type Props = {
   dades: DadesEntitat;
+  // La imatge que l'entitat ja té guardada (en editar-la)
+  imatgeActual?: string | null;
   onCanvi: (parcial: Partial<DadesEntitat>) => void;
   // Només es crida si el formulari és vàlid.
   onConfirma: () => void;
@@ -36,9 +44,10 @@ type Props = {
 export const aEnter = (s: string): number | null => (s.trim() === "" ? null : Number(s));
 
 // Només valida i avisa: les dades les guarda qui el fa servir, amb onCanvi i onConfirma.
-// La imatge encara no es pot pujar: de moment només hi ha l'espai reservat.
+// La imatge tampoc es puja aquí: el formulari la comprimeix i només diu quina s'ha triat (o si s'ha de treure).
 export default function EntitatForm({
   dades,
+  imatgeActual = null,
   onCanvi,
   onConfirma,
   textBoto = "Confirmar",
@@ -46,6 +55,7 @@ export default function EntitatForm({
   errorServidor = null,
 }: Props) {
   const [error, setError] = useState<string | null>(null);
+  const [comprimint, setComprimint] = useState(false);
 
   // Desa el canvi i treu l'error
   function canvia(parcial: Partial<DadesEntitat>) {
@@ -70,25 +80,81 @@ export default function EntitatForm({
     onConfirma();
   }
 
+  // Previsualització de la imatge triada. La URL local s'allibera quan ja no es fa servir.
+  const previsualitzacio = useMemo(
+    () => (dades.imatge instanceof File ? URL.createObjectURL(dades.imatge) : null),
+    [dades.imatge]
+  );
+  useEffect(() => {
+    return () => {
+      if (previsualitzacio) URL.revokeObjectURL(previsualitzacio);
+    };
+  }, [previsualitzacio]);
+
+  const imatgeVisible = previsualitzacio ?? (dades.imatge === "treu" ? null : imatgeActual);
+
+  // Valida i comprimeix la imatge triada. La previsualització ja mostra la versió comprimida,
+  // que és la que es pujarà. Si no és vàlida, avisa i no la canvia.
+  async function triaImatge(fitxer: File | undefined) {
+    if (!fitxer) return;
+    setComprimint(true);
+    const r = await comprimeix(fitxer, "entitat");
+    setComprimint(false);
+    if (!r.ok) {
+      setError(r.error);
+      return;
+    }
+    canvia({ imatge: r.fitxer });
+  }
+
+  // Treu la imatge: si l'entitat en tenia una de guardada, s'esborrarà en desar
+  function treuImatge() {
+    canvia({ imatge: imatgeActual ? "treu" : null });
+  }
+
   const missatge = error ?? errorServidor;
 
   return (
     <form className="formulari" onSubmit={envia} noValidate>
       <div className="entitat-form__dalt">
-        {/* Espai reservat per a la imatge: encara no és funcional */}
-        <div className="entitat-form__imatge" aria-hidden="true">
-          <svg className="entitat-form__icona" viewBox="0 0 80 64" focusable="false">
-            <rect x="3" y="3" width="74" height="58" rx="2" fill="none" stroke="currentColor" strokeWidth="4" />
-            <polyline
-              points="3,48 24,26 40,42 54,30 77,52"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="4"
-              strokeLinejoin="round"
+        <div className="entitat-form__columna-imatge">
+          {/* Tot el requadre obre el selector de fitxers */}
+          <label className="entitat-form__imatge">
+            <input
+              className="entitat-form__fitxer"
+              type="file"
+              accept={IMATGE_TIPUS.join(",")}
+              onChange={(e) => {
+                void triaImatge(e.target.files?.[0]);
+                e.target.value = ""; // perquè es pugui tornar a triar el mateix fitxer
+              }}
             />
-            <circle cx="56" cy="18" r="6" fill="none" stroke="currentColor" strokeWidth="4" />
-          </svg>
-          <span>Insereix imatge</span>
+            {comprimint ? (
+              <span>Preparant la imatge…</span>
+            ) : imatgeVisible ? (
+              <img className="entitat-form__previsualitzacio" src={imatgeVisible} alt="Imatge de l'entitat" />
+            ) : (
+              <>
+                <svg className="entitat-form__icona" viewBox="0 0 80 64" focusable="false" aria-hidden="true">
+                  <rect x="3" y="3" width="74" height="58" rx="2" fill="none" stroke="currentColor" strokeWidth="4" />
+                  <polyline
+                    points="3,48 24,26 40,42 54,30 77,52"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    strokeLinejoin="round"
+                  />
+                  <circle cx="56" cy="18" r="6" fill="none" stroke="currentColor" strokeWidth="4" />
+                </svg>
+                <span>Insereix imatge</span>
+              </>
+            )}
+          </label>
+          {imatgeVisible && !comprimint && (
+            <button type="button" className="entitat-form__treu" onClick={treuImatge}>
+              Treure la imatge
+            </button>
+          )}
         </div>
 
         <div className="entitat-form__camps">
@@ -181,7 +247,7 @@ export default function EntitatForm({
       {missatge && <p className="formulari__error" role="alert">{missatge}</p>}
 
       <div className="formulari__accions">
-        <button type="submit" className="formulari__confirma" disabled={enviant}>
+        <button type="submit" className="formulari__confirma" disabled={enviant || comprimint}>
           {enviant ? "Un moment…" : textBoto}
         </button>
       </div>

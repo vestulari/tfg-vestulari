@@ -3,6 +3,11 @@
 import type { InvitacioDetallDto, InvitacioResumDto } from '@tfg-vestulari/shared'
 import type { Sql } from '../lib/db'
 
+// Les invitacions surten de la BD amb la clau de la imatge de l'entitat, i la ruta la canvia per una URL.
+type AmbClauEntitat<T> = Omit<T, 'entitatImatgeUrl'> & { entitatImatgeClau: string | null }
+export type InvitacioResum = AmbClauEntitat<InvitacioResumDto>
+export type InvitacioDetall = AmbClauEntitat<InvitacioDetallDto>
+
 // Retorna el nombre d'invitacions pendents (rebudes) de l'usuari
 export async function comptaPendents(sql: Sql, userId: string): Promise<number> {
   const [row] = await sql<{ n: number }[]>`
@@ -15,13 +20,20 @@ export async function comptaPendents(sql: Sql, userId: string): Promise<number> 
 }
 
 // Retorna la llista d'invitacions pendents (rebudes) de l'usuari
-export async function llistaPendents(sql: Sql, userId: string): Promise<InvitacioResumDto[]> {
+export async function llistaPendents(sql: Sql, userId: string): Promise<InvitacioResum[]> {
   const rows = await sql<
-    { id: number; entitat_id: number; entitat_nom: string; oberta: boolean }[]
+    {
+      id: number
+      entitat_id: number
+      entitat_nom: string
+      entitat_imatge_clau: string | null
+      oberta: boolean
+    }[]
   >`
     select i.id,
            i.entitat_id,
            e.nom as entitat_nom,
+           e.imatge_clau as entitat_imatge_clau,
            (i.oberta_el is not null) as oberta
     from public.invitacions i
     join public.entitats e on e.id = i.entitat_id
@@ -33,6 +45,7 @@ export async function llistaPendents(sql: Sql, userId: string): Promise<Invitaci
     id: r.id,
     entitatId: r.entitat_id,
     entitatNom: r.entitat_nom,
+    entitatImatgeClau: r.entitat_imatge_clau,
     oberta: r.oberta,
   }))
 }
@@ -42,9 +55,15 @@ export async function obre(
   sql: Sql,
   userId: string,
   id: number
-): Promise<InvitacioDetallDto | null> {
+): Promise<InvitacioDetall | null> {
   const [r] = await sql<
-    { id: number; entitat_id: number; entitat_nom: string; entitat_descripcio: string | null }[]
+    {
+      id: number
+      entitat_id: number
+      entitat_nom: string
+      entitat_imatge_clau: string | null
+      entitat_descripcio: string | null
+    }[]
   >`
     with i as (
       update public.invitacions
@@ -57,6 +76,7 @@ export async function obre(
     select i.id,
            i.entitat_id,
            e.nom as entitat_nom,
+           e.imatge_clau as entitat_imatge_clau,
            e.descripcio as entitat_descripcio
     from i
     join public.entitats e on e.id = i.entitat_id
@@ -66,6 +86,7 @@ export async function obre(
     id: r.id,
     entitatId: r.entitat_id,
     entitatNom: r.entitat_nom,
+    entitatImatgeClau: r.entitat_imatge_clau,
     oberta: true,
     entitatDescripcio: r.entitat_descripcio,
   }

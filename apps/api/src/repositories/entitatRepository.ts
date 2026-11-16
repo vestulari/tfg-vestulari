@@ -7,11 +7,16 @@ import type {
   EntitatResumDto,
 } from '@tfg-vestulari/shared'
 import type { Sql } from '../lib/db'
+import type { AmbClau } from '../lib/imatges'
+
+// Les entitats surten de la BD amb la clau de la imatge. La ruta la canvia per una URL temporal.
+export type EntitatResum = AmbClau<EntitatResumDto>
+export type EntitatMembre = AmbClau<EntitatDetallDto>
 
 // Retorna la llista d'entitats a les que l'usuari té algun perfil assignat
-export async function llistaPerUsuari(sql: Sql, userId: string): Promise<EntitatResumDto[]> {
-  const rows = await sql<{ id: number; nom: string }[]>`
-    select e.id, e.nom
+export async function llistaPerUsuari(sql: Sql, userId: string): Promise<EntitatResum[]> {
+  const rows = await sql<{ id: number; nom: string; imatge_clau: string | null }[]>`
+    select e.id, e.nom, e.imatge_clau
     from public.entitats e
     where exists (
       select 1
@@ -21,7 +26,7 @@ export async function llistaPerUsuari(sql: Sql, userId: string): Promise<Entitat
     )
     order by e.nom
   `
-  return rows.map((r) => ({ id: r.id, nom: r.nom }))
+  return rows.map((r) => ({ id: r.id, nom: r.nom, imatgeClau: r.imatge_clau }))
 }
 
 // Retorna l'entitat amb el perfil que hi té l'usuari i els seus permisos.
@@ -30,11 +35,12 @@ export async function detallPerUsuari(
   sql: Sql,
   userId: string,
   id: number
-): Promise<EntitatDetallDto | null> {
+): Promise<EntitatMembre | null> {
   const [r] = await sql<
     {
       id: number
       nom: string
+      imatge_clau: string | null
       descripcio: string | null
       any_creacio: number
       mes_creacio: number | null
@@ -48,6 +54,7 @@ export async function detallPerUsuari(
   >`
     select e.id,
            e.nom,
+           e.imatge_clau,
            e.descripcio,
            e.any_creacio,
            e.mes_creacio,
@@ -65,6 +72,7 @@ export async function detallPerUsuari(
   return {
     id: r.id,
     nom: r.nom,
+    imatgeClau: r.imatge_clau,
     descripcio: r.descripcio,
     anyCreacio: r.any_creacio,
     mesCreacio: r.mes_creacio,
@@ -136,6 +144,18 @@ export async function edita(sql: Sql, id: number, d: EntitatEditadaDto): Promise
         dia_creacio = ${d.diaCreacio}
     where id = ${id}
   `
+}
+
+// Posa una imatge nova a l'entitat (o cap, amb null) i retorna la clau de la que tenia,
+// perquè la ruta l'esborri de l'R2. El `for update` evita que dos canvis alhora es trepitgin.
+export function canviaImatge(sql: Sql, id: number, clau: string | null): Promise<string | null> {
+  return sql.begin(async (tx) => {
+    const [vella] = await tx<{ imatge_clau: string | null }[]>`
+      select imatge_clau from public.entitats where id = ${id} for update
+    `
+    await tx`update public.entitats set imatge_clau = ${clau} where id = ${id}`
+    return vella?.imatge_clau ?? null
+  })
 }
 
 // Esborra l'entitat. Tot el que en depèn (perfils, invitacions, roba, espectacles…) s'esborra en cascada.

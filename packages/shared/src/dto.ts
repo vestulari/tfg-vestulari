@@ -1,21 +1,29 @@
 // Tipus de les dades que viatgen entre el frontend i l'API (DTO).
 
+// A què pertany una imatge. Cada tipus es comprimeix d'una manera (IMATGE_PERFILS)
+export type TipusImatge = 'usuari' | 'entitat' | 'vestuari'
+
+// imatgeUrl és una URL temporal (signada) per veure la foto, o null si no en té
 export type UsuariDto = {
   id: string
   nom: string
+  imatgeUrl: string | null
   email: string | null
   invitacionsPendents: number
 }
 
+// imatgeUrl és una URL temporal (signada) per veure la imatge, o null si l'entitat no en té
 export type EntitatResumDto = {
   id: number
   nom: string
+  imatgeUrl: string | null
 }
 
 // Una entitat vista per un dels seus membres, amb el perfil que hi té i els seus permisos
 export type EntitatDetallDto = {
   id: number
   nom: string
+  imatgeUrl: string | null
   descripcio: string | null
   anyCreacio: number
   mesCreacio: number | null
@@ -50,6 +58,7 @@ export type InvitacioResumDto = {
   id: number
   entitatId: number
   entitatNom: string
+  entitatImatgeUrl: string | null
   oberta: boolean
 }
 

@@ -1,8 +1,9 @@
 // API REST de la gestió d'invitacions.
 
-import { Hono } from 'hono'
+import { Hono, type Context } from 'hono'
 import type { Env } from '../types'
 import { llegeixId } from '../lib/params'
+import { urlImatge } from '../lib/imatges'
 import * as invitacioRepo from '../repositories/invitacioRepository'
 
 export const invitacions = new Hono<Env>()
@@ -14,10 +15,17 @@ const MISSATGES: Record<invitacioRepo.MotiuRebuig, string> = {
   perfil_no_disponible: "El perfil que t'ofereixen ja no està disponible.",
 }
 
+// Canvia la clau de la imatge de l'entitat per una URL temporal.
+// El convidat pot veure la imatge de l'entitat que el convida, encara que no en sigui membre.
+async function ambUrl<T extends { entitatImatgeClau: string | null }>(c: Context<Env>, inv: T) {
+  const { entitatImatgeClau, ...resta } = inv
+  return { ...resta, entitatImatgeUrl: await urlImatge(c.env, entitatImatgeClau) }
+}
+
 // Retorna la llista d'invitacions pendents (rebudes) de l'usuari
 invitacions.get('/', async (c) => {
   const llista = await invitacioRepo.llistaPendents(c.get('sql'), c.get('userId'))
-  return c.json(llista)
+  return c.json(await Promise.all(llista.map((i) => ambUrl(c, i))))
 })
 
 // Retorna el detall d'una invitació i la marca com a oberta (si no estava marcat ja)
@@ -27,7 +35,7 @@ invitacions.get('/:id', async (c) => {
 
   const invitacio = await invitacioRepo.obre(c.get('sql'), c.get('userId'), id)
   if (!invitacio) return c.json({ error: MISSATGES.no_trobada }, 404)
-  return c.json(invitacio)
+  return c.json(await ambUrl(c, invitacio))
 })
 
 // Accepta una invitació.

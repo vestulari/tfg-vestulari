@@ -91,7 +91,7 @@ export default function Invitacions() {
                   <span className="invitacions__text">
                     {i.entitatNom} et convida a afegir-te a la seva entitat!
                   </span>
-                  <EntitatImatge nom={i.entitatNom} />
+                  <EntitatImatge nom={i.entitatNom} url={i.entitatImatgeUrl} />
                 </Link>
               </li>
             ))}

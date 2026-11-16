@@ -1,4 +1,4 @@
-// Pantalla del compte: canviar el nom d'usuari i la contrasenya, i tancar la sessió.
+// Pantalla del compte: canviar la foto, el nom d'usuari i la contrasenya, i tancar la sessió.
 
 import { useEffect, useState, type FormEvent } from "react";
 import { ApiError } from "../adapters/api/ApiClient";
@@ -9,12 +9,15 @@ import { canviaContrasenya } from "../auth/CanviaContrasenya";
 import BotoEnrere from "../components/BotoEnrere";
 import Capcalera from "../components/Capcalera";
 import RequisitsContrasenya from "../components/RequisitsContrasenya";
+import UsuariAvatar from "../components/UsuariAvatar";
 import { contrasenyaValida } from "../lib/contrasenya";
+import { comprimeix } from "../lib/imatges";
 import { useTornada } from "../lib/tornada";
-import { NOM_MAX, errorNom } from "@tfg-vestulari/shared";
+import { IMATGE_TIPUS, NOM_MAX, errorNom } from "@tfg-vestulari/shared";
 import "./Compte.css";
 
-// L'usuari és el mateix que el de la capçalera: en desar el nom, s'actualitza a tot arreu.
+// L'usuari és el mateix que el de la capçalera: en desar el nom o la foto, s'actualitza a tot arreu.
+// La foto es comprimeix i es puja tot just triar-la (no hi ha botó de desar).
 // Els comptes que només entren amb Google no tenen contrasenya pròpia, i no en veuen la part.
 // La fletxa d'enrere torna a la pantalla des d'on s'ha obert el compte.
 export default function Compte() {
@@ -22,6 +25,11 @@ export default function Compte() {
   const tancaSessio = useTancaSessio();
   const { usuari, error: errorCarrega, estableix } = useUsuari();
   const tornada = useTornada();
+
+  // Foto
+  const [desantFoto, setDesantFoto] = useState<"comprimint" | "pujant" | "traient" | null>(null);
+  const [okFoto, setOkFoto] = useState<string | null>(null);
+  const [errorFoto, setErrorFoto] = useState<string | null>(null);
 
   // Nom
   const [nom, setNom] = useState(usuari?.nom ?? "");
@@ -46,6 +54,48 @@ export default function Compte() {
 
   const email = user?.email ?? usuari?.email ?? "";
   const teContrasenya = user?.identities?.some((i) => i.provider === "email") ?? true;
+
+  // ----- Foto -----
+  // Comprimeix la foto triada i la puja
+  async function canviaFoto(fitxer: File | undefined) {
+    if (!fitxer || desantFoto) return;
+    setOkFoto(null);
+    setErrorFoto(null);
+
+    setDesantFoto("comprimint");
+    const r = await comprimeix(fitxer, "usuari");
+    if (!r.ok) {
+      setErrorFoto(r.error);
+      setDesantFoto(null);
+      return;
+    }
+
+    setDesantFoto("pujant");
+    try {
+      estableix(await usuariApi.canviaImatge(r.fitxer));
+      setOkFoto("Foto actualitzada.");
+    } catch (err) {
+      setErrorFoto(err instanceof ApiError ? err.message : "No s'ha pogut pujar la foto.");
+    } finally {
+      setDesantFoto(null);
+    }
+  }
+
+  // Treu la foto: es tornarà a veure la inicial
+  async function treuFoto() {
+    if (desantFoto) return;
+    setOkFoto(null);
+    setErrorFoto(null);
+    setDesantFoto("traient");
+    try {
+      estableix(await usuariApi.treuImatge());
+      setOkFoto("Foto treta.");
+    } catch (err) {
+      setErrorFoto(err instanceof ApiError ? err.message : "No s'ha pogut treure la foto.");
+    } finally {
+      setDesantFoto(null);
+    }
+  }
 
   // ----- Nom -----
   const errNom = errorNom(nom);
@@ -121,9 +171,40 @@ export default function Compte() {
             <section className="compte__seccio" aria-labelledby="titol-perfil">
               <h2 id="titol-perfil" className="compte__titol">Perfil</h2>
 
-              <div className="compte__avatar" aria-hidden="true">
-                {usuari.nom.charAt(0).toUpperCase()}
+              <UsuariAvatar nom={usuari.nom} url={usuari.imatgeUrl} className="compte__avatar" />
+              <div className="compte__foto-accions">
+                <label className={`compte__boto-foto${desantFoto ? " compte__boto-foto--desactivat" : ""}`}>
+                  <input
+                    className="compte__fitxer"
+                    type="file"
+                    accept={IMATGE_TIPUS.join(",")}
+                    disabled={desantFoto !== null}
+                    onChange={(e) => {
+                      void canviaFoto(e.target.files?.[0]);
+                      e.target.value = ""; // perquè es pugui tornar a triar el mateix fitxer
+                    }}
+                  />
+                  {desantFoto === "comprimint"
+                    ? "Preparant la foto…"
+                    : desantFoto === "pujant"
+                      ? "Pujant…"
+                      : usuari.imatgeUrl
+                        ? "Canviar la foto"
+                        : "Afegir una foto"}
+                </label>
+                {usuari.imatgeUrl && (
+                  <button
+                    type="button"
+                    className="compte__boto-foto"
+                    disabled={desantFoto !== null}
+                    onClick={treuFoto}
+                  >
+                    {desantFoto === "traient" ? "Traient…" : "Treure la foto"}
+                  </button>
+                )}
               </div>
+              {errorFoto && <p className="compte__error" role="alert">{errorFoto}</p>}
+              {okFoto && <p className="compte__ok" role="status">{okFoto}</p>}
               <p className="compte__correu">{email}</p>
 
               <form className="compte__form" onSubmit={desaNom} noValidate>
