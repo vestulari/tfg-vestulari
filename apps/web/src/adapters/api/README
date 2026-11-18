@@ -6,6 +6,7 @@ Client de xarxa. Des d'aqui es fan les crides als endpoints
 - EntitatApi.ts: crides de les entitats
 - InvitacioAPI.ts: crides de les invitacions
 - PerfilApi.ts: crides dels perfils d'una entitat (llistar, veure, crear, editar, compartir...)
+- VestuariApi.ts: crides del vestuari d'una entitat (peces de roba i tipus de peça)
 
 Cada fitxer fa la seva interfície de la carpeta interfaces.
 Les pantalles sempre criden l'API a través d'aquests fitxers, mai amb un fetch directe.

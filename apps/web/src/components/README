@@ -17,10 +17,13 @@ Components visuals de React reutilitzables
 - Confirmacio: la finestra per confirmar una acció abans de fer-la (amb el botó vermell si no es pot desfer)
 - PlantillaPerfilForm: el formulari de la plantilla de perfil, per crear-la o editar-la. Els atributs que ja
   estan guardats (els que tenen id) no poden canviar de tipus, i abans de treure'ls es demana confirmació
-- Cercador: la barra de cerca amb la lupa (la fan servir les invitacions i els intèrprets)
+- Cercador: la barra de cerca amb la lupa (la fan servir les invitacions, els intèrprets i el vestuari)
 - CompartirPerfil: la finestra per compartir un perfil amb un correu. Diu si el correu té compte i si s'ha
   enviat la invitació
 - RutaAdmin: ruta pare de les pantalles d'una entitat que només poden veure els administradors
+- TipusPecaForm: el formulari d'un tipus de peça (el nom i els atributs, que poden ser Text, Número o Color).
+  Funciona com PlantillaPerfilForm i en reaprofita els estils de les files
+- LlistatTipusPeca: la finestra amb el llistat dels tipus de peça existents, per triar-ne un (per crear-ne un de nou a partir d'aquest)
 - Formulari.css: els estils que comparteixen totes les pantalles amb formulari
 
 Els formularis només validen i avisen dels errors, no criden l'API.

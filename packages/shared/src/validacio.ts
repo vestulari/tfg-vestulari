@@ -1,7 +1,9 @@
 // Regles de validació compartides entre el frontend i l'API.
-import { ATRIBUTS_BASICS, GENERES, IMATGE_TIPUS } from './constants'
+import { ATRIBUTS_BASICS, GENERES, IMATGE_TIPUS, TIPUS_ATRIBUT_PECA } from './constants'
 import type {
   AtributDto,
+  AtributPecaDto,
+  TipusPecaDadesDto,
   AtributNouDto,
   AtributPlantillaDto,
   PerfilDadesDto,
@@ -135,19 +137,31 @@ export function errorAtributs(atributs: { nom: string; tipus: string }[]): strin
   if (atributs.length > ATRIBUTS_MAX) {
     return `No pots tenir més de ${ATRIBUTS_MAX} atributs addicionals.`
   }
-  const vistos = new Set<string>(ATRIBUTS_BASICS.map(clau))
+  return errorLlistaAtributs(atributs, ['string', 'integer'], ATRIBUTS_BASICS, 'ja existeix o és un atribut bàsic')
+}
+
+// La part comuna de comprovar atributs: noms vàlids, tipus dels permesos i cap nom repetit
+// (ni amb els reservats, sense mirar majúscules ni accents)
+function errorLlistaAtributs(
+  atributs: { nom: string; tipus: string }[],
+  tipusValids: readonly string[],
+  reservats: readonly string[],
+  textRepetit: string
+): string | null {
+  const vistos = new Set<string>(reservats.map(clau))
   for (const a of atributs) {
     const err = errorNomAtribut(a.nom)
     if (err) return err
-    if (a.tipus !== 'string' && a.tipus !== 'integer') {
-      return `Cal triar el tipus de l'atribut «${a.nom}».`
-    }
+    if (!tipusValids.includes(a.tipus)) return `Cal triar el tipus de l'atribut «${a.nom}».`
     const k = clau(a.nom)
-    if (vistos.has(k)) return `L'atribut «${a.nom}» ja existeix o és un atribut bàsic.`
+    if (vistos.has(k)) return `L'atribut «${a.nom}» ${textRepetit}.`
     vistos.add(k)
   }
   return null
 }
+
+// Diu si dos noms són el mateix sense mirar majúscules, accents ni espais dels costats
+export const mateixNom = (a: string, b: string) => clau(a) === clau(b)
 
 // Comprova el perfil i que els seus valors encaixin amb els atributs de la plantilla
 export function errorPerfil(p: PerfilNouDto, atributs: AtributNouDto[]): string | null {
@@ -353,6 +367,62 @@ export function validaPerfil(cos: unknown, atributs: AtributDto[]): Resultat<Per
     ok: true,
     dades: { nom, edat, genere: genere as PerfilDadesDto['genere'], esAdministrador, esInterpret, valors },
   }
+}
+
+// ---------- Vestuari ----------
+export const TIPUS_PECA_NOM_MAX = 40
+
+export const errorNomTipusPeca = (nom: string) =>
+  errorNomText(nom, 'El nom del tipus de peça és obligatori.', 'El nom del tipus de peça', TIPUS_PECA_NOM_MAX)
+
+// Comprova el nom i els atributs d'un tipus de peça (sense els ids: això ho mira validaTipusPeca)
+export function errorTipusPeca(nom: string, atributs: { nom: string; tipus: string }[]): string | null {
+  const err = errorNomTipusPeca(nom)
+  if (err) return err
+  if (atributs.length > ATRIBUTS_MAX) return `Un tipus de peça no pot tenir més de ${ATRIBUTS_MAX} atributs.`
+  return errorLlistaAtributs(
+    atributs,
+    TIPUS_ATRIBUT_PECA.map((t) => t.valor),
+    [],
+    'està repetit'
+  )
+}
+
+// Comprova el cos d'un POST o PUT d'un tipus de peça. existents són els atributs que ja té
+// (cap, si és nou): els atributs amb id han de ser d'aquests, i no poden canviar de tipus.
+export function validaTipusPeca(
+  cos: unknown,
+  existents: AtributPecaDto[]
+): Resultat<TipusPecaDadesDto> {
+  if (!esObjecte(cos) || typeof cos.nom !== 'string' || !Array.isArray(cos.atributs)) {
+    return invalid('Dades no vàlides.')
+  }
+
+  const tipusValids: readonly unknown[] = TIPUS_ATRIBUT_PECA.map((t) => t.valor)
+  const atributs: TipusPecaDadesDto['atributs'] = []
+  const idsVistos = new Set<number>()
+  for (const a of cos.atributs) {
+    if (!esObjecte(a)) return invalid('Algun atribut no és vàlid.')
+    const { id, nom, tipus } = a
+    if (typeof nom !== 'string' || !tipusValids.includes(tipus)) {
+      return invalid('Algun atribut no és vàlid.')
+    }
+    const t = tipus as AtributPecaDto['tipus']
+    if (id === null || id === undefined) {
+      atributs.push({ id: null, nom, tipus: t })
+      continue
+    }
+
+    const vell = typeof id === 'number' ? existents.find((e) => e.id === id) : undefined
+    if (!vell || idsVistos.has(vell.id)) return invalid('Algun atribut no és vàlid.')
+    if (vell.tipus !== t) return invalid(`No es pot canviar el tipus de l'atribut «${vell.nom}».`)
+    idsVistos.add(vell.id)
+    atributs.push({ id: vell.id, nom, tipus: t })
+  }
+
+  const error = errorTipusPeca(cos.nom, atributs)
+  if (error) return invalid(error)
+  return { ok: true, dades: { nom: cos.nom, atributs } }
 }
 
 // ---------- Correu ----------

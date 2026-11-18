@@ -15,6 +15,10 @@ Cada fitxer és un router de Hono, i tots es munten a index.ts:
 - perfils.ts: penja d'entitats.ts, a /entitats/:id/perfils. Llistar, inserir i editar perfils, i compartir-los
   (enviar una invitació a un correu), cancel·lar la invitació o descompartir-los. Tot això només els
   administradors. El detall d'un perfil el poden veure els administradors, i cadascú el seu ("El meu perfil").
+- vestuari.ts: penja d'entitats.ts. Els tipus de peça (/entitats/:id/tipus-peca) els veuen tots els membres, i
+  els creen, desen i eliminen els administradors. No es pot repetir el nom d'un tipus (sense mirar majúscules ni
+  accents), ni eliminar-ne un si hi ha peces d'aquell tipus (409). Les peces (/entitats/:id/peces), de moment,
+  només es llisten.
 
 Les imatges: els repositoris retornen la clau de la imatge, i la ruta la canvia per una URL temporal
 (amb ambUrl o urlImatge de lib/imatges.ts) just abans de respondre.

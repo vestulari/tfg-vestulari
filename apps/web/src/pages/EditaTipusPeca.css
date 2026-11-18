@@ -1,0 +1,17 @@
+/* Estils de la pantalla de crear o modificar un tipus de peça: el formulari va dins d'una targeta */
+
+.edita-tipus {
+  max-width: 80rem;
+  padding: 2.5rem 3.5rem 3rem;
+  border-radius: 2.5rem;
+  background: #f0f4f9;
+}
+
+/* Dins la targeta, els camps són blancs perquè es distingeixin del fons */
+.edita-tipus .formulari__input,
+.edita-tipus .plantilla__afegeix,
+.edita-tipus .plantilla__elimina { background: #fff; }
+
+@media (max-width: 800px) {
+  .edita-tipus { padding: 1.5rem 1.25rem 2rem; border-radius: 2rem; }
+}

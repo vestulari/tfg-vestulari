@@ -1,0 +1,12 @@
+Fàbriques (patró fàbrica): construeixen objectes que encara no estan guardats
+
+- entitatFactory.ts: tot el que té una entitat quan neix: les seves dades, els atributs extra de la plantilla
+  de perfil, el perfil del creador (sempre administrador) i els tipus de peça inicials (de tipusPecaFactory).
+  Els atributs bàsics del perfil (nom, edat i gènere) no hi són perquè són columnes del perfil.
+  La ruta POST /entitats valida, fabrica l'entitat i la passa a entitatRepository.crea, que la guarda
+  sencera en una transacció.
+- tipusPecaFactory.ts: els tipus de peça inicials de tota entitat nova (Camisa, Samarreta, Faldilla i Pantaló),
+  amb una funció creadora per cada tipus. De moment tots tenen Color i Talla.
+  Els fa servir entitatFactory. Després són tipus com els altres, i es poden editar o eliminar.
+
+Les fàbriques no fan SQL ni saben res d'HTTP: només retornen les dades. Les guarden els repositoris.

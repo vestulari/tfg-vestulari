@@ -1,0 +1,25 @@
+/* Estils del formulari d'un tipus de peça. Les files d'atributs són les de PlantillaPerfilForm.css. */
+
+/* El nom fa de títol de la pantalla */
+.tipus-form__nom {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  padding: 0.3rem 1rem;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: #111;
+  font: inherit;
+  font-size: clamp(1.8rem, 3.6vw, 3rem);
+  text-align: center;
+}
+
+.tipus-form__nom::placeholder { color: #111; }
+.tipus-form__nom:hover { border-bottom-color: #cfd8e3; }
+
+.tipus-form__nom:focus-visible {
+  outline: none;
+  border-bottom-color: var(--blue);
+}
+
+.tipus-form__nom:focus::placeholder { color: #9aa0a8; }

@@ -1,0 +1,68 @@
+/* Estils de la llista de tipus de peça. L'estructura de la pantalla és la de Vestuari.css. */
+
+.tipus-peca__contingut { padding-left: 4rem; }
+
+/* Dues columnes de píndoles */
+.tipus-peca__llista {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem 12%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tipus-peca__tipus {
+  display: block;
+  padding: 0.9rem 1.5rem;
+  border-radius: 999px;
+  background: #f0f4f9;
+  color: #111;
+  font-size: 1.15rem;
+  text-align: center;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.tipus-peca__tipus:hover { background: #e3ebf4; }
+.tipus-peca__tipus:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
+/* El menú d'inserir surt just a sobre del botó */
+.tipus-peca__inserir { position: relative; }
+
+.tipus-peca__menu {
+  position: absolute;
+  bottom: calc(100% + 0.8rem);
+  left: 50%;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  width: max(100%, 20rem);
+  overflow: hidden;
+  border-radius: 1.8rem;
+  background: var(--yellow);
+  box-shadow: 0 0.8rem 2rem rgba(0, 0, 0, 0.2);
+  transform: translateX(-50%);
+}
+
+.tipus-peca__menu button {
+  padding: 1rem 1.5rem;
+  border: 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+  background: transparent;
+  color: #111;
+  font: inherit;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tipus-peca__menu button:last-child { border-bottom: 0; }
+.tipus-peca__menu button:hover:not(:disabled) { background: rgba(255, 255, 255, 0.3); }
+.tipus-peca__menu button:disabled { opacity: 0.5; cursor: not-allowed; }
+.tipus-peca__menu button:focus-visible { outline: 3px solid var(--blue); outline-offset: -3px; }
+
+@media (max-width: 800px) {
+  .tipus-peca__contingut { padding-left: 0.5rem; }
+  .tipus-peca__llista { grid-template-columns: 1fr; gap: 1rem; }
+}

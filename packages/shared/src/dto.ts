@@ -143,3 +143,24 @@ export type PerfilDadesDto = {
 
 // Resposta de compartir un perfil: si el correu té compte, s'envia la invitació
 export type ComparticioDto = { enviada: boolean; missatge: string }
+// ---------- Vestuari ----------
+// Tipus que pot tenir un atribut d'un tipus de peça (els de perfil, més el color)
+export type TipusAtributPeca = 'string' | 'integer' | 'color'
+
+// Un tipus de peça a la llista (Camisa, Samarreta...)
+export type TipusPecaResumDto = { id: number; nom: string }
+
+// Un atribut d'un tipus de peça, tal com està guardat
+export type AtributPecaDto = { id: number; nom: string; tipus: TipusAtributPeca }
+
+// Un tipus de peça amb tots els seus atributs, per ordre de creació
+export type TipusPecaDto = TipusPecaResumDto & { atributs: AtributPecaDto[] }
+
+// Un tipus de peça quan es crea o es desa: els atributs nous van sense id
+export type TipusPecaDadesDto = {
+  nom: string
+  atributs: { id: number | null; nom: string; tipus: TipusAtributPeca }[]
+}
+
+// Una peça de roba a l'inventari
+export type PecaResumDto = { id: number; nom: string; tipusId: number }

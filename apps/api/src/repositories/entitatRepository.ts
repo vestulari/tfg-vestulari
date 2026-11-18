@@ -3,11 +3,12 @@ import type {
   AdministradorDto,
   EntitatDetallDto,
   EntitatEditadaDto,
-  EntitatNovaDto,
   EntitatResumDto,
 } from '@tfg-vestulari/shared'
 import type { Sql } from '../lib/db'
 import type { AmbClau } from '../lib/imatges'
+import type { EntitatNova } from '../factories/entitatFactory'
+import { creaAmb as creaTipusPeca } from './tipusPecaRepository'
 
 // Les entitats surten de la BD amb la clau de la imatge. La ruta la canvia per una URL temporal.
 export type EntitatResum = AmbClau<EntitatResumDto>
@@ -87,21 +88,22 @@ export async function detallPerUsuari(
   }
 }
 
-// Tot en una transacció: o es crea tot (entitat, plantilla, perfil del creador i els seus valors),
-// o no es crea res. El creador sempre és administrador.
-export function crea(sql: Sql, userId: string, d: EntitatNovaDto): Promise<number> {
+// Guarda l'entitat nova que ha muntat entitatFactory, tot en una transacció: o es crea tot (entitat,
+// plantilla de perfil, perfil del creador amb els seus valors i tipus de peça), o no es crea res.
+// Què porta una entitat nova ho decideix la fàbrica; aquí només es guarda.
+export function crea(sql: Sql, userId: string, n: EntitatNova): Promise<number> {
   return sql.begin(async (tx) => {
+    const e = n.entitat
     const [entitat] = await tx<{ id: number }[]>`
       insert into public.entitats
         (nom, descripcio, creada_per, any_creacio, mes_creacio, dia_creacio)
       values
-        (${d.nom}, ${d.descripcio === '' ? null : d.descripcio}, ${userId},
-         ${d.anyCreacio}, ${d.mesCreacio}, ${d.diaCreacio})
+        (${e.nom}, ${e.descripcio}, ${userId}, ${e.anyCreacio}, ${e.mesCreacio}, ${e.diaCreacio})
       returning id
     `
 
     const idsAtribut = new Map<string, number>()
-    for (const a of d.atributs) {
+    for (const a of n.atributsPerfil) {
       const [def] = await tx<{ id: number }[]>`
         insert into public.definicions_atribut_perfil (entitat_id, nom, tipus)
         values (${entitat.id}, ${a.nom}, ${a.tipus})
@@ -110,18 +112,21 @@ export function crea(sql: Sql, userId: string, d: EntitatNovaDto): Promise<numbe
       idsAtribut.set(a.nom, def.id)
     }
 
+    const p = n.perfilCreador
     const [perfil] = await tx<{ id: number }[]>`
       insert into public.perfils (nom, entitat_id, usuari_id, edat, genere)
-      values (${d.perfil.nom}, ${entitat.id}, ${userId}, ${d.perfil.edat}, ${d.perfil.genere})
+      values (${p.nom}, ${entitat.id}, ${userId}, ${p.edat}, ${p.genere})
       returning id
     `
 
-    await tx`insert into public.administradors (perfil_id) values (${perfil.id})`
-    if (d.perfil.esInterpret) {
+    if (p.esAdministrador) {
+      await tx`insert into public.administradors (perfil_id) values (${perfil.id})`
+    }
+    if (p.esInterpret) {
       await tx`insert into public.interprets (perfil_id) values (${perfil.id})`
     }
 
-    for (const v of d.perfil.valors) {
+    for (const v of p.valors) {
       const definicioId = idsAtribut.get(v.atribut)
       if (definicioId === undefined) continue // ja validat abans
       await tx`
@@ -129,6 +134,8 @@ export function crea(sql: Sql, userId: string, d: EntitatNovaDto): Promise<numbe
         values (${definicioId}, ${perfil.id}, ${v.valor})
       `
     }
+
+    for (const t of n.tipusPeca) await creaTipusPeca(tx, entitat.id, t)
 
     return entitat.id
   })
