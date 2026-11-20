@@ -130,3 +130,18 @@ export async function esborraCarpeta(env: Bindings, carpeta: string): Promise<vo
     console.error("No s'han pogut esborrar les imatges de", carpeta, e)
   }
 }
+
+// Retorna la imatge mateixa (els bytes) llegida de l'R2, o null si no n'hi ha.
+// Serveix perquè el navegador la pugui posar dins d'un PDF: les URL signades de l'R2 no tenen CORS,
+// i aquesta resposta, en sortir de l'API, sí.
+export async function fitxer(env: Bindings, clau: string | null): Promise<Response | null> {
+  if (!clau) return null
+  const obj = await env.IMATGES.get(clau)
+  if (!obj) return null
+  return new Response(obj.body, {
+    headers: {
+      'Content-Type': obj.httpMetadata?.contentType ?? 'application/octet-stream',
+      'Cache-Control': 'private, no-store',
+    },
+  })
+}

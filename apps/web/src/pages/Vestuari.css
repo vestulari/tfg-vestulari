@@ -55,19 +55,25 @@
   border-radius: 2rem;
   background: #f0f4f9;
   color: #111;
+  text-decoration: none;
 }
+
+.vestuari__peca:hover { background: #e3ebf4; }
+.vestuari__peca:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
 
 .vestuari__foto {
   display: grid;
   place-items: center;
   width: 6.5rem;
   aspect-ratio: 1;
+  overflow: hidden;
   border: 1px solid #ccc;
   background: #fff;
   color: #7b8088;
 }
 
 .vestuari__foto svg { width: 70%; height: auto; }
+.vestuari__foto img { width: 100%; height: 100%; object-fit: contain; }
 
 .vestuari__nom {
   max-width: 100%;
@@ -79,6 +85,7 @@
 .vestuari__peu {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   justify-content: space-around;
   gap: 1.5rem;
 }
@@ -104,15 +111,6 @@
 .vestuari__boto:disabled { opacity: 0.6; cursor: not-allowed; }
 .vestuari__mes { font-size: 2.2rem; font-weight: 800; line-height: 1; }
 
-.vestuari__properament {
-  position: absolute;
-  top: -0.7rem;
-  right: 1rem;
-  padding: 0.1rem 0.6rem;
-  border-radius: 999px;
-  background: #fff;
-  font-size: 0.75rem;
-}
 
 @media (max-width: 800px) {
   .vestuari { padding: 1rem 1rem 2rem; }

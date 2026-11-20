@@ -22,6 +22,18 @@ export class ApiError extends Error {
 // Si el cos és un FormData (per pujar fitxers), el Content-Type el posa el navegador.
 // Si la resposta és un error, llença un ApiError.
 export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const res = await crida(path, init)
+  if (res.status === 204) return undefined as T
+  return (await res.json()) as T
+}
+
+// Com api(), però la resposta és un fitxer (per exemple, una imatge) en lloc de JSON
+export async function apiFitxer(path: string): Promise<Blob> {
+  return (await crida(path)).blob()
+}
+
+// Fa la petició amb el token i, si la resposta és un error, llença un ApiError amb el missatge del servidor
+async function crida(path: string, init: RequestInit = {}): Promise<Response> {
   const { data } = await supabase.auth.getSession()
   const token = data.session?.access_token
 
@@ -43,7 +55,5 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
     }
     throw new ApiError(res.status, missatge)
   }
-
-  if (res.status === 204) return undefined as T
-  return (await res.json()) as T
+  return res
 }

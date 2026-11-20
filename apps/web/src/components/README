@@ -4,7 +4,7 @@ Components visuals de React reutilitzables
   (per tornar-hi amb la fletxa), i amb bloquejat el menú no s'obre (ho fem servir mentre es crea una entitat)
 - BotoEnrere: la fletxa per tornar enrere
 - Desplegable: el nostre desplegable (el fem servir en lloc del select del navegador). Amb disabled es veu
-  el valor però no es pot canviar
+  el valor però no es pot canviar. Si una opció porta color, es mostra una rodona d'aquell color
 - EntitatImatge: la imatge d'una entitat. Si no en té, o la URL temporal ha caducat, mostra la inicial del nom
 - UsuariAvatar: la foto d'un usuari (a la capçalera i al compte). Si no en té, o la URL temporal ha caducat,
   mostra la inicial del nom. La mida i els colors els posa qui el fa servir
@@ -23,7 +23,14 @@ Components visuals de React reutilitzables
 - RutaAdmin: ruta pare de les pantalles d'una entitat que només poden veure els administradors
 - TipusPecaForm: el formulari d'un tipus de peça (el nom i els atributs, que poden ser Text, Número o Color).
   Funciona com PlantillaPerfilForm i en reaprofita els estils de les files
+- PecaForm: el formulari d'una peça de roba (nom, tipus, valors dels atributs del tipus, descripció i foto).
+  Als atributs de color es tria un color de la paleta. La foto es comprimeix però la puja la pantalla
 - LlistatTipusPeca: la finestra amb el llistat dels tipus de peça existents, per triar-ne un (per crear-ne un de nou a partir d'aquest)
+- TriaImatge (useTriaImatge): la finestra que pregunta si la imatge es vol afegir des de la galeria o des de la
+  càmera. Al mòbil, la càmera és la nativa, i a l'ordinador la finestra FotoCamera. Si no hi ha cap càmera,
+  s'obre directament la galeria. La imatge es comprimeix després com qualsevol altra.
+- FotoCamera: la finestra per fer una foto amb la webcam (es pot repetir la foto i canviar de càmera).
+  En tancar-la, apaga la càmera. Només funciona amb HTTPS o a localhost.
 - Formulari.css: els estils que comparteixen totes les pantalles amb formulari
 
 Els formularis només validen i avisen dels errors, no criden l'API.

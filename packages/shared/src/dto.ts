@@ -162,5 +162,30 @@ export type TipusPecaDadesDto = {
   atributs: { id: number | null; nom: string; tipus: TipusAtributPeca }[]
 }
 
-// Una peça de roba a l'inventari
-export type PecaResumDto = { id: number; nom: string; tipusId: number }
+// Un color de la paleta del vestuari de l'entitat. hex és #RRGGBB en majúscules.
+export type ColorDto = { id: number; nom: string; hex: string }
+
+// Un color quan es desa la paleta: sense id si és nou
+export type ColorDadesDto = { id: number | null; nom: string; hex: string }
+
+// Una peça de roba a l'inventari. imatgeUrl és una URL temporal, o null si no té foto.
+export type PecaResumDto = { id: number; nom: string; tipusId: number; imatgeUrl: string | null }
+
+// El valor d'un atribut del tipus de peça en una peça. Als atributs de color és l'id del color.
+export type ValorPecaDto = { atributId: number; valor: string }
+
+// Tot el que es veu d'una peça. creadaPer és el nom del perfil que la va crear (si encara existeix).
+export type PecaDetallDto = PecaResumDto & {
+  descripcio: string | null
+  tipusNom: string
+  creadaPer: string | null
+  valors: ValorPecaDto[]
+}
+
+// Les dades d'una peça quan es crea o s'edita. En editar-la, el tipus no pot canviar.
+export type PecaDadesDto = {
+  nom: string
+  descripcio: string
+  tipusId: number
+  valors: ValorPecaDto[]
+}

@@ -1,5 +1,6 @@
 // Llista dels tipus de peça de l'entitat (Camisa, Samarreta...), amb el cercador.
-// Els administradors en poden inserir un de nou: de zero o a partir d'un que ja existeix.
+// Els administradors en poden inserir un de nou (de zero o a partir d'un que ja existeix), i amb el
+// botó rodó d'arc de Sant Martí van a la paleta de colors del vestuari.
 
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -134,6 +135,12 @@ export default function TipusPeca() {
               Inserir tipus de peça
             </button>
           </div>
+          <Link
+            className="tipus-peca__colors"
+            to={`${base}/vestuari/colors`}
+            aria-label="Colors del vestuari"
+            title="Colors del vestuari"
+          />
         </div>
       )}
 

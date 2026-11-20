@@ -4,7 +4,8 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import "./Desplegable.css";
 
-export type OpcioDesplegable<T extends string> = { valor: T; etiqueta: string };
+// color (#RRGGBB) és opcional: si hi és, es mostra una rodona d'aquell color davant del text
+export type OpcioDesplegable<T extends string> = { valor: T; etiqueta: string; color?: string };
 
 type Props<T extends string> = {
   // Identificador del botó: perquè un <label htmlFor> el pugui etiquetar.
@@ -36,6 +37,7 @@ export default function Desplegable<T extends string>({
 
   const indexTriat = opcions.findIndex((o) => o.valor === valor);
   const etiquetaTriada = indexTriat >= 0 ? opcions[indexTriat].etiqueta : "";
+  const colorTriat = indexTriat >= 0 ? opcions[indexTriat].color : undefined;
 
   // Es tanca en clicar fora
   useEffect(() => {
@@ -123,6 +125,7 @@ export default function Desplegable<T extends string>({
           <span
             className={`desplegable__valor${etiquetaTriada ? "" : " desplegable__valor--buit"}`}
           >
+            {colorTriat && <Mostra color={colorTriat} />}
             {etiquetaTriada || placeholder}
           </span>
           <svg className="desplegable__fletxa" viewBox="0 0 20 12" aria-hidden="true" focusable="false">
@@ -151,6 +154,7 @@ export default function Desplegable<T extends string>({
                 onMouseEnter={() => setActiu(i)}
                 onClick={() => tria(i)}
               >
+                {o.color && <Mostra color={o.color} />}
                 {o.etiqueta}
               </li>
             ))}
@@ -159,4 +163,9 @@ export default function Desplegable<T extends string>({
       </div>
     </div>
   );
+}
+
+// Rodona del color d'una opció
+function Mostra({ color }: { color: string }) {
+  return <span className="desplegable__mostra" style={{ background: color }} aria-hidden="true" />;
 }

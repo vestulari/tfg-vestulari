@@ -2,6 +2,7 @@
 // Aquí es decideix què porta una entitat nova; entitatRepository només ho guarda.
 
 import type { EntitatNovaDto, Genere, ValorAtributDto } from '@tfg-vestulari/shared'
+import { colorsInicials, type ColorNou } from './colorFactory'
 import { tipusPecaInicials, type TipusPecaNou } from './tipusPecaFactory'
 
 // Tot el que es crea amb l'entitat. Els atributs bàsics del perfil (nom, edat i gènere) no hi són
@@ -25,10 +26,11 @@ export type EntitatNova = {
     valors: ValorAtributDto[]
   }
   tipusPeca: TipusPecaNou[]
+  colors: ColorNou[]
 }
 
 // Fabrica l'entitat nova a partir de les dades ja validades.
-// El creador sempre és administrador, i tota entitat comença amb els tipus de peça inicials.
+// El creador sempre és administrador, i tota entitat comença amb els tipus de peça i la paleta de colors inicials.
 export function fabricaEntitat(d: EntitatNovaDto): EntitatNova {
   return {
     entitat: {
@@ -41,5 +43,6 @@ export function fabricaEntitat(d: EntitatNovaDto): EntitatNova {
     atributsPerfil: d.atributs,
     perfilCreador: { ...d.perfil, esAdministrador: true },
     tipusPeca: tipusPecaInicials(),
+    colors: colorsInicials(),
   }
 }

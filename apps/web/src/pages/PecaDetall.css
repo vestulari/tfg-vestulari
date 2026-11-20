@@ -1,0 +1,177 @@
+/* Estils del detall d'una peça de roba */
+
+.peca-detall {
+  min-height: 100vh;
+  padding: 1.5rem 3rem 3rem;
+  background: #e6eef6;
+}
+
+.peca-detall__targeta {
+  max-width: 82rem;
+  margin: 2.5rem auto 0;
+  padding: 2.5rem 3.5rem 3rem;
+  border-radius: 2.5rem;
+  background: #f0f4f9;
+}
+
+.peca-detall__missatge { margin: 1.5rem 0 0; text-align: center; color: #3d3a36; }
+.peca-detall__avis { margin-top: 1.2rem; }
+
+/* La fletxa a l'esquerra, el nom centrat i el menú ⋯ a la dreta */
+.peca-detall__cap {
+  display: grid;
+  grid-template-columns: 5rem 1fr 5rem;
+  align-items: start;
+}
+
+.peca-detall__titol { grid-column: 2; text-align: center; }
+
+.peca-detall__nom {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+
+.peca-detall__codi { margin: 0.3rem 0 0; font-size: 0.95rem; color: #3d3a36; }
+
+.peca-detall__menu { position: relative; grid-column: 3; justify-self: end; }
+
+.peca-detall__punts {
+  padding: 0.3rem 0.6rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: #111;
+  font-size: 1.6rem;
+  letter-spacing: 0.1rem;
+  cursor: pointer;
+}
+
+.peca-detall__punts:hover { background: #e3ebf4; }
+.peca-detall__punts:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+.peca-detall__opcions {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  width: 19rem;
+  overflow: hidden;
+  border-radius: 1.6rem;
+  background: #fff;
+  box-shadow: 0 0.8rem 2rem rgba(0, 0, 0, 0.25);
+}
+
+.peca-detall__opcions > * {
+  padding: 0.9rem 1.2rem;
+  border: 0;
+  border-bottom: 1px solid #55595f;
+  background: #fff;
+  color: #111;
+  font: inherit;
+  font-size: 1.1rem;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.peca-detall__opcions > *:last-child { border-bottom: 0; }
+.peca-detall__opcions > *:hover:not(:disabled) { background: #eef3f9; }
+.peca-detall__opcions > *:disabled { color: #8a8f96; cursor: not-allowed; }
+.peca-detall__opcions > *:focus-visible { outline: 3px solid var(--blue); outline-offset: -3px; }
+.peca-detall__opcions > .peca-detall__opcio--perill { background: #f25c6e; font-weight: 700; }
+.peca-detall__opcions > .peca-detall__opcio--perill:hover { background: #e14b5e; }
+
+.peca-detall__properament {
+  margin-left: 0.4rem;
+  padding: 0.05rem 0.5rem;
+  border-radius: 999px;
+  background: #eef1f4;
+  font-size: 0.75rem;
+}
+
+/* Els camps a l'esquerra i la foto a la dreta */
+.peca-detall__cos {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 21rem;
+  gap: 2rem 3rem;
+  margin-top: 2.5rem;
+}
+
+.peca-detall__camps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+  gap: 1.3rem 2.5rem;
+  margin: 0;
+}
+
+.peca-detall__camp {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+}
+
+.peca-detall__camp dt { text-align: center; overflow-wrap: anywhere; }
+
+.peca-detall__camp dd {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0.9rem 1.2rem;
+  border-radius: 999px;
+  background: #fff;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.peca-detall__mostra {
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-right: 0.6rem;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 50%;
+}
+
+.peca-detall__subtitol { margin: 2rem 0 0.8rem 1.2rem; font-size: 1rem; font-weight: 400; }
+
+.peca-detall__descripcio {
+  min-height: 7rem;
+  margin: 0;
+  padding: 1.4rem 1.8rem;
+  border-radius: 2rem;
+  background: #fff;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.peca-detall__foto {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border: 1px solid #ccc;
+  background: #fff;
+  box-shadow: 0 0.4rem 1rem rgba(0, 0, 0, 0.08);
+}
+
+.peca-detall__foto img { width: 100%; height: 100%; object-fit: contain; }
+.peca-detall__sense-foto { color: #8a8f96; }
+
+@media (max-width: 1000px) {
+  .peca-detall__cos { grid-template-columns: 1fr; }
+  .peca-detall__foto { width: min(21rem, 100%); justify-self: center; order: -1; }
+}
+
+@media (max-width: 800px) {
+  .peca-detall { padding: 1rem 1rem 2rem; }
+  .peca-detall__targeta { margin-top: 1.25rem; padding: 1.5rem 1.25rem 2rem; border-radius: 2rem; }
+  .peca-detall__cap { grid-template-columns: 3.5rem 1fr 3.5rem; }
+  .peca-detall__opcions { width: min(19rem, calc(100vw - 3rem)); }
+  .peca-detall__camps { grid-template-columns: 1fr; }
+}

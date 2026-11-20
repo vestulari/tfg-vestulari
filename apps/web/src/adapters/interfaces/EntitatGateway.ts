@@ -19,6 +19,8 @@ export interface EntitatGateway {
   elimina(id: number): Promise<void>
   canviaImatge(id: number, imatge: File): Promise<EntitatDetallDto>
   treuImatge(id: number): Promise<EntitatDetallDto>
+  // La imatge mateixa (per posar-la a la fitxa tècnica de les peces)
+  fitxerImatge(id: number): Promise<Blob>
   administradors(id: number): Promise<AdministradorDto[]>
   passaCreador(id: number, perfilId: number): Promise<void>
   surt(id: number): Promise<void>

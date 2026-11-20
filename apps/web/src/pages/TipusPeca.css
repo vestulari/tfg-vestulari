@@ -62,6 +62,20 @@
 .tipus-peca__menu button:disabled { opacity: 0.5; cursor: not-allowed; }
 .tipus-peca__menu button:focus-visible { outline: 3px solid var(--blue); outline-offset: -3px; }
 
+/* Botó rodó d'arc de Sant Martí per anar als colors del vestuari */
+.tipus-peca__colors {
+  flex: none;
+  width: 3.4rem;
+  height: 3.4rem;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: conic-gradient(#e53935, #fb8c00, #fdd835, #43a047, #1e88e5, #8e24aa, #e53935);
+  box-shadow: 0 0.3rem 0.8rem rgba(0, 0, 0, 0.2);
+}
+
+.tipus-peca__colors:hover { filter: brightness(1.08); }
+.tipus-peca__colors:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
 @media (max-width: 800px) {
   .tipus-peca__contingut { padding-left: 0.5rem; }
   .tipus-peca__llista { grid-template-columns: 1fr; gap: 1rem; }

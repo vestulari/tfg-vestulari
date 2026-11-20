@@ -1,5 +1,5 @@
-// Inventari de vestuari de l'entitat: totes les peces de roba, amb el cercador i el filtre per tipus de peça.
-// Des d'aquí es va a la llista de tipus de peça.
+// Inventari de vestuari de l'entitat: totes les peces de roba (amb la foto), amb el cercador i el filtre
+// per tipus de peça. Clicant una peça se'n veu el detall. Els administradors en poden inserir de noves.
 
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -19,7 +19,7 @@ type Dades = { peces: PecaResumDto[]; tipus: TipusPecaResumDto[] };
 const TOTS = "tots";
 
 // Carrega les peces i els tipus alhora. El filtre per tipus i la cerca es fan al navegador.
-// Inserir una peça i el filtre avançat encara no tenen pantalla: surten desactivats amb "Properament".
+// El filtre avançat encara no té pantalla: surt desactivat.
 export default function Vestuari() {
   const entitat = useEntitat();
   const [dades, setDades] = useState<Dades | null>(null);
@@ -92,11 +92,13 @@ export default function Vestuari() {
         {visibles.length > 0 && (
           <ul className="vestuari__graella">
             {visibles.map((p) => (
-              <li key={p.id} className="vestuari__peca">
-                <span className="vestuari__foto" aria-hidden="true">
-                  <IconaPenjador />
-                </span>
-                <span className="vestuari__nom">{p.nom}</span>
+              <li key={p.id}>
+                <Link className="vestuari__peca" to={`${base}/vestuari/peces/${p.id}`}>
+                  <span className="vestuari__foto">
+                    {p.imatgeUrl ? <img src={p.imatgeUrl} alt="" loading="lazy" /> : <IconaPenjador />}
+                  </span>
+                  <span className="vestuari__nom">{p.nom}</span>
+                </Link>
               </li>
             ))}
           </ul>
@@ -105,11 +107,10 @@ export default function Vestuari() {
 
       <div className="vestuari__peu">
         {entitat.perfil.esAdministrador && (
-          <button type="button" className="vestuari__boto" disabled>
+          <Link className="vestuari__boto" to={`${base}/vestuari/peces/nova`}>
             <span className="vestuari__mes" aria-hidden="true">+</span>
             Inserir peça de roba
-            <span className="vestuari__properament">Properament</span>
-          </button>
+          </Link>
         )}
         <Link className="vestuari__boto" to={`${base}/vestuari/tipus`}>
           Veure tipus de peça
@@ -119,7 +120,7 @@ export default function Vestuari() {
   );
 }
 
-// Penjador de roba, mentre les peces encara no tenen foto
+// Penjador de roba, per a les peces que no tenen foto
 function IconaPenjador() {
   return (
     <svg viewBox="0 0 56 40" focusable="false">

@@ -89,7 +89,7 @@ export async function detallPerUsuari(
 }
 
 // Guarda l'entitat nova que ha muntat entitatFactory, tot en una transacció: o es crea tot (entitat,
-// plantilla de perfil, perfil del creador amb els seus valors i tipus de peça), o no es crea res.
+// plantilla de perfil, perfil del creador amb els seus valors, tipus de peça i colors), o no es crea res.
 // Què porta una entitat nova ho decideix la fàbrica; aquí només es guarda.
 export function crea(sql: Sql, userId: string, n: EntitatNova): Promise<number> {
   return sql.begin(async (tx) => {
@@ -136,6 +136,9 @@ export function crea(sql: Sql, userId: string, n: EntitatNova): Promise<number> 
     }
 
     for (const t of n.tipusPeca) await creaTipusPeca(tx, entitat.id, t)
+    for (const c of n.colors) {
+      await tx`insert into public.colors_vestuari (entitat_id, nom, hex) values (${entitat.id}, ${c.nom}, ${c.hex})`
+    }
 
     return entitat.id
   })
@@ -165,7 +168,7 @@ export function canviaImatge(sql: Sql, id: number, clau: string | null): Promise
   })
 }
 
-// Esborra l'entitat. Tot el que en depèn (perfils, invitacions, roba, espectacles…) s'esborra en cascada.
+// Esborra l'entitat. Tot el que en depèn (perfils, invitacions, roba, colors, espectacles…) s'esborra en cascada.
 export async function elimina(sql: Sql, id: number): Promise<void> {
   await sql`delete from public.entitats where id = ${id}`
 }

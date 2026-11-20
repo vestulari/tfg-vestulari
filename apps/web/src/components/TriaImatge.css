@@ -1,0 +1,42 @@
+/* Estils de la finestra per triar d'on s'afegeix una imatge */
+
+.tria-imatge { width: min(30rem, calc(100vw - 2rem)); }
+
+.tria-imatge__opcions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.tria-imatge__opcio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 1.4rem 1rem;
+  border: 0;
+  border-radius: 1.5rem;
+  background: #f1f5fa;
+  color: #111;
+  font: inherit;
+  font-size: 1.05rem;
+  cursor: pointer;
+}
+
+.tria-imatge__opcio:hover { background: #e3ebf4; }
+.tria-imatge__opcio:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+.tria-imatge__icona { width: 3rem; height: 3rem; }
+
+/* Els inputs de fitxer no es veuen: els obren les opcions de la finestra */
+.tria-imatge__fitxer {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 420px) {
+  .tria-imatge__opcions { grid-template-columns: 1fr; }
+}

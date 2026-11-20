@@ -1,0 +1,89 @@
+/* Estils de la paleta de colors del vestuari */
+
+.colors {
+  max-width: 48rem;
+  padding: 2.5rem 3rem 3rem;
+  border-radius: 2.5rem;
+  background: #f0f4f9;
+}
+
+.colors__titol {
+  margin: 0 0 1.5rem;
+  font-size: clamp(1.8rem, 3.6vw, 2.8rem);
+  font-weight: 400;
+  text-align: center;
+}
+
+.colors__info { margin: 0; line-height: 1.5; text-align: center; color: #3d3a36; }
+
+.colors__llista { display: grid; gap: 0.9rem; margin: 0; padding: 0; list-style: none; }
+
+/* La rodona del color, el nom, el codi i el botó de treure */
+.colors__fila {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr) 5.5rem 2.6rem;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* La rodona obre el selector de color del navegador (l'input no es veu) */
+.colors__mostra {
+  position: relative;
+  width: 3rem;
+  height: 3rem;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.colors__mostra input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.colors__mostra:focus-within { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+.colors .formulari__input,
+.colors .colors__treu { background: #fff; }
+
+.colors__hex { font-family: monospace; font-size: 0.95rem; color: #55595f; }
+
+.colors__treu {
+  width: 2.6rem;
+  height: 2.6rem;
+  border: 0;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.colors__treu:hover { background: #f4606f; }
+.colors__treu:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+.colors__afegeix {
+  align-self: center;
+  padding: 0.8rem 2rem;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #111;
+  font: inherit;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.colors__afegeix:hover:not(:disabled) { background: #eaf0f7; }
+.colors__afegeix:disabled { opacity: 0.5; cursor: not-allowed; }
+.colors__afegeix:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
+@media (max-width: 800px) {
+  .colors { padding: 1.5rem 1.25rem 2rem; border-radius: 2rem; }
+  .colors__fila { grid-template-columns: 2.6rem minmax(0, 1fr) 2.6rem; }
+  .colors__mostra { width: 2.6rem; height: 2.6rem; }
+  .colors__hex { display: none; }
+}

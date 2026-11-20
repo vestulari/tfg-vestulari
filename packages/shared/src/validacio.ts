@@ -3,7 +3,11 @@ import { ATRIBUTS_BASICS, GENERES, IMATGE_TIPUS, TIPUS_ATRIBUT_PECA } from './co
 import type {
   AtributDto,
   AtributPecaDto,
+  ColorDadesDto,
+  ColorDto,
+  PecaDadesDto,
   TipusPecaDadesDto,
+  ValorPecaDto,
   AtributNouDto,
   AtributPlantillaDto,
   PerfilDadesDto,
@@ -423,6 +427,146 @@ export function validaTipusPeca(
   const error = errorTipusPeca(cos.nom, atributs)
   if (error) return invalid(error)
   return { ok: true, dades: { nom: cos.nom, atributs } }
+}
+
+// ---------- Peces de roba ----------
+export const PECA_NOM_MAX = 60
+
+// Codi d'una peça: #TTPPP, l'id del tipus de peça (2 xifres com a mínim) i el de la peça (3 com a mínim).
+// Si els ids són més grans, el codi s'allarga: mai es talla res. Com que el tipus d'una peça no canvia,
+// el codi tampoc.
+export function codiPeca(tipusId: number, pecaId: number): string {
+  return `#${String(tipusId).padStart(2, '0')}${String(pecaId).padStart(3, '0')}`
+}
+
+export const errorNomPeca = (nom: string) =>
+  errorNomText(nom, 'El nom de la peça és obligatori.', 'El nom de la peça', PECA_NOM_MAX)
+
+// El valor d'un atribut d'una peça. És opcional, però si hi és ha d'encaixar amb el tipus de l'atribut:
+// els números han de ser enters, i els colors, l'id d'un color de la paleta de l'entitat.
+export function errorValorPeca(
+  atribut: { nom: string; tipus: AtributPecaDto['tipus'] },
+  valor: string,
+  colors: ColorDto[]
+): string | null {
+  if (atribut.tipus !== 'color') return errorValor(atribut.nom, atribut.tipus, valor)
+  const v = valor.trim()
+  if (v === '' || colors.some((c) => String(c.id) === v)) return null
+  return `El color de «${atribut.nom}» ja no existeix. Torna'l a triar.`
+}
+
+// Comprova el nom, la descripció i els valors d'una peça amb els atributs del seu tipus
+export function errorPeca(
+  p: { nom: string; descripcio: string; valors: ValorPecaDto[] },
+  atributs: AtributPecaDto[],
+  colors: ColorDto[]
+): string | null {
+  const err = errorNomPeca(p.nom) ?? errorDescripcio(p.descripcio)
+  if (err) return err
+
+  const vistos = new Set<number>()
+  for (const v of p.valors) {
+    const def = atributs.find((a) => a.id === v.atributId)
+    if (!def) return 'Algun atribut ja no existeix. Torna a carregar la pàgina.'
+    if (vistos.has(def.id)) return `El valor de «${def.nom}» està repetit.`
+    vistos.add(def.id)
+    const e = errorValorPeca(def, v.valor, colors)
+    if (e) return e
+  }
+  return null
+}
+
+// Comprova el cos d'un POST o PUT d'una peça, amb els atributs del seu tipus i la paleta de l'entitat.
+// Qui la crida ja ha comprovat que el tipus (tipusId) existeix. Els valors buits no es guarden.
+export function validaPeca(
+  cos: unknown,
+  atributs: AtributPecaDto[],
+  colors: ColorDto[]
+): Resultat<PecaDadesDto> {
+  if (!esObjecte(cos)) return invalid('Dades no vàlides.')
+  const { nom, tipusId } = cos
+  const descripcio = cos.descripcio === undefined || cos.descripcio === null ? '' : cos.descripcio
+  if (
+    typeof nom !== 'string' ||
+    typeof descripcio !== 'string' ||
+    typeof tipusId !== 'number' ||
+    !Array.isArray(cos.valors)
+  ) {
+    return invalid('La peça no és vàlida.')
+  }
+
+  const valors: ValorPecaDto[] = []
+  for (const v of cos.valors) {
+    if (!esObjecte(v) || typeof v.atributId !== 'number' || typeof v.valor !== 'string') {
+      return invalid('Algun valor no és vàlid.')
+    }
+    valors.push({ atributId: v.atributId, valor: v.valor })
+  }
+
+  const error = errorPeca({ nom, descripcio, valors }, atributs, colors)
+  if (error) return invalid(error)
+
+  return {
+    ok: true,
+    dades: {
+      nom,
+      descripcio: descripcio.trim(),
+      tipusId,
+      valors: valors.filter((v) => v.valor.trim() !== '').map((v) => ({ ...v, valor: v.valor.trim() })),
+    },
+  }
+}
+
+// ---------- Colors del vestuari ----------
+export const COLOR_NOM_MAX = 30
+export const COLORS_MAX = 60
+
+export const errorNomColor = (nom: string) =>
+  errorNomText(nom, 'El nom del color és obligatori.', 'El nom del color', COLOR_NOM_MAX)
+
+// Un color ha de ser #RRGGBB
+export const esHex = (hex: string) => /^#[0-9a-fA-F]{6}$/.test(hex)
+
+// Comprova la paleta: que no hi hagi massa colors, que els noms i els codis siguin vàlids i que no
+// se'n repeteixi cap nom (sense mirar majúscules ni accents)
+export function errorColors(colors: { nom: string; hex: string }[]): string | null {
+  if (colors.length > COLORS_MAX) return `No pots tenir més de ${COLORS_MAX} colors.`
+  const vistos = new Set<string>()
+  for (const c of colors) {
+    const err = errorNomColor(c.nom)
+    if (err) return err
+    if (!esHex(c.hex)) return `El codi del color «${c.nom}» no és vàlid.`
+    const k = clau(c.nom)
+    if (vistos.has(k)) return `El color «${c.nom}» està repetit.`
+    vistos.add(k)
+  }
+  return null
+}
+
+// Comprova el cos d'un PUT de la paleta. Els colors amb id han de ser dels que ja existeixen.
+// Els codis es guarden en majúscules.
+export function validaColors(cos: unknown, existents: ColorDto[]): Resultat<ColorDadesDto[]> {
+  if (!esObjecte(cos) || !Array.isArray(cos.colors)) return invalid('Els colors no són vàlids.')
+
+  const colors: ColorDadesDto[] = []
+  const idsVistos = new Set<number>()
+  for (const c of cos.colors) {
+    if (!esObjecte(c) || typeof c.nom !== 'string' || typeof c.hex !== 'string') {
+      return invalid('Algun color no és vàlid.')
+    }
+    let id: number | null = null
+    if (c.id !== null && c.id !== undefined) {
+      const vell = typeof c.id === 'number' ? existents.find((e) => e.id === c.id) : undefined
+      if (!vell || idsVistos.has(vell.id)) return invalid('Algun color no és vàlid.')
+      idsVistos.add(vell.id)
+      id = vell.id
+    }
+    colors.push({ id, nom: c.nom, hex: c.hex.toUpperCase() })
+  }
+
+  const error = errorColors(colors)
+  if (error) return invalid(error)
+  return { ok: true, dades: colors }
 }
 
 // ---------- Correu ----------

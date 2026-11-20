@@ -5,13 +5,13 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
   DESCRIPCIO_MAX,
   ENTITAT_NOM_MAX,
-  IMATGE_TIPUS,
   errorDataCreacio,
   errorDescripcio,
   errorNomEntitat,
 } from "@tfg-vestulari/shared";
 import { filtraEnter } from "../lib/enters";
 import { comprimeix } from "../lib/imatges";
+import { useTriaImatge } from "./TriaImatge";
 import "./Formulari.css";
 import "./EntitatForm.css";
 
@@ -112,23 +112,22 @@ export default function EntitatForm({
     canvia({ imatge: imatgeActual ? "treu" : null });
   }
 
+  // La finestra per triar si la imatge ve de la galeria o de la càmera
+  const triador = useTriaImatge({ camera: "posterior", onImatge: (f) => void triaImatge(f) });
+
   const missatge = error ?? errorServidor;
 
   return (
     <form className="formulari" onSubmit={envia} noValidate>
       <div className="entitat-form__dalt">
         <div className="entitat-form__columna-imatge">
-          {/* Tot el requadre obre el selector de fitxers */}
-          <label className="entitat-form__imatge">
-            <input
-              className="entitat-form__fitxer"
-              type="file"
-              accept={IMATGE_TIPUS.join(",")}
-              onChange={(e) => {
-                void triaImatge(e.target.files?.[0]);
-                e.target.value = ""; // perquè es pugui tornar a triar el mateix fitxer
-              }}
-            />
+          {/* Tot el requadre obre la finestra per triar d'on ve la imatge */}
+          <button
+            type="button"
+            className="entitat-form__imatge"
+            disabled={comprimint}
+            onClick={triador.obre}
+          >
             {comprimint ? (
               <span>Preparant la imatge…</span>
             ) : imatgeVisible ? (
@@ -149,7 +148,8 @@ export default function EntitatForm({
                 <span>Insereix imatge</span>
               </>
             )}
-          </label>
+          </button>
+          {triador.elements}
           {imatgeVisible && !comprimint && (
             <button type="button" className="entitat-form__treu" onClick={treuImatge}>
               Treure la imatge

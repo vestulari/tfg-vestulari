@@ -18,7 +18,7 @@ import { fabricaEntitat } from '../factories/entitatFactory'
 import * as entitatRepo from '../repositories/entitatRepository'
 import * as plantillaRepo from '../repositories/plantillaRepository'
 import { perfils } from './perfils'
-import { peces, tipusPeca } from './vestuari'
+import { colors, peces, tipusPeca } from './vestuari'
 
 export const entitats = new Hono<Env>()
 
@@ -30,6 +30,7 @@ entitats.use('/:id/*', membre)
 entitats.route('/:id/perfils', perfils)
 entitats.route('/:id/tipus-peca', tipusPeca)
 entitats.route('/:id/peces', peces)
+entitats.route('/:id/colors', colors)
 
 // Crea una entitat nova, amb la plantilla de perfil, el perfil del creador i els tipus de peça inicials.
 entitats.post('/', async (c) => {
@@ -89,6 +90,12 @@ entitats.put('/:id/imatge', nomesAdmin, async (c) => {
   }
   await imatges.esborra(c.env, vella)
   return c.json(await detallAmbUrl(c, id))
+})
+
+// La imatge de l'entitat mateixa (els bytes), per posar-la a la fitxa tècnica de les peces. La veuen tots els membres.
+entitats.get('/:id/imatge/fitxer', async (c) => {
+  const r = await imatges.fitxer(c.env, c.get('entitat').imatgeClau)
+  return r ?? c.json({ error: "L'entitat no té imatge." }, 404)
 })
 
 // Treu la imatge de l'entitat (es tornarà a veure la inicial). Només ho poden fer els administradors.

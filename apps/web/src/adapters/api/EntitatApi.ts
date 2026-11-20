@@ -7,7 +7,7 @@ import type {
   EntitatDetallDto,
   EntitatResumDto,
 } from '@tfg-vestulari/shared'
-import { api } from './ApiClient'
+import { api, apiFitxer } from './ApiClient'
 import type { EntitatGateway } from '../interfaces/EntitatGateway'
 
 export const entitatApi: EntitatGateway = {
@@ -24,6 +24,7 @@ export const entitatApi: EntitatGateway = {
     return api<EntitatDetallDto>(`/entitats/${id}/imatge`, { method: 'PUT', body: cos })
   },
   treuImatge: (id) => api<EntitatDetallDto>(`/entitats/${id}/imatge`, { method: 'DELETE' }),
+  fitxerImatge: (id) => apiFitxer(`/entitats/${id}/imatge/fitxer`),
   administradors: (id) => api<AdministradorDto[]>(`/entitats/${id}/administradors`),
   passaCreador: (id, perfilId) =>
     api<void>(`/entitats/${id}/creador`, { method: 'POST', body: JSON.stringify({ perfilId }) }),

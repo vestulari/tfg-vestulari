@@ -16,7 +16,11 @@ Hi ha un fitxer per cada cosa de la base de dades:
   definicions_atribut_roba). Desar funciona com la plantilla de perfil. Eliminar no deixa si hi ha alguna peça
   d'aquell tipus. creaAmb serveix perquè entitatRepository guardi els tipus inicials dins de la transacció
   de crear l'entitat.
-- pecaRepository.ts: llistar les peces de roba de l'inventari.
+- pecaRepository.ts: llistar, veure, crear, editar i eliminar peces de roba, amb els valors dels atributs, i
+  canviar-ne la foto. En editar, els valors es tornen a escriure sencers (el tipus no canvia mai).
+- colorRepository.ts: llistar i desar la paleta de colors del vestuari. Desar funciona com la plantilla de perfil,
+  però si algun color que es treu el fa servir una peça, no es desa res i en retorna els noms.
+  Les peces guarden l'id del color, així reanomenar-lo o canviar-ne el to afecta totes les peces.
 
 Algunes normes que seguim:
 - Totes les funcions reben la connexió (sql) primer, i després l'usuari si els cal.
