@@ -37,12 +37,13 @@ async function nomRepetit(c: Context<Env>, d: TipusPecaDadesDto, excepte?: numbe
   return tots.some((t) => t.id !== excepte && mateixNom(t.nom, d.nom))
 }
 
-// Llista dels tipus de peça
+// Llista dels tipus de peça, cadascun amb els seus atributs.
+// Així el frontend en té prou amb una crida per a tot el vestuari, i no n'ha de demanar cap detall.
 tipusPeca.get('/', async (c) => {
-  return c.json(await tipusPecaRepo.llista(c.get('sql'), c.get('entitat').id))
+  return c.json(await tipusPecaRepo.llistaAmbAtributs(c.get('sql'), c.get('entitat').id))
 })
 
-// Crea un tipus de peça nou (només administradors)
+// Crea un tipus de peça nou (només administradors). Retorna el tipus ja creat, amb els atributs.
 tipusPeca.post('/', nomesAdmin, async (c) => {
   const cos = await llegeixCos(c)
   if (cos === undefined) return c.json({ error: 'Cos de la petició no vàlid' }, 400)
@@ -52,7 +53,7 @@ tipusPeca.post('/', nomesAdmin, async (c) => {
   if (await nomRepetit(c, r.dades)) return c.json({ error: NOM_REPETIT }, 409)
 
   const id = await tipusPecaRepo.crea(c.get('sql'), c.get('entitat').id, r.dades)
-  return c.json({ id }, 201)
+  return c.json(await tipusPecaRepo.detall(c.get('sql'), c.get('entitat').id, id), 201)
 })
 
 // Un tipus de peça amb els seus atributs
@@ -149,13 +150,14 @@ peces.get('/', async (c) => {
 })
 
 // Crea una peça nova (només administradors). La foto es puja després, amb PUT /:pecaId/imatge.
+// Retorna la peça ja creada.
 peces.post('/', nomesAdmin, async (c) => {
   const r = await llegeixPeca(c)
   if (!r.ok) return r.resposta
 
   const entitat = c.get('entitat')
   const id = await pecaRepo.crea(c.get('sql'), entitat.id, entitat.perfil.id, r.dades)
-  return c.json({ id }, 201)
+  return c.json(await detallAmbUrl(c, id), 201)
 })
 
 // Detall d'una peça

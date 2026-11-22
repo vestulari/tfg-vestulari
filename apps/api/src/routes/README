@@ -16,15 +16,20 @@ Cada fitxer és un router de Hono, i tots es munten a index.ts:
 - perfils.ts: penja d'entitats.ts, a /entitats/:id/perfils. Llistar, inserir i editar perfils, i compartir-los
   (enviar una invitació a un correu), cancel·lar la invitació o descompartir-los. Tot això només els
   administradors. El detall d'un perfil el poden veure els administradors, i cadascú el seu ("El meu perfil").
+  Totes les accions retornen el perfil ja actualitzat, perquè el frontend no l'hagi de tornar a demanar.
 - vestuari.ts: penja d'entitats.ts. Tot ho poden mirar els membres; crear, canviar i eliminar, només els administradors.
   - Tipus de peça (/entitats/:id/tipus-peca): no es pot repetir el nom (sense mirar majúscules ni accents), ni
-    eliminar-ne un si hi ha peces d'aquell tipus (409).
+    eliminar-ne un si hi ha peces d'aquell tipus (409). La llista ja porta els atributs de cada tipus, perquè
+    amb una sola crida el frontend en tingui prou per a tot el vestuari.
   - Peces (/entitats/:id/peces): llistar (amb la URL de la foto), veure, crear, editar i eliminar. Els valors es
     validen amb els atributs del tipus i, als de color, amb la paleta. El tipus d'una peça no es pot canviar.
     La foto va a /:pecaId/imatge (PUT multipart o DELETE) i es guarda a entitats/{id}/peces/{pecaId}/.
     /:pecaId/imatge/fitxer retorna la foto mateixa, per posar-la a la fitxa tècnica (les URL signades no tenen CORS).
   - Colors (/entitats/:id/colors): la paleta del vestuari. Es desa sencera, i no es pot treure un color que faci
     servir alguna peça (409).
+
+Per gastar menys crides: crear i editar retornen sempre l'objecte sencer (no només l'id), i així el frontend
+no l'ha de tornar a demanar.
 
 Les imatges: els repositoris retornen la clau de la imatge, i la ruta la canvia per una URL temporal
 (amb ambUrl o urlImatge de lib/imatges.ts) just abans de respondre.

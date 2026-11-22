@@ -11,16 +11,16 @@ export const perfilApi: PerfilGateway = {
   llista: (entitatId) => api<PerfilResumDto[]>(base(entitatId)),
   detall: (entitatId, perfilId) => api<PerfilDetallDto>(`${base(entitatId)}/${perfilId}`),
   crea: (entitatId, dades) =>
-    api<{ id: number }>(base(entitatId), { method: 'POST', body: JSON.stringify(dades) }),
+    api<PerfilDetallDto>(base(entitatId), { method: 'POST', body: JSON.stringify(dades) }),
   edita: (entitatId, perfilId, dades) =>
-    api<void>(`${base(entitatId)}/${perfilId}`, { method: 'PUT', body: JSON.stringify(dades) }),
+    api<PerfilDetallDto>(`${base(entitatId)}/${perfilId}`, { method: 'PUT', body: JSON.stringify(dades) }),
   comparteix: (entitatId, perfilId, email) =>
     api<ComparticioDto>(`${base(entitatId)}/${perfilId}/invitacio`, {
       method: 'POST',
       body: JSON.stringify({ email }),
     }),
   cancelaInvitacio: (entitatId, perfilId) =>
-    api<void>(`${base(entitatId)}/${perfilId}/invitacio`, { method: 'DELETE' }),
+    api<PerfilDetallDto>(`${base(entitatId)}/${perfilId}/invitacio`, { method: 'DELETE' }),
   descomparteix: (entitatId, perfilId) =>
-    api<void>(`${base(entitatId)}/${perfilId}/usuari`, { method: 'DELETE' }),
+    api<PerfilDetallDto>(`${base(entitatId)}/${perfilId}/usuari`, { method: 'DELETE' }),
 }

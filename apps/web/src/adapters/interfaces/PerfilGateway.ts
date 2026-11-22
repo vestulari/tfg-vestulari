@@ -11,9 +11,10 @@ import type {
 export interface PerfilGateway {
   llista(entitatId: number): Promise<PerfilResumDto[]>
   detall(entitatId: number, perfilId: number): Promise<PerfilDetallDto>
-  crea(entitatId: number, dades: PerfilDadesDto): Promise<{ id: number }>
-  edita(entitatId: number, perfilId: number, dades: PerfilDadesDto): Promise<void>
+  // Les accions dels administradors retornen el perfil ja actualitzat
+  crea(entitatId: number, dades: PerfilDadesDto): Promise<PerfilDetallDto>
+  edita(entitatId: number, perfilId: number, dades: PerfilDadesDto): Promise<PerfilDetallDto>
   comparteix(entitatId: number, perfilId: number, email: string): Promise<ComparticioDto>
-  cancelaInvitacio(entitatId: number, perfilId: number): Promise<void>
-  descomparteix(entitatId: number, perfilId: number): Promise<void>
+  cancelaInvitacio(entitatId: number, perfilId: number): Promise<PerfilDetallDto>
+  descomparteix(entitatId: number, perfilId: number): Promise<PerfilDetallDto>
 }

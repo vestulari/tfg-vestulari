@@ -141,8 +141,9 @@ export type PerfilDadesDto = {
   valors: ValorPerfilDto[]
 }
 
-// Resposta de compartir un perfil: si el correu té compte, s'envia la invitació
-export type ComparticioDto = { enviada: boolean; missatge: string }
+// Resposta de compartir un perfil: si el correu té compte, s'envia la invitació.
+// Si s'ha enviat, porta el perfil actualitzat (així no s'ha de tornar a demanar).
+export type ComparticioDto = { enviada: boolean; missatge: string; perfil?: PerfilDetallDto }
 // ---------- Vestuari ----------
 // Tipus que pot tenir un atribut d'un tipus de peça (els de perfil, més el color)
 export type TipusAtributPeca = 'string' | 'integer' | 'color'

@@ -20,6 +20,28 @@ export async function llista(sql: Sql, entitatId: number): Promise<TipusPecaResu
   `
 }
 
+// Retorna tots els tipus de peça de l'entitat (per ordre alfabètic), cadascun amb els seus atributs.
+// Són dues consultes en total, i no una per tipus.
+export async function llistaAmbAtributs(sql: Sql, entitatId: number): Promise<TipusPecaDto[]> {
+  const [tipus, atributs] = await Promise.all([
+    llista(sql, entitatId),
+    sql<(AtributPecaDto & { plantilla_id: number })[]>`
+      select d.id, d.nom, d.tipus, d.plantilla_id
+      from public.definicions_atribut_roba d
+      join public.plantilles_roba p on p.id = d.plantilla_id
+      where p.entitat_id = ${entitatId}
+      order by d.id
+    `,
+  ])
+  return tipus.map((t) => ({
+    id: t.id,
+    nom: t.nom,
+    atributs: atributs
+      .filter((a) => a.plantilla_id === t.id)
+      .map((a) => ({ id: a.id, nom: a.nom, tipus: a.tipus })),
+  }))
+}
+
 // Retorna un tipus de peça amb els seus atributs (per ordre de creació), o null si no és de l'entitat
 export async function detall(sql: Sql, entitatId: number, id: number): Promise<TipusPecaDto | null> {
   const [tipus] = await sql<TipusPecaResumDto[]>`

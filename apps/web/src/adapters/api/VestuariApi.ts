@@ -5,7 +5,6 @@ import type {
   PecaDetallDto,
   PecaResumDto,
   TipusPecaDto,
-  TipusPecaResumDto,
 } from '@tfg-vestulari/shared'
 import { api, apiFitxer } from './ApiClient'
 import type { VestuariGateway } from '../interfaces/VestuariGateway'
@@ -15,10 +14,9 @@ const tipus = (entitatId: number) => `/entitats/${entitatId}/tipus-peca`
 const peces = (entitatId: number) => `/entitats/${entitatId}/peces`
 
 export const vestuariApi: VestuariGateway = {
-  tipus: (entitatId) => api<TipusPecaResumDto[]>(tipus(entitatId)),
-  tipusDetall: (entitatId, tipusId) => api<TipusPecaDto>(`${tipus(entitatId)}/${tipusId}`),
+  tipus: (entitatId) => api<TipusPecaDto[]>(tipus(entitatId)),
   creaTipus: (entitatId, dades) =>
-    api<{ id: number }>(tipus(entitatId), { method: 'POST', body: JSON.stringify(dades) }),
+    api<TipusPecaDto>(tipus(entitatId), { method: 'POST', body: JSON.stringify(dades) }),
   desaTipus: (entitatId, tipusId, dades) =>
     api<TipusPecaDto>(`${tipus(entitatId)}/${tipusId}`, { method: 'PUT', body: JSON.stringify(dades) }),
   eliminaTipus: (entitatId, tipusId) =>
@@ -27,7 +25,7 @@ export const vestuariApi: VestuariGateway = {
   peces: (entitatId) => api<PecaResumDto[]>(peces(entitatId)),
   peca: (entitatId, pecaId) => api<PecaDetallDto>(`${peces(entitatId)}/${pecaId}`),
   creaPeca: (entitatId, dades) =>
-    api<{ id: number }>(peces(entitatId), { method: 'POST', body: JSON.stringify(dades) }),
+    api<PecaDetallDto>(peces(entitatId), { method: 'POST', body: JSON.stringify(dades) }),
   editaPeca: (entitatId, pecaId, dades) =>
     api<PecaDetallDto>(`${peces(entitatId)}/${pecaId}`, { method: 'PUT', body: JSON.stringify(dades) }),
   eliminaPeca: (entitatId, pecaId) => api<void>(`${peces(entitatId)}/${pecaId}`, { method: 'DELETE' }),

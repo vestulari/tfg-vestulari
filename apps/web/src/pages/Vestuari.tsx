@@ -3,44 +3,49 @@
 
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import type { PecaResumDto, TipusPecaResumDto } from "@tfg-vestulari/shared";
+import type { PecaResumDto } from "@tfg-vestulari/shared";
 import { vestuariApi } from "../adapters/api/VestuariApi";
 import BotoEnrere from "../components/BotoEnrere";
 import Capcalera from "../components/Capcalera";
 import Cercador from "../components/Cercador";
 import Desplegable from "../components/Desplegable";
+import { useTipusPeca } from "../context/CatalegsContext";
 import { useEntitat } from "../context/EntitatContext";
 import { coincideix } from "../lib/cerca";
 import "./Vestuari.css";
 
-type Dades = { peces: PecaResumDto[]; tipus: TipusPecaResumDto[] };
-
 // Valor del desplegable quan no es filtra per cap tipus
 const TOTS = "tots";
 
-// Carrega les peces i els tipus alhora. El filtre per tipus i la cerca es fan al navegador.
+// Demana les peces a l'API, i els tipus surten dels catàlegs de l'entitat (ja carregats si s'han fet servir).
+// El filtre per tipus i la cerca es fan al navegador.
 // El filtre avançat encara no té pantalla: surt desactivat.
 export default function Vestuari() {
   const entitat = useEntitat();
-  const [dades, setDades] = useState<Dades | null>(null);
-  const [error, setError] = useState(false);
+  const tipus = useTipusPeca();
+  const [peces, setPeces] = useState<PecaResumDto[] | null>(null);
+  const [errorPeces, setErrorPeces] = useState(false);
   const [cerca, setCerca] = useState("");
   const [tipusTriat, setTipusTriat] = useState<string>(TOTS);
 
   useEffect(() => {
     let cancelat = false;
-    Promise.all([vestuariApi.peces(entitat.id), vestuariApi.tipus(entitat.id)])
-      .then(([peces, tipus]) => {
-        if (!cancelat) setDades({ peces, tipus });
+    vestuariApi
+      .peces(entitat.id)
+      .then((p) => {
+        if (!cancelat) setPeces(p);
       })
       .catch((e) => {
         console.error("Error carregant el vestuari", e);
-        if (!cancelat) setError(true);
+        if (!cancelat) setErrorPeces(true);
       });
     return () => {
       cancelat = true;
     };
   }, [entitat.id]);
+
+  const dades = peces && tipus.dades ? { peces, tipus: tipus.dades } : null;
+  const error = errorPeces || tipus.error;
 
   const opcionsTipus = [
     { valor: TOTS, etiqueta: "Tots els tipus" },
