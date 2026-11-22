@@ -1,4 +1,4 @@
-// Barra de cerca amb la lupa. La fan servir les invitacions i la llista d'intèrprets.
+// Barra de cerca amb la lupa. La fan servir les invitacions, la llista d'intèrprets i el vestuari.
 
 import "./Cercador.css";
 

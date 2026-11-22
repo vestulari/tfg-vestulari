@@ -2,7 +2,7 @@ Capa d'accés a les dades (on es fan les sentències SQL)
 
 Hi ha un fitxer per cada cosa de la base de dades:
 - usuariRepository.ts: buscar un usuari i canviar-li el nom o la foto
-- entitatRepository.ts: llistar les entitats d'un usuari, veure'n una, crear-ne una de nova, canviar-ne les
+- entitatRepository.ts: llistar les entitats d'un usuari, veure'n una, guardar-ne una de nova (la que munta factories/entitatFactory.ts), canviar-ne les
   dades i la imatge, eliminar-la, passar el rol de creador i sortir-ne. Sortir vol dir que el perfil queda sense usuari
   (lliure) i la invitació que s'havia acceptat passa a rebutjada, perquè el puguin tornar a convidar.
 - invitacioRepository.ts: comptar, llistar, obrir, acceptar i rebutjar invitacions
@@ -12,6 +12,15 @@ Hi ha un fitxer per cada cosa de la base de dades:
   Compartir busca el correu a auth.users: si no hi és, no s'envia res. Si la persona ja havia rebutjat
   aquell perfil, es reaprofita la mateixa invitació (torna a estar rebuda).
   Al perfil del creador no se li pot treure l'admin ni es pot descompartir, i ningú pot descompartir el seu.
+- tipusPecaRepository.ts: llistar, veure, crear, desar i eliminar tipus de peça (taules plantilles_roba i
+  definicions_atribut_roba). Desar funciona com la plantilla de perfil. Eliminar no deixa si hi ha alguna peça
+  d'aquell tipus. creaAmb serveix perquè entitatRepository guardi els tipus inicials dins de la transacció
+  de crear l'entitat.
+- pecaRepository.ts: llistar, veure, crear, editar i eliminar peces de roba, amb els valors dels atributs, i
+  canviar-ne la foto. En editar, els valors es tornen a escriure sencers (el tipus no canvia mai).
+- colorRepository.ts: llistar i desar la paleta de colors del vestuari. Desar funciona com la plantilla de perfil,
+  però si algun color que es treu el fa servir una peça, no es desa res i en retorna els noms.
+  Les peces guarden l'id del color, així reanomenar-lo o canviar-ne el to afecta totes les peces.
 
 Algunes normes que seguim:
 - Totes les funcions reben la connexió (sql) primer, i després l'usuari si els cal.

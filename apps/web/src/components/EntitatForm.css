@@ -37,15 +37,10 @@
   cursor: pointer;
 }
 
-.entitat-form__imatge:focus-within { outline: 2px solid var(--blue); outline-offset: 3px; }
-
-/* L'input de fitxer no es veu: s'obre clicant el requadre */
-.entitat-form__fitxer {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-}
+/* El requadre és un botó: obre la finestra per triar d'on ve la imatge */
+button.entitat-form__imatge { border: 0; font-family: inherit; cursor: pointer; }
+.entitat-form__imatge:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+button.entitat-form__imatge:disabled { cursor: progress; }
 
 .entitat-form__previsualitzacio {
   position: absolute;

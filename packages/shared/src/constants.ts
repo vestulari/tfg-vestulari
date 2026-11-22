@@ -1,6 +1,6 @@
 // Constants compartides entre el frontend i l'API.
 
-import type { Genere, TipusAtribut, TipusImatge } from './dto'
+import type { Genere, TipusAtribut, TipusAtributPeca, TipusImatge } from './dto'
 
 // Atributs que tots els perfils tenen sempre i que no es poden tocar.
 export const ATRIBUTS_BASICS = ['Nom', 'Edat', 'Gènere'] as const
@@ -17,6 +17,14 @@ export const TIPUS_ATRIBUT: { valor: TipusAtribut; etiqueta: string }[] = [
   { valor: 'string', etiqueta: 'Text' },
   { valor: 'integer', etiqueta: 'Número' },
 ]
+
+// ---------- Vestuari ----------
+// Tipus que pot tenir un atribut d'un tipus de peça, amb el text que es mostra
+export const TIPUS_ATRIBUT_PECA: { valor: TipusAtributPeca; etiqueta: string }[] = [
+  ...TIPUS_ATRIBUT,
+  { valor: 'color', etiqueta: 'Color' },
+]
+
 // ---------- Imatges ----------
 // Formats d'imatge acceptats
 export const IMATGE_TIPUS = ['image/jpeg', 'image/png', 'image/webp'] as const

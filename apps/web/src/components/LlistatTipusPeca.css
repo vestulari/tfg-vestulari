@@ -1,0 +1,26 @@
+/* Estils de la finestra amb el llistat de tipus de peça. La finestra és la de Confirmacio.css. */
+
+.llistat-tipus__llista {
+  display: grid;
+  gap: 0.6rem;
+  max-height: 50vh;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.llistat-tipus__opcio {
+  width: 100%;
+  padding: 0.75rem 1.2rem;
+  border: 0;
+  border-radius: 999px;
+  background: #f1f5fa;
+  color: #111;
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+
+.llistat-tipus__opcio:hover { background: #e3ebf4; }
+.llistat-tipus__opcio:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }

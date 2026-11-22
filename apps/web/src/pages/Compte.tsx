@@ -10,10 +10,11 @@ import BotoEnrere from "../components/BotoEnrere";
 import Capcalera from "../components/Capcalera";
 import RequisitsContrasenya from "../components/RequisitsContrasenya";
 import UsuariAvatar from "../components/UsuariAvatar";
+import { useTriaImatge } from "../components/TriaImatge";
 import { contrasenyaValida } from "../lib/contrasenya";
 import { comprimeix } from "../lib/imatges";
 import { useTornada } from "../lib/tornada";
-import { IMATGE_TIPUS, NOM_MAX, errorNom } from "@tfg-vestulari/shared";
+import { NOM_MAX, errorNom } from "@tfg-vestulari/shared";
 import "./Compte.css";
 
 // L'usuari és el mateix que el de la capçalera: en desar el nom o la foto, s'actualitza a tot arreu.
@@ -150,6 +151,9 @@ export default function Compte() {
     }
   }
 
+  // La finestra per triar si la foto ve de la galeria o de la càmera (la frontal, per fer-se una foto)
+  const triador = useTriaImatge({ camera: "frontal", onImatge: (f) => void canviaFoto(f) });
+
   return (
     <div className="compte">
       <Capcalera titol="El meu compte" />
@@ -173,17 +177,12 @@ export default function Compte() {
 
               <UsuariAvatar nom={usuari.nom} url={usuari.imatgeUrl} className="compte__avatar" />
               <div className="compte__foto-accions">
-                <label className={`compte__boto-foto${desantFoto ? " compte__boto-foto--desactivat" : ""}`}>
-                  <input
-                    className="compte__fitxer"
-                    type="file"
-                    accept={IMATGE_TIPUS.join(",")}
-                    disabled={desantFoto !== null}
-                    onChange={(e) => {
-                      void canviaFoto(e.target.files?.[0]);
-                      e.target.value = ""; // perquè es pugui tornar a triar el mateix fitxer
-                    }}
-                  />
+                <button
+                  type="button"
+                  className="compte__boto-foto"
+                  disabled={desantFoto !== null}
+                  onClick={triador.obre}
+                >
                   {desantFoto === "comprimint"
                     ? "Preparant la foto…"
                     : desantFoto === "pujant"
@@ -191,7 +190,8 @@ export default function Compte() {
                       : usuari.imatgeUrl
                         ? "Canviar la foto"
                         : "Afegir una foto"}
-                </label>
+                </button>
+                {triador.elements}
                 {usuari.imatgeUrl && (
                   <button
                     type="button"

@@ -143,3 +143,49 @@ export type PerfilDadesDto = {
 
 // Resposta de compartir un perfil: si el correu té compte, s'envia la invitació
 export type ComparticioDto = { enviada: boolean; missatge: string }
+// ---------- Vestuari ----------
+// Tipus que pot tenir un atribut d'un tipus de peça (els de perfil, més el color)
+export type TipusAtributPeca = 'string' | 'integer' | 'color'
+
+// Un tipus de peça a la llista (Camisa, Samarreta...)
+export type TipusPecaResumDto = { id: number; nom: string }
+
+// Un atribut d'un tipus de peça, tal com està guardat
+export type AtributPecaDto = { id: number; nom: string; tipus: TipusAtributPeca }
+
+// Un tipus de peça amb tots els seus atributs, per ordre de creació
+export type TipusPecaDto = TipusPecaResumDto & { atributs: AtributPecaDto[] }
+
+// Un tipus de peça quan es crea o es desa: els atributs nous van sense id
+export type TipusPecaDadesDto = {
+  nom: string
+  atributs: { id: number | null; nom: string; tipus: TipusAtributPeca }[]
+}
+
+// Un color de la paleta del vestuari de l'entitat. hex és #RRGGBB en majúscules.
+export type ColorDto = { id: number; nom: string; hex: string }
+
+// Un color quan es desa la paleta: sense id si és nou
+export type ColorDadesDto = { id: number | null; nom: string; hex: string }
+
+// Una peça de roba a l'inventari. imatgeUrl és una URL temporal, o null si no té foto.
+export type PecaResumDto = { id: number; nom: string; tipusId: number; imatgeUrl: string | null }
+
+// El valor d'un atribut del tipus de peça en una peça. Als atributs de color és l'id del color.
+export type ValorPecaDto = { atributId: number; valor: string }
+
+// Tot el que es veu d'una peça. creadaPer és el nom del perfil que la va crear (si encara existeix).
+export type PecaDetallDto = PecaResumDto & {
+  descripcio: string | null
+  tipusNom: string
+  creadaPer: string | null
+  valors: ValorPecaDto[]
+}
+
+// Les dades d'una peça quan es crea o s'edita. En editar-la, el tipus no pot canviar.
+export type PecaDadesDto = {
+  nom: string
+  descripcio: string
+  tipusId: number
+  valors: ValorPecaDto[]
+}

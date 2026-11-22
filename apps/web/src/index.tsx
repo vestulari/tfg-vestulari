@@ -28,6 +28,13 @@ import PerfilDetall from "./pages/PerfilDetall";
 import NouPerfil from "./pages/NouPerfil";
 import EditaPerfil from "./pages/EditaPerfil";
 import EditaPlantilla from "./pages/EditaPlantilla";
+import Vestuari from "./pages/Vestuari";
+import TipusPeca from "./pages/TipusPeca";
+import TipusPecaDetall from "./pages/TipusPecaDetall";
+import EditaTipusPeca from "./pages/EditaTipusPeca";
+import PecaDetall from "./pages/PecaDetall";
+import EditaPeca from "./pages/EditaPeca";
+import ColorsVestuari from "./pages/ColorsVestuari";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -55,6 +62,10 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
               <Route path="configuracio" element={<ConfiguracioEntitat />} />
               {/* "El meu perfil" també és aquesta pantalla: l'API decideix qui pot veure cada perfil */}
               <Route path="perfils/:perfilId" element={<PerfilDetall />} />
+              <Route path="vestuari" element={<Vestuari />} />
+              <Route path="vestuari/tipus" element={<TipusPeca />} />
+              <Route path="vestuari/tipus/:tipusId" element={<TipusPecaDetall />} />
+              <Route path="vestuari/peces/:pecaId" element={<PecaDetall />} />
 
               {/* Només per als administradors */}
               <Route element={<RutaAdmin />}>
@@ -62,6 +73,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                 <Route path="perfils/nou" element={<NouPerfil />} />
                 <Route path="perfils/:perfilId/editar" element={<EditaPerfil />} />
                 <Route path="plantilla" element={<EditaPlantilla />} />
+                <Route path="vestuari/tipus/nou" element={<EditaTipusPeca />} />
+                <Route path="vestuari/tipus/:tipusId/editar" element={<EditaTipusPeca />} />
+                <Route path="vestuari/peces/nova" element={<EditaPeca />} />
+                <Route path="vestuari/peces/:pecaId/editar" element={<EditaPeca />} />
+                <Route path="vestuari/colors" element={<ColorsVestuari />} />
               </Route>
             </Route>
           </Route>

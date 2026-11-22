@@ -32,5 +32,26 @@ Cada pantalla té la seva ruta, i les rutes estan definides a index.tsx:
 - EditaPlantilla (/entitat/:id/plantilla): modificar els atributs dels perfils. Els que es treuen no
   s'esborren fins a Guardar, que torna a preguntar. Només administradors.
 
+- Vestuari (/entitat/:id/vestuari): l'inventari de peces de roba (amb la foto), amb el cercador i el filtre per
+  tipus de peça. Clicant una peça se'n veu el detall. Els administradors en poden inserir. Filtrar encara surt desactivat.
+- PecaDetall (/entitat/:id/vestuari/peces/:pecaId): una peça amb el codi #TTPPP, el tipus, els atributs, qui la va
+  crear, la descripció i la foto. Al menú ⋯: descarregar la fitxa tècnica en PDF (tothom; lib/fitxaTecnica.ts),
+  Generar codi (encara desactivat) i, per als administradors, editar-la o eliminar-la.
+- EditaPeca (/entitat/:id/vestuari/peces/nova i .../:pecaId/editar): inserir o editar una peça. En triar el tipus
+  surten els seus atributs. Primer es desen les dades i després la foto; si la foto falla, s'avisa al detall.
+  En editar, el tipus no es pot canviar (el codi en depèn). Només administradors.
+- TipusPeca (/entitat/:id/vestuari/tipus): la llista de tipus de peça. Els administradors en poden inserir un de
+  zero o a partir d'un d'existent (se'n copien els atributs). Fa servir l'estructura de Vestuari.css.
+- TipusPecaDetall (/entitat/:id/vestuari/tipus/:tipusId): el tipus de peça amb els seus atributs, només per mirar.
+  Els administradors el poden editar o eliminar (si no hi ha cap peça d'aquest tipus).
+- EditaTipusPeca (/entitat/:id/vestuari/tipus/nou i .../:tipusId/editar): crear (?de=id per copiar-ne un) o
+  modificar un tipus de peça. Com a la plantilla de perfil, Guardar torna a preguntar si s'esborren atributs.
+  Només administradors.
+- ColorsVestuari (/entitat/:id/vestuari/colors): la paleta de colors del vestuari, que s'obre amb el botó rodó
+  d'arc de Sant Martí de TipusPeca. Es pot canviar el nom i el to (amb el selector de color del navegador),
+  afegir-ne i treure'n. Guardar torna a preguntar si se n'esborra algun. Només administradors.
+  Tota entitat nova es crea amb quatre tipus de peça (Camisa, Samarreta, Faldilla i Pantaló, amb Color i Talla)
+  i 16 colors, que fabrica l'API (factories/entitatFactory.ts). Es poden editar i eliminar com els altres.
+
 Totes menys la landing i el login necessiten haver iniciat sessió.
 Cada pantalla té el seu css amb el mateix nom.

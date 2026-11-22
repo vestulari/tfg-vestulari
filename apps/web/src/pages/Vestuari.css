@@ -1,0 +1,124 @@
+/* Estils de l'inventari de vestuari. La llista de tipus de peça també fa servir la mateixa estructura
+   (barra, contingut i peu amb els botons grocs). */
+
+.vestuari {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 3rem 2.5rem;
+  background: #e6eef6;
+}
+
+.vestuari__barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  padding: 2rem 4rem 1.5rem;
+}
+
+/* El desplegable de tipus i el botó de filtrar van a la dreta */
+.vestuari__filtres { display: flex; align-items: center; gap: 1rem; margin-left: auto; }
+.vestuari__tipus { width: 13rem; }
+
+.vestuari__filtre {
+  padding: 0.6rem 2.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: #f1f5fa;
+  color: #111;
+  font: inherit;
+  font-size: 1.05rem;
+}
+
+.vestuari__filtre:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.vestuari__contingut { flex: 1; padding: 1rem 4rem 2rem 9.5rem; }
+.vestuari__missatge { margin: 0; color: #3d3a36; }
+
+.vestuari__graella {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vestuari__peca {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  width: 10.5rem;
+  padding: 0.9rem 1rem 1.3rem;
+  border-radius: 2rem;
+  background: #f0f4f9;
+  color: #111;
+  text-decoration: none;
+}
+
+.vestuari__peca:hover { background: #e3ebf4; }
+.vestuari__peca:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
+.vestuari__foto {
+  display: grid;
+  place-items: center;
+  width: 6.5rem;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background: #fff;
+  color: #7b8088;
+}
+
+.vestuari__foto svg { width: 70%; height: auto; }
+.vestuari__foto img { width: 100%; height: 100%; object-fit: contain; }
+
+.vestuari__nom {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vestuari__peu {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-around;
+  gap: 1.5rem;
+}
+
+.vestuari__boto {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 0.7rem 1.8rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--yellow);
+  color: #111;
+  font: inherit;
+  font-size: 1.4rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.vestuari__boto:hover:not(:disabled) { filter: brightness(1.04); }
+.vestuari__boto:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+.vestuari__boto:disabled { opacity: 0.6; cursor: not-allowed; }
+.vestuari__mes { font-size: 2.2rem; font-weight: 800; line-height: 1; }
+
+
+@media (max-width: 800px) {
+  .vestuari { padding: 1rem 1rem 2rem; }
+  .vestuari__barra { padding: 1.25rem 0.5rem 1rem; }
+  .vestuari__filtres { margin-left: 0; flex-wrap: wrap; }
+  .vestuari__contingut { padding: 1rem 0.5rem 2rem; }
+  .vestuari__graella { gap: 1rem; justify-content: center; }
+  .vestuari__peca { width: 8.5rem; }
+  .vestuari__foto { width: 5rem; }
+  .vestuari__boto { font-size: 1.15rem; gap: 1rem; }
+}
