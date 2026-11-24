@@ -11,6 +11,7 @@ import BotoEnrere from "../components/BotoEnrere";
 import Capcalera from "../components/Capcalera";
 import Confirmacio from "../components/Confirmacio";
 import TipusPecaForm, { atributsPecaOmplerts, type AtributPecaFila } from "../components/TipusPecaForm";
+import { useActualitzaCatalegs, useTipusPeca } from "../context/CatalegsContext";
 import { useEntitat } from "../context/EntitatContext";
 import "../components/Formulari.css";
 import "./EditaTipusPeca.css";
@@ -34,6 +35,7 @@ function dadesDeFiles(nom: string, files: AtributPecaFila[]): TipusPecaDadesDto 
 
 // En guardar un tipus que ja existia, si es treu algun atribut guardat es pregunta abans amb la llista
 // dels que s'esborraran. Quan s'ha guardat, es torna al detall del tipus.
+// El tipus d'origen surt dels catàlegs de l'entitat, i el que es guarda s'hi posa en acabar.
 export default function EditaTipusPeca() {
   const entitat = useEntitat();
   const navega = useNavigate();
@@ -45,6 +47,8 @@ export default function EditaTipusPeca() {
   const de = params.get("de");
   const origen = editant ? id : de !== null ? Number(de) : null;
 
+  const cataleg = useTipusPeca();
+  const { posaTipus } = useActualitzaCatalegs();
   const [originals, setOriginals] = useState<AtributPecaDto[]>([]);
   const [nom, setNom] = useState("");
   const [files, setFiles] = useState<AtributPecaFila[]>([]);
@@ -54,32 +58,26 @@ export default function EditaTipusPeca() {
   const [enviant, setEnviant] = useState(false);
   const [errorServidor, setErrorServidor] = useState<string | null>(null);
 
-  // Si s'edita o es copia, carrega el tipus d'origen
+  // Si s'edita o es copia, omple el formulari amb el tipus d'origen quan arriben els catàlegs (només un cop)
   useEffect(() => {
-    if (origen === null) return;
-    if (!Number.isInteger(origen) || origen <= 0) {
+    if (origen === null || carregat) return;
+    if (cataleg.error) {
       setErrorCarrega(true);
       return;
     }
-    let cancelat = false;
-    vestuariApi
-      .tipusDetall(entitat.id, origen)
-      .then((t) => {
-        if (cancelat) return;
-        if (editant) {
-          setOriginals(t.atributs);
-          setNom(t.nom);
-        }
-        setFiles(filesDAtributs(t.atributs, !editant));
-        setCarregat(true);
-      })
-      .catch(() => {
-        if (!cancelat) setErrorCarrega(true);
-      });
-    return () => {
-      cancelat = true;
-    };
-  }, [entitat.id, origen, editant]);
+    if (!cataleg.dades) return;
+    const t = cataleg.dades.find((x) => x.id === origen);
+    if (!t) {
+      setErrorCarrega(true);
+      return;
+    }
+    if (editant) {
+      setOriginals(t.atributs);
+      setNom(t.nom);
+    }
+    setFiles(filesDAtributs(t.atributs, !editant));
+    setCarregat(true);
+  }, [cataleg.dades, cataleg.error, origen, editant, carregat]);
 
   const llista = `/entitat/${entitat.id}/vestuari/tipus`;
 
@@ -98,10 +96,11 @@ export default function EditaTipusPeca() {
     setErrorServidor(null);
     try {
       const dades = dadesDeFiles(nom, files);
-      const idDesat = id !== null
-        ? (await vestuariApi.desaTipus(entitat.id, id, dades)).id
-        : (await vestuariApi.creaTipus(entitat.id, dades)).id;
-      navega(`${llista}/${idDesat}`, { replace: true });
+      const desat = id !== null
+        ? await vestuariApi.desaTipus(entitat.id, id, dades)
+        : await vestuariApi.creaTipus(entitat.id, dades);
+      posaTipus(desat);
+      navega(`${llista}/${desat.id}`, { replace: true });
     } catch (e) {
       setErrorServidor(e instanceof ApiError ? e.message : "No s'ha pogut guardar el tipus de peça.");
       setConfirmant(false);

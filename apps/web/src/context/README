@@ -5,5 +5,10 @@ Estat que comparteixen diverses pantalles
 - EntitatContext.tsx: l'entitat on és l'usuari ara mateix, amb el seu perfil i els permisos.
   La posa la pantalla Entitat, i les pantalles de dins de l'entitat la llegeixen amb useEntitat().
   Si una pantalla la canvia (com la configuració), la substitueix amb useActualitzaEntitat().
+- CatalegsContext.tsx: els catàlegs de l'entitat (la plantilla de perfil, els tipus de peça amb els seus atributs i
+  la paleta de colors). Gairebé no canvien, així que es demanen a l'API un sol cop per entitat, la primera vegada
+  que una pantalla els necessita (usePlantilla, useTipusPeca i useColors). Quan un administrador en desa un, la
+  pantalla hi posa la resposta de l'API amb useActualitzaCatalegs(), i no cal tornar-lo a demanar.
+  Si un altre administrador els canvia des d'un altre dispositiu, no es veu fins que es torna a entrar a l'entitat.
 
 La sessió i l'usuari no són aquí, són a la carpeta auth.

@@ -1,7 +1,7 @@
 // Detall d'un tipus de peça: el nom i els seus atributs, amb el tipus de cadascun.
 // Tothom el pot mirar. Els administradors el poden editar o eliminar (si cap peça és d'aquest tipus).
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { TIPUS_ATRIBUT_PECA, type TipusPecaDto } from "@tfg-vestulari/shared";
 import { ApiError } from "../adapters/api/ApiClient";
@@ -9,6 +9,7 @@ import { vestuariApi } from "../adapters/api/VestuariApi";
 import BotoEnrere from "../components/BotoEnrere";
 import Capcalera from "../components/Capcalera";
 import Confirmacio from "../components/Confirmacio";
+import { useActualitzaCatalegs, useTipusPeca } from "../context/CatalegsContext";
 import { useEntitat } from "../context/EntitatContext";
 import "./TipusPecaDetall.css";
 
@@ -22,6 +23,7 @@ type Estat =
 const etiqueta = (tipus: string) => TIPUS_ATRIBUT_PECA.find((t) => t.valor === tipus)?.etiqueta ?? tipus;
 
 // Eliminar es confirma abans. Si hi ha peces d'aquest tipus, l'API no ho deixa fer i se'n mostra el motiu.
+// El tipus surt dels catàlegs de l'entitat (que ja porten els atributs), així que no cal cap crida.
 export default function TipusPecaDetall() {
   const entitat = useEntitat();
   const navega = useNavigate();
@@ -29,30 +31,20 @@ export default function TipusPecaDetall() {
   const id = Number(tipusId);
   const esAdmin = entitat.perfil.esAdministrador;
 
-  const [estat, setEstat] = useState<Estat>({ tipus: "carregant" });
+  const cataleg = useTipusPeca();
+  const { treuTipus } = useActualitzaCatalegs();
   const [eliminant, setEliminant] = useState(false);
   const [enviant, setEnviant] = useState(false);
   const [errorEliminar, setErrorEliminar] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!Number.isInteger(id) || id <= 0) {
-      setEstat({ tipus: "no_disponible" });
-      return;
-    }
-    let cancelat = false;
-    vestuariApi
-      .tipusDetall(entitat.id, id)
-      .then((t) => {
-        if (!cancelat) setEstat({ tipus: "ok", tipusPeca: t });
-      })
-      .catch((e) => {
-        if (cancelat) return;
-        setEstat(e instanceof ApiError && e.status === 404 ? { tipus: "no_disponible" } : { tipus: "error" });
-      });
-    return () => {
-      cancelat = true;
-    };
-  }, [entitat.id, id]);
+  const trobat = cataleg.dades?.find((t) => t.id === id);
+  const estat: Estat = cataleg.error
+    ? { tipus: "error" }
+    : !cataleg.dades
+      ? { tipus: "carregant" }
+      : trobat
+        ? { tipus: "ok", tipusPeca: trobat }
+        : { tipus: "no_disponible" };
 
   const llista = `/entitat/${entitat.id}/vestuari/tipus`;
 
@@ -62,6 +54,7 @@ export default function TipusPecaDetall() {
     setErrorEliminar(null);
     try {
       await vestuariApi.eliminaTipus(entitat.id, id);
+      treuTipus(id);
       navega(llista, { replace: true });
     } catch (e) {
       setErrorEliminar(e instanceof ApiError ? e.message : "No s'ha pogut eliminar el tipus de peça.");

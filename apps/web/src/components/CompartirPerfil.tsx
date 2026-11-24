@@ -2,7 +2,12 @@
 // si aquest correu té compte a Vestulari i si s'ha enviat la invitació.
 
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
-import { CORREU_MAX, errorCorreu, type ComparticioDto } from "@tfg-vestulari/shared";
+import {
+  CORREU_MAX,
+  errorCorreu,
+  type ComparticioDto,
+  type PerfilDetallDto,
+} from "@tfg-vestulari/shared";
 import { ApiError } from "../adapters/api/ApiClient";
 import { perfilApi } from "../adapters/api/PerfilApi";
 import "./Formulari.css";
@@ -14,8 +19,8 @@ type Props = {
   entitatId: number;
   perfil: { id: number; nom: string };
   onTanca: () => void;
-  // Es crida quan s'ha enviat la invitació, perquè la pantalla es torni a carregar
-  onEnviada: () => void;
+  // Es crida quan s'ha enviat la invitació, amb el perfil ja actualitzat (així no s'ha de tornar a demanar)
+  onEnviada: (perfil: PerfilDetallDto) => void;
 };
 
 // Si el correu no té compte, la finestra es queda oberta per provar-ne un altre.
@@ -56,7 +61,7 @@ export default function CompartirPerfil({ obert, entitatId, perfil, onTanca, onE
     try {
       const r = await perfilApi.comparteix(entitatId, perfil.id, correu.trim());
       setResposta(r);
-      if (r.enviada) onEnviada();
+      if (r.enviada && r.perfil) onEnviada(r.perfil);
     } catch (e) {
       setError(e instanceof ApiError ? e.message : "No s'ha pogut enviar la invitació. Torna-ho a provar.");
     } finally {

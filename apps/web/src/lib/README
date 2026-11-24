@@ -5,6 +5,9 @@ Utilitats del frontend que no són components
 - enters.ts: per als camps on només es poden escriure números.
 - cerca.ts: coincideix(), per filtrar llistes amb el cercador sense mirar majúscules ni accents.
 - perfils.ts: passa els perfils i la plantilla del format de l'API al dels formularis, i al revés.
+- navegacio.ts: useDadaPassada(), per rebre l'objecte que ha passat la pantalla anterior en navegar (per exemple,
+  el perfil del detall a la pantalla d'editar). Així no s'ha de tornar a demanar. Si no n'hi ha (en recarregar),
+  la pantalla el demana a l'API com sempre.
 - tornada.ts: recorda d'on s'ha obert el compte o les invitacions, perquè la fletxa d'enrere hi torni.
 - imatges.ts: comprimeix(), que redueix i torna a codificar en WebP una foto abans de pujar-la, segons el seu
   tipus (usuari, entitat o vestuari). La compressió perd qualitat i no es pot desfer, però amb els valors que

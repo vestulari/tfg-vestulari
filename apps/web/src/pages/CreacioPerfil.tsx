@@ -57,12 +57,9 @@ export default function CreacioPerfil() {
     };
 
     try {
-      const { id } = await entitatApi.crea(dades);
-      // L'entitat ja està creada: si la imatge no es pot pujar, s'hi entra igualment
-      // (no es pot tornar a enviar, o es crearia dues vegades) i es pot posar des de la configuració.
-      if (esborrany.imatge instanceof File) {
-        await entitatApi.canviaImatge(id, esborrany.imatge).catch(() => undefined);
-      }
+      // Les dades i la imatge van en una sola crida. Si la imatge no es pot pujar, l'entitat ja està creada:
+      // s'hi entra igualment (no es pot tornar a enviar, o es crearia dues vegades) i es pot posar des de la configuració.
+      const { id } = await entitatApi.crea(dades, esborrany.imatge instanceof File ? esborrany.imatge : null);
       navigate(`/entitat/${id}`);
     } catch (e) {
       setErrorServidor(e instanceof ApiError ? e.message : "No s'ha pogut crear l'entitat.");

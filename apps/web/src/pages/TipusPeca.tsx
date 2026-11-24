@@ -4,12 +4,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import type { TipusPecaResumDto } from "@tfg-vestulari/shared";
-import { vestuariApi } from "../adapters/api/VestuariApi";
 import BotoEnrere from "../components/BotoEnrere";
 import Capcalera from "../components/Capcalera";
 import Cercador from "../components/Cercador";
 import LlistatTipusPeca from "../components/LlistatTipusPeca";
+import { useTipusPeca } from "../context/CatalegsContext";
 import { useEntitat } from "../context/EntitatContext";
 import { coincideix } from "../lib/cerca";
 import "./Vestuari.css";
@@ -17,31 +16,15 @@ import "./TipusPeca.css";
 
 // El botó d'inserir obre un menú amb les dues maneres de crear-lo.
 // "A partir d'un existent" primer demana quin, i després obre el formulari amb els seus atributs copiats.
+// Els tipus surten dels catàlegs de l'entitat: si ja s'havien carregat, no es fa cap crida.
 export default function TipusPeca() {
   const entitat = useEntitat();
   const navega = useNavigate();
-  const [tipus, setTipus] = useState<TipusPecaResumDto[] | null>(null);
-  const [error, setError] = useState(false);
+  const { dades: tipus, error } = useTipusPeca();
   const [cerca, setCerca] = useState("");
   const [menuObert, setMenuObert] = useState(false);
   const [triant, setTriant] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    let cancelat = false;
-    vestuariApi
-      .tipus(entitat.id)
-      .then((t) => {
-        if (!cancelat) setTipus(t);
-      })
-      .catch((e) => {
-        console.error("Error carregant els tipus de peça", e);
-        if (!cancelat) setError(true);
-      });
-    return () => {
-      cancelat = true;
-    };
-  }, [entitat.id]);
 
   // El menú es tanca en clicar fora o amb Escape
   useEffect(() => {

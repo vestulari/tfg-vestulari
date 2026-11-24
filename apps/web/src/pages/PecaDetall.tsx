@@ -15,7 +15,9 @@ import { vestuariApi } from "../adapters/api/VestuariApi";
 import BotoEnrere from "../components/BotoEnrere";
 import Capcalera from "../components/Capcalera";
 import Confirmacio from "../components/Confirmacio";
+import { useColors, useTipusPeca } from "../context/CatalegsContext";
 import { useEntitat } from "../context/EntitatContext";
+import { useDadaPassada } from "../lib/navegacio";
 import "../components/Formulari.css";
 import "./PecaDetall.css";
 
@@ -25,7 +27,8 @@ type Estat =
   | { tipus: "error" }
   | { tipus: "ok"; peca: PecaDetallDto; atributs: AtributPecaDto[]; colors: ColorDto[] };
 
-// Carrega la peça, els atributs del seu tipus i la paleta alhora.
+// Els atributs del tipus i la paleta surten dels catàlegs de l'entitat. La peça només es demana a l'API
+// si la pantalla anterior no l'ha passada (per exemple, en tornar d'editar-la).
 // Si en venim d'inserir-la i la foto no s'ha pogut pujar, ho diu l'avís que arriba amb la navegació.
 export default function PecaDetall() {
   const entitat = useEntitat();
@@ -36,7 +39,12 @@ export default function PecaDetall() {
   const esAdmin = entitat.perfil.esAdministrador;
   const avis = (ubicacio.state as { avis?: string } | null)?.avis ?? null;
 
-  const [estat, setEstat] = useState<Estat>({ tipus: "carregant" });
+  const passada = useDadaPassada<PecaDetallDto>("peca", id);
+  const tipus = useTipusPeca();
+  const colors = useColors();
+  const [carrega, setCarrega] = useState<
+    { tipus: "carregant" } | { tipus: "no_disponible" } | { tipus: "error" } | { tipus: "ok"; peca: PecaDetallDto }
+  >(passada ? { tipus: "ok", peca: passada } : { tipus: "carregant" });
   const [menuObert, setMenuObert] = useState(false);
   const [eliminant, setEliminant] = useState(false);
   const [enviant, setEnviant] = useState(false);
@@ -45,26 +53,44 @@ export default function PecaDetall() {
   const [errorFitxa, setErrorFitxa] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  // Demana la peça, si no l'ha passada la pantalla anterior
   useEffect(() => {
+    if (passada) {
+      setCarrega({ tipus: "ok", peca: passada });
+      return;
+    }
     if (!Number.isInteger(id) || id <= 0) {
-      setEstat({ tipus: "no_disponible" });
+      setCarrega({ tipus: "no_disponible" });
       return;
     }
     let cancelat = false;
-    (async () => {
-      try {
-        const [peca, colors] = await Promise.all([vestuariApi.peca(entitat.id, id), vestuariApi.colors(entitat.id)]);
-        const tipus = await vestuariApi.tipusDetall(entitat.id, peca.tipusId);
-        if (!cancelat) setEstat({ tipus: "ok", peca, atributs: tipus.atributs, colors });
-      } catch (e) {
+    setCarrega({ tipus: "carregant" });
+    vestuariApi
+      .peca(entitat.id, id)
+      .then((peca) => {
+        if (!cancelat) setCarrega({ tipus: "ok", peca });
+      })
+      .catch((e) => {
         if (cancelat) return;
-        setEstat(e instanceof ApiError && e.status === 404 ? { tipus: "no_disponible" } : { tipus: "error" });
-      }
-    })();
+        setCarrega(e instanceof ApiError && e.status === 404 ? { tipus: "no_disponible" } : { tipus: "error" });
+      });
     return () => {
       cancelat = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entitat.id, id]);
+
+  // Junta la peça amb els atributs del seu tipus i la paleta. Fins que no hi és tot, es mostra "Carregant…".
+  const tipusDeLaPeca =
+    carrega.tipus === "ok" ? tipus.dades?.find((t) => t.id === carrega.peca.tipusId) : undefined;
+  const estat: Estat =
+    carrega.tipus !== "ok"
+      ? carrega
+      : tipus.error || colors.error
+        ? { tipus: "error" }
+        : !tipus.dades || !colors.dades
+          ? { tipus: "carregant" }
+          : { tipus: "ok", peca: carrega.peca, atributs: tipusDeLaPeca?.atributs ?? [], colors: colors.dades };
 
   // El menú es tanca en clicar fora o amb Escape
   useEffect(() => {
@@ -150,7 +176,7 @@ export default function PecaDetall() {
                     Generar codi <span className="peca-detall__properament">Properament</span>
                   </button>
                   {esAdmin && (
-                    <Link role="menuitem" to={`${base}/peces/${id}/editar`}>
+                    <Link role="menuitem" to={`${base}/peces/${id}/editar`} state={{ peca: estat.peca }}>
                       Editar peça
                     </Link>
                   )}

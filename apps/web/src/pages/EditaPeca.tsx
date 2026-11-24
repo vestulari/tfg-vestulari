@@ -3,18 +3,20 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import type { AtributPecaDto, ColorDto, PecaDetallDto, TipusPecaResumDto } from "@tfg-vestulari/shared";
+import type { AmbAvis, ColorDto, PecaDetallDto, TipusPecaDto } from "@tfg-vestulari/shared";
 import { ApiError } from "../adapters/api/ApiClient";
 import { vestuariApi } from "../adapters/api/VestuariApi";
 import BotoEnrere from "../components/BotoEnrere";
 import Capcalera from "../components/Capcalera";
 import PecaForm, { valorsDEsborrany, type PecaEsborrany } from "../components/PecaForm";
+import { useColors, useTipusPeca } from "../context/CatalegsContext";
 import { useEntitat } from "../context/EntitatContext";
+import { useDadaPassada } from "../lib/navegacio";
 import "../components/Formulari.css";
 import "./EditaPeca.css";
 
 type Carrega = {
-  tipus: TipusPecaResumDto[];
+  tipus: TipusPecaDto[];
   colors: ColorDto[];
   // La peça que s'edita (null si és nova)
   peca: PecaDetallDto | null;
@@ -31,6 +33,8 @@ function esborranyDePeca(p: PecaDetallDto): PecaEsborrany {
 
 // Primer es desen les dades i després la foto. Si la foto falla, la peça ja queda guardada:
 // es va igualment al detall, i allà s'avisa que la foto no s'ha pogut pujar.
+// Els tipus (amb els atributs) i la paleta surten dels catàlegs de l'entitat. La peça que s'edita la passa
+// el detall (si s'hi arriba d'una altra manera, es demana), i en desar es torna al detall amb la peça desada.
 export default function EditaPeca() {
   const entitat = useEntitat();
   const navega = useNavigate();
@@ -38,61 +42,50 @@ export default function EditaPeca() {
   const editant = pecaId !== undefined;
   const id = editant ? Number(pecaId) : null;
 
-  const [carrega, setCarrega] = useState<Carrega | null>(null);
-  const [errorCarrega, setErrorCarrega] = useState(false);
-  const [dades, setDades] = useState<PecaEsborrany>(BUIT);
-  // Els atributs de cada tipus que ja s'han carregat, per no tornar-los a demanar
-  const [atributsPerTipus, setAtributsPerTipus] = useState<Record<string, AtributPecaDto[]>>({});
+  const passada = useDadaPassada<PecaDetallDto>("peca", id ?? -1);
+  const tipus = useTipusPeca();
+  const colors = useColors();
+
+  const [peca, setPeca] = useState<PecaDetallDto | null>(passada);
+  const [errorPeca, setErrorPeca] = useState(false);
+  const [dades, setDades] = useState<PecaEsborrany>(passada ? esborranyDePeca(passada) : BUIT);
   const [enviant, setEnviant] = useState(false);
   const [errorServidor, setErrorServidor] = useState<string | null>(null);
 
-  // Carrega els tipus, la paleta i, si s'edita, la peça
+  // Si s'edita una peça que no ha passat el detall, la demana a l'API
   useEffect(() => {
-    if (id !== null && (!Number.isInteger(id) || id <= 0)) {
-      setErrorCarrega(true);
+    if (id === null || passada) return;
+    if (!Number.isInteger(id) || id <= 0) {
+      setErrorPeca(true);
       return;
     }
     let cancelat = false;
-    Promise.all([
-      vestuariApi.tipus(entitat.id),
-      vestuariApi.colors(entitat.id),
-      id === null ? Promise.resolve(null) : vestuariApi.peca(entitat.id, id),
-    ])
-      .then(([tipus, colors, peca]) => {
+    vestuariApi
+      .peca(entitat.id, id)
+      .then((p) => {
         if (cancelat) return;
-        setCarrega({ tipus, colors, peca });
-        if (peca) setDades(esborranyDePeca(peca));
+        setPeca(p);
+        setDades(esborranyDePeca(p));
       })
       .catch(() => {
-        if (!cancelat) setErrorCarrega(true);
+        if (!cancelat) setErrorPeca(true);
       });
     return () => {
       cancelat = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entitat.id, id]);
 
-  // Quan es tria un tipus, carrega els seus atributs (si encara no s'havien carregat)
-  useEffect(() => {
-    const t = dades.tipusId;
-    if (t === "" || atributsPerTipus[t]) return;
-    let cancelat = false;
-    vestuariApi
-      .tipusDetall(entitat.id, Number(t))
-      .then((d) => {
-        if (!cancelat) setAtributsPerTipus((a) => ({ ...a, [t]: d.atributs }));
-      })
-      .catch(() => {
-        if (!cancelat) setErrorServidor("No s'han pogut carregar els atributs d'aquest tipus de peça.");
-      });
-    return () => {
-      cancelat = true;
-    };
-  }, [entitat.id, dades.tipusId, atributsPerTipus]);
+  const errorCarrega = errorPeca || tipus.error || colors.error;
+  const carrega: Carrega | null =
+    tipus.dades && colors.dades && (!editant || peca) ? { tipus: tipus.dades, colors: colors.dades, peca } : null;
 
-  const atributs = dades.tipusId === "" ? null : atributsPerTipus[dades.tipusId] ?? null;
+  // Els atributs del tipus triat (els tipus ja els porten, no cal demanar-los)
+  const atributs =
+    dades.tipusId === "" ? null : tipus.dades?.find((t) => String(t.id) === dades.tipusId)?.atributs ?? null;
   const base = `/entitat/${entitat.id}/vestuari`;
 
-  // Desa la peça i després la foto, i va al detall
+  // Desa la peça i la foto amb una sola crida, i va al detall
   async function desa() {
     if (!atributs) return;
     setEnviant(true);
@@ -105,23 +98,22 @@ export default function EditaPeca() {
       valors: valorsDEsborrany(dades, atributs),
     };
 
-    let idDesat: number;
+    let resposta: AmbAvis<PecaDetallDto>;
     try {
-      idDesat = id !== null ? (await vestuariApi.editaPeca(entitat.id, id, cos)).id : (await vestuariApi.creaPeca(entitat.id, cos)).id;
+      resposta =
+        id !== null
+          ? await vestuariApi.editaPeca(entitat.id, id, cos, dades.imatge)
+          : await vestuariApi.creaPeca(entitat.id, cos, dades.imatge);
     } catch (e) {
       setErrorServidor(e instanceof ApiError ? e.message : "No s'ha pogut guardar la peça.");
       setEnviant(false);
       return;
     }
 
-    let avis: string | undefined;
-    try {
-      if (dades.imatge instanceof File) await vestuariApi.canviaImatgePeca(entitat.id, idDesat, dades.imatge);
-      else if (dades.imatge === "treu") await vestuariApi.treuImatgePeca(entitat.id, idDesat);
-    } catch (e) {
-      avis = `La peça s'ha guardat, però la foto no: ${e instanceof ApiError ? e.message : "torna-ho a provar editant la peça."}`;
-    }
-    navega(`${base}/peces/${idDesat}`, { replace: true, state: avis ? { avis } : undefined });
+    // Si la foto no s'ha pogut pujar, la peça ja està guardada: el detall ho avisarà
+    const { avis, ...desada } = resposta;
+    // El detall rep la peça desada (amb la foto nova), i així no l'ha de tornar a demanar
+    navega(`${base}/peces/${desada.id}`, { replace: true, state: { peca: desada, avis } });
   }
 
   return (

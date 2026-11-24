@@ -8,6 +8,10 @@ Llibreries auxiliars, utilitats generals i configuracions de Supabase
   i que no passi de la mida màxima del seu tipus (usuari, entitat o vestuari). Les imatges ja arriben
   comprimides del navegador: l'API no les pot comprimir, perquè els Workers no tenen eines per fer-ho.
   A la BD només hi guardem la clau de l'objecte (per exemple entitats/3/<uuid>), mai la URL.
+  Per gastar menys crides, les entitats i les peces desen les dades i la imatge amb una sola petició:
+  llegeixAmbImatge() llegeix un formulari amb les dades (JSON) i la imatge (o treuImatge), i comprova la imatge
+  abans de desar res. Després, aplicaCanvi() la puja i esborra la vella; si la pujada falla, les dades ja estan
+  desades i retorna un avís en lloc de fallar.
 - params.ts: per llegir el que arriba a les rutes: els identificadors de la URL (llegeixId) i el cos JSON (llegeixCos).
 
 Aquí va el codi que fan servir diverses parts de l'API i que no és ni una ruta, ni SQL, ni un middleware.

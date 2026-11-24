@@ -37,12 +37,13 @@ async function nomRepetit(c: Context<Env>, d: TipusPecaDadesDto, excepte?: numbe
   return tots.some((t) => t.id !== excepte && mateixNom(t.nom, d.nom))
 }
 
-// Llista dels tipus de peça
+// Llista dels tipus de peça, cadascun amb els seus atributs.
+// Així el frontend en té prou amb una crida per a tot el vestuari, i no n'ha de demanar cap detall.
 tipusPeca.get('/', async (c) => {
-  return c.json(await tipusPecaRepo.llista(c.get('sql'), c.get('entitat').id))
+  return c.json(await tipusPecaRepo.llistaAmbAtributs(c.get('sql'), c.get('entitat').id))
 })
 
-// Crea un tipus de peça nou (només administradors)
+// Crea un tipus de peça nou (només administradors). Retorna el tipus ja creat, amb els atributs.
 tipusPeca.post('/', nomesAdmin, async (c) => {
   const cos = await llegeixCos(c)
   if (cos === undefined) return c.json({ error: 'Cos de la petició no vàlid' }, 400)
@@ -52,17 +53,7 @@ tipusPeca.post('/', nomesAdmin, async (c) => {
   if (await nomRepetit(c, r.dades)) return c.json({ error: NOM_REPETIT }, 409)
 
   const id = await tipusPecaRepo.crea(c.get('sql'), c.get('entitat').id, r.dades)
-  return c.json({ id }, 201)
-})
-
-// Un tipus de peça amb els seus atributs
-tipusPeca.get('/:tipusId', async (c) => {
-  const tipusId = llegeixId(c.req.param('tipusId'))
-  if (tipusId === null) return c.json({ error: 'Identificador no vàlid' }, 400)
-
-  const tipus = await tipusPecaRepo.detall(c.get('sql'), c.get('entitat').id, tipusId)
-  if (!tipus) return c.json({ error: NO_TROBAT }, 404)
-  return c.json(tipus)
+  return c.json(await tipusPecaRepo.detall(c.get('sql'), c.get('entitat').id, id), 201)
 })
 
 // Desa un tipus de peça sencer (només administradors). Els atributs que falten s'esborren amb els seus
@@ -115,12 +106,9 @@ async function detallAmbUrl(c: Context<Env>, id: number): Promise<PecaDetallDto 
   return p && imatges.ambUrl<PecaDetallDto>(c.env, p)
 }
 
-// Valida el cos d'una peça amb els atributs del seu tipus i la paleta de l'entitat.
+// Valida les dades d'una peça (ja llegides del cos) amb els atributs del seu tipus i la paleta de l'entitat.
 // Retorna les dades, o la resposta d'error. Si fix és un tipus, la peça no en pot canviar.
-async function llegeixPeca(c: Context<Env>, fix?: number) {
-  const cos = await llegeixCos(c)
-  if (cos === undefined) return { ok: false as const, resposta: c.json({ error: 'Cos de la petició no vàlid' }, 400) }
-
+async function validaDadesPeca(c: Context<Env>, cos: unknown, fix?: number) {
   const tipusId = (cos as { tipusId?: unknown } | null)?.tipusId
   if (typeof tipusId !== 'number' || !Number.isInteger(tipusId)) {
     return { ok: false as const, resposta: c.json({ error: 'Cal triar el tipus de peça.' }, 400) }
@@ -148,14 +136,32 @@ peces.get('/', async (c) => {
   return c.json(await Promise.all(llista.map((p) => imatges.ambUrl<PecaResumDto>(c.env, p))))
 })
 
-// Crea una peça nova (només administradors). La foto es puja després, amb PUT /:pecaId/imatge.
+// Posa la foto nova a una peça (o la treu, amb null) i retorna la clau de la que tenia
+async function guardaClauPeca(c: Context<Env>, id: number, clau: string | null): Promise<string | null> {
+  const r = await pecaRepo.canviaImatge(c.get('sql'), c.get('entitat').id, id, clau)
+  return r.ok ? r.vella : null
+}
+
+// Respon amb la peça desada i, si la foto no s'ha pogut pujar, amb l'avís
+async function respostaPeca(c: Context<Env>, id: number, avis: string | null, estat: 200 | 201) {
+  const peca = await detallAmbUrl(c, id)
+  return c.json(avis ? { ...peca, avis } : peca, estat)
+}
+
+// Crea una peça nova (només administradors). Si porta foto (formulari multipart), es puja en la mateixa crida,
+// dins de la carpeta de l'entitat. Retorna la peça ja creada, amb un avís si la foto no s'ha pogut pujar.
 peces.post('/', nomesAdmin, async (c) => {
-  const r = await llegeixPeca(c)
+  const cos = await imatges.llegeixAmbImatge(c, 'vestuari')
+  if (!cos.ok) return cos.resposta
+  const r = await validaDadesPeca(c, cos.dades)
   if (!r.ok) return r.resposta
 
   const entitat = c.get('entitat')
   const id = await pecaRepo.crea(c.get('sql'), entitat.id, entitat.perfil.id, r.dades)
-  return c.json({ id }, 201)
+  const avis = await imatges.aplicaCanvi(c.env, 'vestuari', `entitats/${entitat.id}/peces/${id}`, cos.canvi, (clau) =>
+    guardaClauPeca(c, id, clau)
+  )
+  return respostaPeca(c, id, avis, 201)
 })
 
 // Detall d'una peça
@@ -167,21 +173,28 @@ peces.get('/:pecaId', async (c) => {
   return peca ? c.json(peca) : c.json({ error: PECA_NO_TROBADA }, 404)
 })
 
-// Edita el nom, la descripció i els valors d'una peça (només administradors). Retorna la peça ja canviada.
+// Edita el nom, la descripció i els valors d'una peça i, si cal, la foto (posar-ne una de nova o treure-la),
+// tot en una sola crida (només administradors). Retorna la peça ja canviada, amb un avís si la foto no s'ha pogut pujar.
 peces.put('/:pecaId', nomesAdmin, async (c) => {
   const id = idPeca(c)
   if (id === null) return c.json({ error: 'Identificador no vàlid' }, 400)
 
-  const actual = await pecaRepo.detall(c.get('sql'), c.get('entitat').id, id)
+  const entitatId = c.get('entitat').id
+  const actual = await pecaRepo.detall(c.get('sql'), entitatId, id)
   if (!actual) return c.json({ error: PECA_NO_TROBADA }, 404)
 
-  const r = await llegeixPeca(c, actual.tipusId)
+  const cos = await imatges.llegeixAmbImatge(c, 'vestuari')
+  if (!cos.ok) return cos.resposta
+  const r = await validaDadesPeca(c, cos.dades, actual.tipusId)
   if (!r.ok) return r.resposta
 
-  if (!(await pecaRepo.edita(c.get('sql'), c.get('entitat').id, id, r.dades))) {
+  if (!(await pecaRepo.edita(c.get('sql'), entitatId, id, r.dades))) {
     return c.json({ error: PECA_NO_TROBADA }, 404)
   }
-  return c.json(await detallAmbUrl(c, id))
+  const avis = await imatges.aplicaCanvi(c.env, 'vestuari', `entitats/${entitatId}/peces/${id}`, cos.canvi, (clau) =>
+    guardaClauPeca(c, id, clau)
+  )
+  return respostaPeca(c, id, avis, 200)
 })
 
 // Elimina una peça i la seva foto (només administradors)
@@ -193,46 +206,6 @@ peces.delete('/:pecaId', nomesAdmin, async (c) => {
   if (vella === undefined) return c.json({ error: PECA_NO_TROBADA }, 404)
   await imatges.esborra(c.env, vella)
   return c.body(null, 204)
-})
-
-// Canvia la foto d'una peça (només administradors). El cos és un formulari (multipart/form-data)
-// amb el fitxer al camp imatge. Es guarda dins de la carpeta de l'entitat. Retorna la peça ja canviada.
-peces.put('/:pecaId/imatge', nomesAdmin, async (c) => {
-  const id = idPeca(c)
-  if (id === null) return c.json({ error: 'Identificador no vàlid' }, 400)
-
-  const cos = await imatges.llegeix(c, 'vestuari')
-  if (!cos.ok) return cos.resposta
-
-  const entitatId = c.get('entitat').id
-  const pujada = await imatges.desa(c.env, 'vestuari', `entitats/${entitatId}/peces/${id}`, cos.fitxer)
-  if (!pujada.ok) return c.json({ error: pujada.error }, 400)
-
-  // Si no es pot guardar a la BD, la imatge que s'acaba de pujar sobra
-  let r: Awaited<ReturnType<typeof pecaRepo.canviaImatge>>
-  try {
-    r = await pecaRepo.canviaImatge(c.get('sql'), entitatId, id, pujada.clau)
-  } catch (e) {
-    await imatges.esborra(c.env, pujada.clau)
-    throw e
-  }
-  if (!r.ok) {
-    await imatges.esborra(c.env, pujada.clau)
-    return c.json({ error: PECA_NO_TROBADA }, 404)
-  }
-  await imatges.esborra(c.env, r.vella)
-  return c.json(await detallAmbUrl(c, id))
-})
-
-// Treu la foto d'una peça (només administradors). Retorna la peça ja canviada.
-peces.delete('/:pecaId/imatge', nomesAdmin, async (c) => {
-  const id = idPeca(c)
-  if (id === null) return c.json({ error: 'Identificador no vàlid' }, 400)
-
-  const r = await pecaRepo.canviaImatge(c.get('sql'), c.get('entitat').id, id, null)
-  if (!r.ok) return c.json({ error: PECA_NO_TROBADA }, 404)
-  await imatges.esborra(c.env, r.vella)
-  return c.json(await detallAmbUrl(c, id))
 })
 
 // La foto de la peça mateixa (els bytes), per posar-la a la fitxa tècnica

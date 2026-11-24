@@ -1,5 +1,6 @@
 // Ruta pare de tot el que hi ha dins d'una entitat (/entitat/:id i les seves subpàgines).
 // Carrega l'entitat i la deixa al context, perquè les pantalles de dins no l'hagin de tornar a demanar.
+// També hi posa els catàlegs (plantilla, tipus de peça i colors), que es demanen la primera vegada que calen.
 
 import { useEffect, useState } from "react";
 import { Outlet, useParams } from "react-router-dom";
@@ -8,6 +9,7 @@ import { ApiError } from "../adapters/api/ApiClient";
 import { entitatApi } from "../adapters/api/EntitatApi";
 import BotoEnrere from "../components/BotoEnrere";
 import Capcalera from "../components/Capcalera";
+import { CatalegsProvider } from "../context/CatalegsContext";
 import { EntitatContext } from "../context/EntitatContext";
 import "./EntradaEntitat.css";
 
@@ -54,7 +56,9 @@ export default function Entitat() {
       <EntitatContext.Provider
         value={{ entitat: estat.entitat, actualitza: (entitat) => setEstat({ tipus: "ok", entitat }) }}
       >
-        <Outlet />
+        <CatalegsProvider key={estat.entitat.id} entitatId={estat.entitat.id}>
+          <Outlet />
+        </CatalegsProvider>
       </EntitatContext.Provider>
     );
   }

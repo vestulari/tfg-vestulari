@@ -24,7 +24,7 @@ type Estat =
 export default function InvitacioDetall() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { recarrega } = useUsuari();
+  const { usuari, estableix } = useUsuari();
   const estatTornada = useEstatTornada();
   const idNum = Number(id);
 
@@ -58,20 +58,19 @@ export default function InvitacioDetall() {
     };
   }, [idNum]);
 
-  // Accepta la invitació (i entra a l'entitat) o la rebutja. Després torna a carregar l'usuari,
-  // perquè el nombre d'invitacions pendents de la capçalera ha canviat.
+  // Accepta la invitació (i entra a l'entitat) o la rebutja. L'API retorna el nombre d'invitacions pendents,
+  // i amb això s'actualitza el comptador de la capçalera sense tornar a demanar l'usuari.
   async function resol(accio: "accepta" | "rebutja") {
     setEnviant(true);
     setErrorAccio(null);
     try {
-      if (accio === "accepta") {
-        const { entitatId } = await invitacioApi.accepta(idNum);
-        navigate(`/entitat/${entitatId}`);
+      const r = accio === "accepta" ? await invitacioApi.accepta(idNum) : await invitacioApi.rebutja(idNum);
+      if (usuari) estableix({ ...usuari, invitacionsPendents: r.invitacionsPendents });
+      if (r.entitatId !== undefined) {
+        navigate(`/entitat/${r.entitatId}`);
       } else {
-        await invitacioApi.rebutja(idNum);
         navigate("/invitacions", { state: estatTornada });
       }
-      void recarrega();
     } catch (e) {
       setErrorAccio(e instanceof ApiError ? e.message : "No s'ha pogut completar l'acció.");
       setEnviant(false);

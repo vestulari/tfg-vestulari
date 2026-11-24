@@ -8,6 +8,7 @@ import { vestuariApi } from "../adapters/api/VestuariApi";
 import BotoEnrere from "../components/BotoEnrere";
 import Capcalera from "../components/Capcalera";
 import Confirmacio from "../components/Confirmacio";
+import { useActualitzaCatalegs, useColors } from "../context/CatalegsContext";
 import { useEntitat } from "../context/EntitatContext";
 import "../components/Formulari.css";
 import "./ColorsVestuari.css";
@@ -20,32 +21,24 @@ const filesDeColors = (colors: ColorDto[]): ColorFila[] =>
 
 // Els colors que es treuen no s'esborren fins a Guardar, que abans torna a preguntar.
 // Si alguna peça fa servir un color que es treu, l'API no deixa guardar i en diu el motiu.
+// La paleta surt dels catàlegs de l'entitat, i en guardar-la s'hi posa la que retorna l'API.
 export default function ColorsVestuari() {
   const entitat = useEntitat();
-  const [originals, setOriginals] = useState<ColorDto[] | null>(null);
+  const { dades: originals, error: errorCarrega } = useColors();
+  const { posaColors } = useActualitzaCatalegs();
   const [files, setFiles] = useState<ColorFila[]>([]);
-  const [errorCarrega, setErrorCarrega] = useState(false);
+  const [omplert, setOmplert] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [avis, setAvis] = useState<string | null>(null);
   const [confirmant, setConfirmant] = useState(false);
   const [enviant, setEnviant] = useState(false);
 
+  // Quan arriba la paleta, omple el formulari (només el primer cop, per no perdre el que s'escriu)
   useEffect(() => {
-    let cancelat = false;
-    vestuariApi
-      .colors(entitat.id)
-      .then((c) => {
-        if (cancelat) return;
-        setOriginals(c);
-        setFiles(filesDeColors(c));
-      })
-      .catch(() => {
-        if (!cancelat) setErrorCarrega(true);
-      });
-    return () => {
-      cancelat = true;
-    };
-  }, [entitat.id]);
+    if (!originals || omplert) return;
+    setFiles(filesDeColors(originals));
+    setOmplert(true);
+  }, [originals, omplert]);
 
   // Canvia el nom o el to d'un color
   function canvia(clau: number, parcial: Partial<ColorFila>) {
@@ -92,7 +85,7 @@ export default function ColorsVestuari() {
         entitat.id,
         files.map((f) => ({ id: f.id ?? null, nom: f.nom, hex: f.hex }))
       );
-      setOriginals(desats);
+      posaColors(desats);
       setFiles(filesDeColors(desats));
       setAvis("S'han guardat els colors.");
     } catch (e) {

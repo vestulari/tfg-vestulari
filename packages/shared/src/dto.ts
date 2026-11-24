@@ -54,6 +54,10 @@ export type AdministradorDto = {
   usuariNom: string
 }
 
+// Resposta d'acceptar o rebutjar una invitació. entitatId només hi és en acceptar-la.
+// invitacionsPendents és el comptador nou, perquè el frontend no hagi de tornar a demanar l'usuari.
+export type InvitacioRespostaDto = { entitatId?: number; invitacionsPendents: number }
+
 export type InvitacioResumDto = {
   id: number
   entitatId: number
@@ -93,7 +97,11 @@ export type EntitatNovaDto = {
   perfil: PerfilNouDto
 }
 
-export type EntitatCreadaDto = { id: number }
+// Resposta de crear una entitat. avis diu que l'entitat s'ha creat però la imatge no s'ha pogut pujar.
+export type EntitatCreadaDto = { id: number; avis?: string }
+
+// Una resposta que, a més de l'objecte desat, pot portar un avís (per exemple, si la imatge no s'ha pogut pujar)
+export type AmbAvis<T> = T & { avis?: string }
 
 // ---------- Plantilla de perfil ----------
 // Un atribut de la plantilla d'una entitat, tal com està guardat
@@ -141,8 +149,9 @@ export type PerfilDadesDto = {
   valors: ValorPerfilDto[]
 }
 
-// Resposta de compartir un perfil: si el correu té compte, s'envia la invitació
-export type ComparticioDto = { enviada: boolean; missatge: string }
+// Resposta de compartir un perfil: si el correu té compte, s'envia la invitació.
+// Si s'ha enviat, porta el perfil actualitzat (així no s'ha de tornar a demanar).
+export type ComparticioDto = { enviada: boolean; missatge: string; perfil?: PerfilDetallDto }
 // ---------- Vestuari ----------
 // Tipus que pot tenir un atribut d'un tipus de peça (els de perfil, més el color)
 export type TipusAtributPeca = 'string' | 'integer' | 'color'

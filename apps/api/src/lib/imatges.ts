@@ -106,6 +106,91 @@ export async function desa(
   return { ok: true, clau }
 }
 
+// Comprova que la imatge sigui d'un tipus acceptat i que no passi de la mida, sense pujar-la.
+// Retorna el missatge d'error, o null si està bé.
+export async function comprova(fitxer: File, tipusImatge: TipusImatge): Promise<string | null> {
+  return errorImatge((await tipusReal(fitxer)) ?? '', fitxer.size, IMATGE_PERFILS[tipusImatge].midaMax)
+}
+
+// Què es vol fer amb la imatge en desar unes dades: posar-ne una de nova, treure la que hi ha, o res
+export type CanviImatge = { fitxer: File | null; treu: boolean }
+
+// Llegeix una petició que porta dades i, si cal, un canvi d'imatge, perquè tot es desi amb una sola crida.
+// Pot ser JSON (només dades) o un formulari multipart amb el camp dades (el JSON) i el fitxer al camp imatge,
+// o treuImatge=1 per treure la que hi ha. La imatge es comprova abans de desar res, així si no és vàlida
+// no es guarda cap dada a mitges. Retorna les dades i el canvi, o la resposta d'error que ha de donar la ruta.
+export async function llegeixAmbImatge(
+  c: Context<Env>,
+  tipusImatge: TipusImatge
+): Promise<{ ok: true; dades: unknown; canvi: CanviImatge } | { ok: false; resposta: Response }> {
+  const falla = (r: Response) => ({ ok: false as const, resposta: r })
+
+  if (!(c.req.header('Content-Type') ?? '').startsWith('multipart/form-data')) {
+    try {
+      return { ok: true, dades: await c.req.json(), canvi: { fitxer: null, treu: false } }
+    } catch {
+      return falla(c.json({ error: 'Cos de la petició no vàlid' }, 400))
+    }
+  }
+
+  // Abans de llegir res, rebutja els cossos massa grans (amb marge per a les dades i el formulari)
+  const mida = Number(c.req.header('Content-Length') ?? 0)
+  if (mida > IMATGE_PERFILS[tipusImatge].midaMax + 64 * 1024) {
+    return falla(c.json({ error: 'La imatge és massa gran.' }, 413))
+  }
+
+  let cos: Record<string, unknown>
+  let dades: unknown
+  try {
+    cos = await c.req.parseBody()
+    dades = JSON.parse(String(cos.dades))
+  } catch {
+    return falla(c.json({ error: 'Cos de la petició no vàlid' }, 400))
+  }
+
+  const fitxer = cos.imatge instanceof File ? cos.imatge : null
+  if (fitxer) {
+    const error = await comprova(fitxer, tipusImatge)
+    if (error) return falla(c.json({ error }, 400))
+  }
+  return { ok: true, dades, canvi: { fitxer, treu: cos.treuImatge === '1' } }
+}
+
+// Aplica el canvi d'imatge a un objecte que ja s'ha desat: puja la nova i esborra la vella, o treu la que hi havia.
+// guardaClau desa la clau nova (o null) a la BD i retorna la clau vella.
+// Si la imatge no es pot pujar, les dades ja estan desades: retorna un avís per dir-ho, en lloc de fallar.
+export async function aplicaCanvi(
+  env: Bindings,
+  tipusImatge: TipusImatge,
+  carpeta: string,
+  canvi: CanviImatge,
+  guardaClau: (clau: string | null) => Promise<string | null>
+): Promise<string | null> {
+  if (canvi.fitxer) {
+    let r: Awaited<ReturnType<typeof desa>>
+    try {
+      r = await desa(env, tipusImatge, carpeta, canvi.fitxer)
+    } catch (e) {
+      console.error("No s'ha pogut pujar la imatge", e)
+      return "Les dades s'han desat, però la imatge no s'ha pogut pujar. Torna-ho a provar."
+    }
+    if (!r.ok) return `Les dades s'han desat, però la imatge no: ${r.error}`
+
+    // Si no es pot guardar a la BD, la imatge que s'acaba de pujar sobra
+    let vella: string | null
+    try {
+      vella = await guardaClau(r.clau)
+    } catch (e) {
+      await esborra(env, r.clau)
+      throw e
+    }
+    await esborra(env, vella)
+  } else if (canvi.treu) {
+    await esborra(env, await guardaClau(null))
+  }
+  return null
+}
+
 // Esborra una imatge. Si falla, només ho apunta: una imatge que sobra no ha de fer fallar la petició.
 export async function esborra(env: Bindings, clau: string | null): Promise<void> {
   if (!clau) return
