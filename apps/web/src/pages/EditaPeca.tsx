@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import type { ColorDto, PecaDetallDto, TipusPecaDto } from "@tfg-vestulari/shared";
+import type { AmbAvis, ColorDto, PecaDetallDto, TipusPecaDto } from "@tfg-vestulari/shared";
 import { ApiError } from "../adapters/api/ApiClient";
 import { vestuariApi } from "../adapters/api/VestuariApi";
 import BotoEnrere from "../components/BotoEnrere";
@@ -85,7 +85,7 @@ export default function EditaPeca() {
     dades.tipusId === "" ? null : tipus.dades?.find((t) => String(t.id) === dades.tipusId)?.atributs ?? null;
   const base = `/entitat/${entitat.id}/vestuari`;
 
-  // Desa la peça i després la foto, i va al detall
+  // Desa la peça i la foto amb una sola crida, i va al detall
   async function desa() {
     if (!atributs) return;
     setEnviant(true);
@@ -98,22 +98,20 @@ export default function EditaPeca() {
       valors: valorsDEsborrany(dades, atributs),
     };
 
-    let desada: PecaDetallDto;
+    let resposta: AmbAvis<PecaDetallDto>;
     try {
-      desada = id !== null ? await vestuariApi.editaPeca(entitat.id, id, cos) : await vestuariApi.creaPeca(entitat.id, cos);
+      resposta =
+        id !== null
+          ? await vestuariApi.editaPeca(entitat.id, id, cos, dades.imatge)
+          : await vestuariApi.creaPeca(entitat.id, cos, dades.imatge);
     } catch (e) {
       setErrorServidor(e instanceof ApiError ? e.message : "No s'ha pogut guardar la peça.");
       setEnviant(false);
       return;
     }
 
-    let avis: string | undefined;
-    try {
-      if (dades.imatge instanceof File) desada = await vestuariApi.canviaImatgePeca(entitat.id, desada.id, dades.imatge);
-      else if (dades.imatge === "treu") desada = await vestuariApi.treuImatgePeca(entitat.id, desada.id);
-    } catch (e) {
-      avis = `La peça s'ha guardat, però la foto no: ${e instanceof ApiError ? e.message : "torna-ho a provar editant la peça."}`;
-    }
+    // Si la foto no s'ha pogut pujar, la peça ja està guardada: el detall ho avisarà
+    const { avis, ...desada } = resposta;
     // El detall rep la peça desada (amb la foto nova), i així no l'ha de tornar a demanar
     navega(`${base}/peces/${desada.id}`, { replace: true, state: { peca: desada, avis } });
   }

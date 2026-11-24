@@ -107,22 +107,12 @@ export default function ConfiguracioEntitat() {
     setErrorAccio(null);
     try {
       if (accio === "desa") {
-        // Primer les dades i després la imatge. Cada pas retorna l'entitat ja canviada, i es desa de seguida:
-        // si la imatge falla, les dades ja queden guardades i la imatge continua pendent per tornar-ho a provar.
-        if (dadesCanviades) {
-          const nova = await entitatApi.edita(entitat.id, aDto(dades));
-          actualitzaEntitat(nova);
-          setDades({ ...aDades(nova), imatge: dades.imatge });
-        }
-        if (dades.imatge !== null) {
-          const nova =
-            dades.imatge === "treu"
-              ? await entitatApi.treuImatge(entitat.id)
-              : await entitatApi.canviaImatge(entitat.id, dades.imatge);
-          actualitzaEntitat(nova);
-          setDades(aDades(nova));
-        }
-        setAvis("S'han desat els canvis.");
+        // Les dades i la imatge es desen amb una sola crida. Si la imatge falla, les dades ja queden
+        // desades i la resposta porta l'avís; la imatge continua triada per tornar-ho a provar.
+        const { avis: avisImatge, ...nova } = await entitatApi.edita(entitat.id, aDto(dades), dades.imatge);
+        actualitzaEntitat(nova);
+        setDades(avisImatge ? { ...aDades(nova), imatge: dades.imatge } : aDades(nova));
+        setAvis(avisImatge ?? "S'han desat els canvis.");
       } else if (accio === "creador" && triat) {
         await entitatApi.passaCreador(entitat.id, triat.perfilId);
         actualitzaEntitat({ ...entitat, perfil: { ...entitat.perfil, esCreador: false } });

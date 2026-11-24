@@ -33,15 +33,21 @@ entitats.route('/:id/peces', peces)
 entitats.route('/:id/colors', colors)
 
 // Crea una entitat nova, amb la plantilla de perfil, el perfil del creador i els tipus de peça inicials.
+// Si porta imatge (formulari multipart), es puja en la mateixa crida. Si la imatge falla, l'entitat ja
+// està creada i la resposta porta un avís.
 entitats.post('/', async (c) => {
-  const cos = await llegeixCos(c)
-  if (cos === undefined) return c.json({ error: 'Cos de la petició no vàlid' }, 400)
+  const cos = await imatges.llegeixAmbImatge(c, 'entitat')
+  if (!cos.ok) return cos.resposta
 
-  const r = validaEntitatNova(cos)
+  const r = validaEntitatNova(cos.dades)
   if (!r.ok) return c.json({ error: r.error }, 400)
 
-  const id = await entitatRepo.crea(c.get('sql'), c.get('userId'), fabricaEntitat(r.dades))
-  const resposta: EntitatCreadaDto = { id }
+  const sql = c.get('sql')
+  const id = await entitatRepo.crea(sql, c.get('userId'), fabricaEntitat(r.dades))
+  const avis = await imatges.aplicaCanvi(c.env, 'entitat', `entitats/${id}`, cos.canvi, (clau) =>
+    entitatRepo.canviaImatge(sql, id, clau)
+  )
+  const resposta: EntitatCreadaDto = avis ? { id, avis } : { id }
   return c.json(resposta, 201)
 })
 
@@ -49,19 +55,24 @@ entitats.post('/', async (c) => {
 // Si l'usuari no n'és membre, el middleware ja ha respost 404, com si l'entitat no existís.
 entitats.get('/:id', async (c) => c.json(await imatges.ambUrl<EntitatDetallDto>(c.env, c.get('entitat'))))
 
-// Canvia el nom, la descripció i la data de l'entitat. Només ho poden fer els administradors.
-// Retorna l'entitat ja canviada.
+// Canvia el nom, la descripció i la data de l'entitat i, si cal, la imatge (posar-ne una de nova o treure-la),
+// tot en una sola crida. Només ho poden fer els administradors. Retorna l'entitat ja canviada,
+// amb un avís si les dades s'han desat però la imatge no.
 entitats.patch('/:id', nomesAdmin, async (c) => {
-  const cos = await llegeixCos(c)
-  if (cos === undefined) return c.json({ error: 'Cos de la petició no vàlid' }, 400)
+  const cos = await imatges.llegeixAmbImatge(c, 'entitat')
+  if (!cos.ok) return cos.resposta
 
-  const r = validaEntitatEditada(cos)
+  const r = validaEntitatEditada(cos.dades)
   if (!r.ok) return c.json({ error: r.error }, 400)
 
   const sql = c.get('sql')
   const id = c.get('entitat').id
   await entitatRepo.edita(sql, id, r.dades)
-  return c.json(await detallAmbUrl(c, id))
+  const avis = await imatges.aplicaCanvi(c.env, 'entitat', `entitats/${id}`, cos.canvi, (clau) =>
+    entitatRepo.canviaImatge(sql, id, clau)
+  )
+  const entitat = await detallAmbUrl(c, id)
+  return c.json(avis ? { ...entitat, avis } : entitat)
 })
 
 // Torna a carregar l'entitat (amb la URL de la imatge) després de canviar-la
@@ -70,40 +81,10 @@ async function detallAmbUrl(c: Context<Env>, id: number): Promise<EntitatDetallD
   return e && imatges.ambUrl<EntitatDetallDto>(c.env, e)
 }
 
-// Canvia la imatge de l'entitat. Només ho poden fer els administradors.
-// El cos és un formulari (multipart/form-data) amb el fitxer al camp imatge. Retorna l'entitat ja canviada.
-entitats.put('/:id/imatge', nomesAdmin, async (c) => {
-  const cos = await imatges.llegeix(c, 'entitat')
-  if (!cos.ok) return cos.resposta
-
-  const id = c.get('entitat').id
-  const r = await imatges.desa(c.env, 'entitat', `entitats/${id}`, cos.fitxer)
-  if (!r.ok) return c.json({ error: r.error }, 400)
-
-  // Si no es pot guardar a la BD, la imatge que s'acaba de pujar sobra
-  let vella: string | null
-  try {
-    vella = await entitatRepo.canviaImatge(c.get('sql'), id, r.clau)
-  } catch (e) {
-    await imatges.esborra(c.env, r.clau)
-    throw e
-  }
-  await imatges.esborra(c.env, vella)
-  return c.json(await detallAmbUrl(c, id))
-})
-
 // La imatge de l'entitat mateixa (els bytes), per posar-la a la fitxa tècnica de les peces. La veuen tots els membres.
 entitats.get('/:id/imatge/fitxer', async (c) => {
   const r = await imatges.fitxer(c.env, c.get('entitat').imatgeClau)
   return r ?? c.json({ error: "L'entitat no té imatge." }, 404)
-})
-
-// Treu la imatge de l'entitat (es tornarà a veure la inicial). Només ho poden fer els administradors.
-entitats.delete('/:id/imatge', nomesAdmin, async (c) => {
-  const id = c.get('entitat').id
-  const vella = await entitatRepo.canviaImatge(c.get('sql'), id, null)
-  await imatges.esborra(c.env, vella)
-  return c.json(await detallAmbUrl(c, id))
 })
 
 // Elimina l'entitat i tot el que hi ha a dins, imatges incloses. Només ho pot fer el creador.

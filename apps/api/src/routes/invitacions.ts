@@ -1,6 +1,7 @@
 // API REST de la gestió d'invitacions.
 
 import { Hono, type Context } from 'hono'
+import type { InvitacioRespostaDto } from '@tfg-vestulari/shared'
 import type { Env } from '../types'
 import { llegeixId } from '../lib/params'
 import { urlImatge } from '../lib/imatges'
@@ -38,22 +39,32 @@ invitacions.get('/:id', async (c) => {
   return c.json(await ambUrl(c, invitacio))
 })
 
-// Accepta una invitació.
+// Accepta una invitació. Retorna l'entitat on s'ha entrat i quantes invitacions queden pendents,
+// perquè el frontend actualitzi el comptador sense haver de tornar a demanar l'usuari.
 invitacions.post('/:id/accepta', async (c) => {
   const id = llegeixId(c.req.param('id'))
   if (id === null) return c.json({ error: 'Identificador no vàlid' }, 400)
 
   const r = await invitacioRepo.accepta(c.get('sql'), c.get('userId'), id)
-  if (r.ok) return c.json({ entitatId: r.entitatId })
+  if (r.ok) {
+    const resposta: InvitacioRespostaDto = {
+      entitatId: r.entitatId,
+      invitacionsPendents: await invitacioRepo.comptaPendents(c.get('sql'), c.get('userId')),
+    }
+    return c.json(resposta)
+  }
   return c.json({ error: MISSATGES[r.motiu] }, r.motiu === 'no_trobada' ? 404 : 409)
 })
 
-// Rebutja una invitació.
+// Rebutja una invitació. Retorna quantes invitacions queden pendents (per al comptador).
 invitacions.post('/:id/rebutja', async (c) => {
   const id = llegeixId(c.req.param('id'))
   if (id === null) return c.json({ error: 'Identificador no vàlid' }, 400)
 
   const fet = await invitacioRepo.rebutja(c.get('sql'), c.get('userId'), id)
   if (!fet) return c.json({ error: MISSATGES.no_trobada }, 404)
-  return c.body(null, 204)
+  const resposta: InvitacioRespostaDto = {
+    invitacionsPendents: await invitacioRepo.comptaPendents(c.get('sql'), c.get('userId')),
+  }
+  return c.json(resposta)
 })

@@ -1,12 +1,13 @@
 // Fa les crides API relacionades amb el vestuari d'una entitat (tipus de peça, peces de roba i colors).
 
 import type {
+  AmbAvis,
   ColorDto,
   PecaDetallDto,
   PecaResumDto,
   TipusPecaDto,
 } from '@tfg-vestulari/shared'
-import { api, apiFitxer } from './ApiClient'
+import { api, apiFitxer, cosAmbImatge } from './ApiClient'
 import type { VestuariGateway } from '../interfaces/VestuariGateway'
 
 // Rutes base del vestuari d'una entitat
@@ -24,18 +25,14 @@ export const vestuariApi: VestuariGateway = {
 
   peces: (entitatId) => api<PecaResumDto[]>(peces(entitatId)),
   peca: (entitatId, pecaId) => api<PecaDetallDto>(`${peces(entitatId)}/${pecaId}`),
-  creaPeca: (entitatId, dades) =>
-    api<PecaDetallDto>(peces(entitatId), { method: 'POST', body: JSON.stringify(dades) }),
-  editaPeca: (entitatId, pecaId, dades) =>
-    api<PecaDetallDto>(`${peces(entitatId)}/${pecaId}`, { method: 'PUT', body: JSON.stringify(dades) }),
+  creaPeca: (entitatId, dades, imatge) =>
+    api<AmbAvis<PecaDetallDto>>(peces(entitatId), { method: 'POST', body: cosAmbImatge(dades, imatge) }),
+  editaPeca: (entitatId, pecaId, dades, imatge) =>
+    api<AmbAvis<PecaDetallDto>>(`${peces(entitatId)}/${pecaId}`, {
+      method: 'PUT',
+      body: cosAmbImatge(dades, imatge),
+    }),
   eliminaPeca: (entitatId, pecaId) => api<void>(`${peces(entitatId)}/${pecaId}`, { method: 'DELETE' }),
-  canviaImatgePeca: (entitatId, pecaId, imatge) => {
-    const cos = new FormData()
-    cos.append('imatge', imatge)
-    return api<PecaDetallDto>(`${peces(entitatId)}/${pecaId}/imatge`, { method: 'PUT', body: cos })
-  },
-  treuImatgePeca: (entitatId, pecaId) =>
-    api<PecaDetallDto>(`${peces(entitatId)}/${pecaId}/imatge`, { method: 'DELETE' }),
   fitxerImatgePeca: (entitatId, pecaId) => apiFitxer(`${peces(entitatId)}/${pecaId}/imatge/fitxer`),
 
   colors: (entitatId) => api<ColorDto[]>(`/entitats/${entitatId}/colors`),

@@ -2,28 +2,23 @@
 
 import type {
   AdministradorDto,
+  AmbAvis,
   AtributDto,
   EntitatCreadaDto,
   EntitatDetallDto,
   EntitatResumDto,
 } from '@tfg-vestulari/shared'
-import { api, apiFitxer } from './ApiClient'
+import { api, apiFitxer, cosAmbImatge } from './ApiClient'
 import type { EntitatGateway } from '../interfaces/EntitatGateway'
 
 export const entitatApi: EntitatGateway = {
   llistaMeves: () => api<EntitatResumDto[]>('/me/entitats'),
   detall: (id) => api<EntitatDetallDto>(`/entitats/${id}`),
-  crea: (dades) =>
-    api<EntitatCreadaDto>('/entitats', { method: 'POST', body: JSON.stringify(dades) }),
-  edita: (id, dades) =>
-    api<EntitatDetallDto>(`/entitats/${id}`, { method: 'PATCH', body: JSON.stringify(dades) }),
+  crea: (dades, imatge) =>
+    api<EntitatCreadaDto>('/entitats', { method: 'POST', body: cosAmbImatge(dades, imatge) }),
+  edita: (id, dades, imatge) =>
+    api<AmbAvis<EntitatDetallDto>>(`/entitats/${id}`, { method: 'PATCH', body: cosAmbImatge(dades, imatge) }),
   elimina: (id) => api<void>(`/entitats/${id}`, { method: 'DELETE' }),
-  canviaImatge: (id, imatge) => {
-    const cos = new FormData()
-    cos.append('imatge', imatge)
-    return api<EntitatDetallDto>(`/entitats/${id}/imatge`, { method: 'PUT', body: cos })
-  },
-  treuImatge: (id) => api<EntitatDetallDto>(`/entitats/${id}/imatge`, { method: 'DELETE' }),
   fitxerImatge: (id) => apiFitxer(`/entitats/${id}/imatge/fitxer`),
   administradors: (id) => api<AdministradorDto[]>(`/entitats/${id}/administradors`),
   passaCreador: (id, perfilId) =>

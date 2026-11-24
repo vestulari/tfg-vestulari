@@ -8,8 +8,9 @@ Cada fitxer és un router de Hono, i tots es munten a index.ts:
 - entitats.ts: crear una entitat, i veure'n una (amb el perfil i els permisos de l'usuari).
   També la configuració: canviar-ne les dades (administradors), eliminar-la i passar el rol de creador
   (només el creador), i sortir-ne (tothom menys el creador).
-  També la imatge (/entitats/:id/imatge): la canvien (PUT, amb un formulari multipart) o la treuen (DELETE) els
-  administradors. Quan s'elimina l'entitat, també s'esborren totes les seves imatges de l'R2.
+  La imatge es desa amb les dades: crear l'entitat (POST) i editar-la (PATCH) accepten un formulari multipart amb
+  les dades i la imatge (o treuImatge). Si la imatge no s'ha pogut pujar, la resposta porta un avís.
+  Quan s'elimina l'entitat, també s'esborren totes les seves imatges de l'R2.
   /entitats/:id/imatge/fitxer retorna la imatge mateixa (la fa servir la fitxa tècnica de les peces).
   També la plantilla de perfil (/entitats/:id/plantilla): la veuen tots els membres i la desen els administradors.
   Si l'usuari no n'és membre, respon 404, i si no té permís per fer una cosa, 403.
@@ -23,13 +24,17 @@ Cada fitxer és un router de Hono, i tots es munten a index.ts:
     amb una sola crida el frontend en tingui prou per a tot el vestuari.
   - Peces (/entitats/:id/peces): llistar (amb la URL de la foto), veure, crear, editar i eliminar. Els valors es
     validen amb els atributs del tipus i, als de color, amb la paleta. El tipus d'una peça no es pot canviar.
-    La foto va a /:pecaId/imatge (PUT multipart o DELETE) i es guarda a entitats/{id}/peces/{pecaId}/.
-    /:pecaId/imatge/fitxer retorna la foto mateixa, per posar-la a la fitxa tècnica (les URL signades no tenen CORS).
+    La foto es desa amb les dades (POST i PUT accepten el mateix formulari multipart que les entitats) i es guarda
+    a entitats/{id}/peces/{pecaId}/. /:pecaId/imatge/fitxer retorna la foto mateixa, per posar-la a la fitxa
+    tècnica (les URL signades no tenen CORS).
   - Colors (/entitats/:id/colors): la paleta del vestuari. Es desa sencera, i no es pot treure un color que faci
     servir alguna peça (409).
 
 Per gastar menys crides: crear i editar retornen sempre l'objecte sencer (no només l'id), i així el frontend
 no l'ha de tornar a demanar.
+
+Acceptar i rebutjar una invitació retornen el comptador nou d'invitacions pendents, perquè el frontend no hagi de
+tornar a demanar /me.
 
 Les imatges: els repositoris retornen la clau de la imatge, i la ruta la canvia per una URL temporal
 (amb ambUrl o urlImatge de lib/imatges.ts) just abans de respondre.

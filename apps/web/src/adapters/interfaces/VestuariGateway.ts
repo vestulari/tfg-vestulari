@@ -2,6 +2,7 @@
 // (tipus de peça, peces de roba i paleta de colors). També comprova que el return sigui el tipus esperat.
 
 import type {
+  AmbAvis,
   ColorDadesDto,
   ColorDto,
   PecaDadesDto,
@@ -10,6 +11,7 @@ import type {
   TipusPecaDadesDto,
   TipusPecaDto,
 } from '@tfg-vestulari/shared'
+import type { CanviImatge } from '../api/ApiClient'
 
 export interface VestuariGateway {
   // Tipus de peça (la llista ja porta els atributs de cada tipus)
@@ -21,11 +23,15 @@ export interface VestuariGateway {
   // Peces de roba
   peces(entitatId: number): Promise<PecaResumDto[]>
   peca(entitatId: number, pecaId: number): Promise<PecaDetallDto>
-  creaPeca(entitatId: number, dades: PecaDadesDto): Promise<PecaDetallDto>
-  editaPeca(entitatId: number, pecaId: number, dades: PecaDadesDto): Promise<PecaDetallDto>
+  // Crear i editar desen les dades i la foto alhora. Si la foto falla, la resposta porta un avís.
+  creaPeca(entitatId: number, dades: PecaDadesDto, imatge: CanviImatge): Promise<AmbAvis<PecaDetallDto>>
+  editaPeca(
+    entitatId: number,
+    pecaId: number,
+    dades: PecaDadesDto,
+    imatge: CanviImatge
+  ): Promise<AmbAvis<PecaDetallDto>>
   eliminaPeca(entitatId: number, pecaId: number): Promise<void>
-  canviaImatgePeca(entitatId: number, pecaId: number, imatge: File): Promise<PecaDetallDto>
-  treuImatgePeca(entitatId: number, pecaId: number): Promise<PecaDetallDto>
   // La foto mateixa, per posar-la a la fitxa tècnica
   fitxerImatgePeca(entitatId: number, pecaId: number): Promise<Blob>
 
