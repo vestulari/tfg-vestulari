@@ -1,0 +1,77 @@
+/* Estils de la pantalla per crear o editar un espectacle */
+
+.edita-espectacle {
+  min-height: 100vh;
+  padding: 1.5rem 3rem 3rem;
+  background: #e6eef6;
+}
+
+.edita-espectacle__targeta {
+  max-width: 82rem;
+  margin: 2.5rem auto 0;
+  padding: 2.5rem 3.5rem 3rem;
+  border-radius: 2.5rem;
+  background: #f0f4f9;
+}
+
+/* La fletxa a l'esquerra i el nom, en gran i centrat */
+.edita-espectacle__cap {
+  display: grid;
+  grid-template-columns: 5rem 1fr 5rem;
+  align-items: center;
+}
+
+.edita-espectacle__nom {
+  grid-column: 2;
+  min-width: 0;
+  padding: 0.2rem 0.6rem;
+  border: 0;
+  border-radius: 1rem;
+  background: none;
+  color: #111;
+  font: inherit;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  text-align: center;
+}
+
+.edita-espectacle__nom::placeholder { color: #111; }
+.edita-espectacle__nom:hover { background: #e9eff6; }
+.edita-espectacle__nom:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; background: #fff; }
+
+/* La data d'estrena, a la dreta */
+.edita-espectacle__estrena {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem 1.2rem;
+}
+
+.edita-espectacle__data { display: flex; gap: 0.6rem; }
+.edita-espectacle__data .formulari__input { width: 5.5rem; height: 3rem; }
+.edita-espectacle__data .formulari__input:last-child { width: 7rem; }
+.edita-espectacle__estrena .formulari__nota { flex-basis: 100%; text-align: right; }
+
+.edita-espectacle__fila {
+  display: grid;
+  grid-template-columns: 9rem 1fr;
+  align-items: start;
+  gap: 1rem;
+}
+
+.edita-espectacle__fila .formulari__etiqueta { padding-top: 1rem; text-align: right; }
+.edita-espectacle__descripcio { min-height: 7rem; background: #fff; }
+
+.edita-espectacle__escenes { display: flex; flex-direction: column; gap: 0.8rem; padding-left: 1rem; }
+.edita-espectacle__subtitol { margin: 0; font-weight: 400; }
+
+@media (max-width: 800px) {
+  .edita-espectacle { padding: 1rem 1rem 2rem; }
+  .edita-espectacle__targeta { margin-top: 1.25rem; padding: 1.5rem 1.25rem 2rem; border-radius: 2rem; }
+  .edita-espectacle__cap { grid-template-columns: 3.5rem 1fr; }
+  .edita-espectacle__estrena { justify-content: flex-start; }
+  .edita-espectacle__estrena .formulari__nota { text-align: left; }
+  .edita-espectacle__fila { grid-template-columns: 1fr; }
+  .edita-espectacle__fila .formulari__etiqueta { padding-top: 0; text-align: left; }
+  .edita-espectacle__escenes { padding-left: 0; }
+}

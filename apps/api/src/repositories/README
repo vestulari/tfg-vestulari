@@ -16,6 +16,8 @@ Hi ha un fitxer per cada cosa de la base de dades:
   definicions_atribut_roba). Desar funciona com la plantilla de perfil. Eliminar no deixa si hi ha alguna peça
   d'aquell tipus. creaAmb serveix perquè entitatRepository guardi els tipus inicials dins de la transacció
   de crear l'entitat.
+- espectacleRepository.ts: llistar (per data d'estrena), veure, crear, desar i eliminar espectacles amb les seves
+  escenes (cada escena té un ordre). De les actuacions, de moment només se'n llegeixen el nom i la data.
 - pecaRepository.ts: llistar, veure, crear, editar i eliminar peces de roba, amb els valors dels atributs, i
   canviar-ne la foto. En editar, els valors es tornen a escriure sencers (el tipus no canvia mai).
 - colorRepository.ts: llistar i desar la paleta de colors del vestuari. Desar funciona com la plantilla de perfil,

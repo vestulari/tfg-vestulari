@@ -1,0 +1,36 @@
+/* Estils de la llista d'espectacles (la resta de la pantalla la comparteix amb el vestuari) */
+
+.espectacles__contingut { padding-left: 4rem; }
+
+.espectacles__llista {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.espectacles__fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 4rem 1rem 3rem;
+  border-radius: 999px;
+  background: #f0f4f9;
+  color: #111;
+  font-size: 1.1rem;
+  text-decoration: none;
+}
+
+.espectacles__fila:hover { background: #e3ebf4; }
+.espectacles__fila:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
+.espectacles__nom { overflow-wrap: anywhere; }
+.espectacles__any { flex: none; color: #3d3a36; }
+
+@media (max-width: 800px) {
+  .espectacles__contingut { padding-left: 0.5rem; }
+  .espectacles__fila { flex-wrap: wrap; padding: 0.9rem 1.5rem; border-radius: 1.5rem; }
+}

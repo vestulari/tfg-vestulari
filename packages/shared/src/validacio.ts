@@ -2,6 +2,8 @@
 import { ATRIBUTS_BASICS, GENERES, IMATGE_TIPUS, TIPUS_ATRIBUT_PECA } from './constants'
 import type {
   AtributDto,
+  EscenaDto,
+  EspectacleDadesDto,
   AtributPecaDto,
   ColorDadesDto,
   ColorDto,
@@ -78,16 +80,17 @@ export function errorDescripcio(text: string): string | null {
     : null
 }
 
-// Només l'any és obligatori. El dia exigeix el mes.
-export function errorDataCreacio(
+// Comprovacions comunes d'una data on només l'any és obligatori i el dia exigeix el mes.
+// anyMax és l'any més gran que es deixa posar, i quina diu de quina data es tracta (per als missatges).
+function errorDataParcial(
   any: number | null,
   mes: number | null,
   dia: number | null,
-  avui: Date = new Date()
+  anyMax: number,
+  quina: string
 ): string | null {
-  const anyActual = avui.getFullYear()
-  if (any === null || !Number.isInteger(any)) return "L'any de creació és obligatori."
-  if (any < ANY_MIN || any > anyActual) return `L'any ha d'estar entre ${ANY_MIN} i ${anyActual}.`
+  if (any === null || !Number.isInteger(any)) return `L'any ${quina} és obligatori.`
+  if (any < ANY_MIN || any > anyMax) return `L'any ha d'estar entre ${ANY_MIN} i ${anyMax}.`
 
   if (mes === null) return dia === null ? null : 'Per indicar el dia cal indicar també el mes.'
   if (!Number.isInteger(mes) || mes < 1 || mes > 12) return 'El mes ha de ser un número entre 1 i 12.'
@@ -97,6 +100,19 @@ export function errorDataCreacio(
     const diesDelMes = new Date(Date.UTC(any, mes, 0)).getUTCDate()
     if (dia > diesDelMes) return 'Aquest dia no existeix en aquest mes.'
   }
+  return null
+}
+
+// Només l'any és obligatori. El dia exigeix el mes. No pot ser una data futura.
+export function errorDataCreacio(
+  any: number | null,
+  mes: number | null,
+  dia: number | null,
+  avui: Date = new Date()
+): string | null {
+  const anyActual = avui.getFullYear()
+  const error = errorDataParcial(any, mes, dia, anyActual, 'de creació')
+  if (error || any === null || mes === null) return error
 
   const mesActual = avui.getMonth() + 1
   if (any === anyActual && mes > mesActual) return 'La data no pot ser futura.'
@@ -105,6 +121,11 @@ export function errorDataCreacio(
   }
   return null
 }
+
+// La data d'estrena d'un espectacle: com la de creació (només l'any és obligatori),
+// però pot ser futura, perquè hi ha espectacles que encara no s'han estrenat.
+export const errorDataEstrena = (any: number | null, mes: number | null, dia: number | null) =>
+  errorDataParcial(any, mes, dia, 9999, "d'estrena")
 
 // L'edat és obligatòria i ha de ser un enter dins dels límits
 export function errorEdat(edat: number | null): string | null {
@@ -594,4 +615,71 @@ export function errorImatge(tipus: string, mida: number, midaMax: number): strin
   }
   if (mida === 0) return 'La imatge està buida.'
   return null
+}
+
+// ---------- Espectacles ----------
+export const ESPECTACLE_NOM_MAX = 80
+export const ESCENA_NOM_MAX = 60
+export const ESCENES_MAX = 100
+
+export const errorNomEspectacle = (nom: string) =>
+  errorNomText(nom, "El nom de l'espectacle és obligatori.", "El nom de l'espectacle", ESPECTACLE_NOM_MAX)
+
+export const errorNomEscena = (nom: string) =>
+  errorNomText(nom, "El nom de l'escena és obligatori.", "El nom de l'escena", ESCENA_NOM_MAX)
+
+// Comprova les escenes d'un espectacle: que no n'hi hagi massa, que tinguin nom i que no se'n repeteixi cap
+// (sense mirar majúscules ni accents)
+export function errorEscenes(escenes: { nom: string }[]): string | null {
+  if (escenes.length > ESCENES_MAX) return `Un espectacle no pot tenir més de ${ESCENES_MAX} escenes.`
+  for (let i = 0; i < escenes.length; i++) {
+    const err = errorNomEscena(escenes[i].nom)
+    if (err) return err
+    if (escenes.slice(0, i).some((e) => mateixNom(e.nom, escenes[i].nom))) {
+      return `Hi ha dues escenes que es diuen «${escenes[i].nom}».`
+    }
+  }
+  return null
+}
+
+// Comprova el cos d'un POST o PUT d'un espectacle. Les escenes amb id han de ser de les que ja té
+// l'espectacle (existents), i l'ordre és el de la llista.
+export function validaEspectacle(cos: unknown, existents: EscenaDto[]): Resultat<EspectacleDadesDto> {
+  if (!esObjecte(cos) || !Array.isArray(cos.escenes)) return invalid('Dades no vàlides.')
+
+  const nom = cos.nom
+  const descripcio = cos.descripcio === undefined || cos.descripcio === null ? '' : cos.descripcio
+  const anyEstrena = cos.anyEstrena
+  const mes = enterOpcional(cos.mesEstrena)
+  const dia = enterOpcional(cos.diaEstrena)
+  if (typeof nom !== 'string') return invalid("Falta el nom de l'espectacle.")
+  if (typeof descripcio !== 'string') return invalid('La descripció no és vàlida.')
+  if (typeof anyEstrena !== 'number') return invalid("Falta l'any d'estrena.")
+  if (mes === undefined || dia === undefined) return invalid("La data d'estrena no és vàlida.")
+
+  const escenes: EspectacleDadesDto['escenes'] = []
+  const idsVistos = new Set<number>()
+  for (const e of cos.escenes) {
+    if (!esObjecte(e) || typeof e.nom !== 'string') return invalid('Alguna escena no és vàlida.')
+    if (e.id === null || e.id === undefined) {
+      escenes.push({ id: null, nom: e.nom })
+      continue
+    }
+    const vella = typeof e.id === 'number' ? existents.find((x) => x.id === e.id) : undefined
+    if (!vella || idsVistos.has(vella.id)) return invalid('Alguna escena no és vàlida.')
+    idsVistos.add(vella.id)
+    escenes.push({ id: vella.id, nom: e.nom })
+  }
+
+  const error =
+    errorNomEspectacle(nom) ??
+    errorDataEstrena(anyEstrena, mes, dia) ??
+    errorDescripcio(descripcio) ??
+    errorEscenes(escenes)
+  if (error) return invalid(error)
+
+  return {
+    ok: true,
+    dades: { nom, descripcio: descripcio.trim(), anyEstrena, mesEstrena: mes, diaEstrena: dia, escenes },
+  }
 }

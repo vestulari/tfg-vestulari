@@ -1,0 +1,195 @@
+/* Estils del detall d'un espectacle */
+
+.espectacle {
+  min-height: 100vh;
+  padding: 1.5rem 3rem 3rem;
+  background: #e6eef6;
+}
+
+.espectacle__targeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 82rem;
+  margin: 2.5rem auto 0;
+  padding: 2.5rem 3.5rem 3rem;
+  border-radius: 2.5rem;
+  background: #f0f4f9;
+}
+
+.espectacle__missatge { margin: 0; text-align: center; color: #3d3a36; }
+
+/* La fletxa a l'esquerra, el nom centrat i el menú ⋯ a la dreta */
+.espectacle__cap {
+  display: grid;
+  grid-template-columns: 5rem 1fr 5rem;
+  align-items: start;
+}
+
+.espectacle__titol { grid-column: 2; text-align: center; }
+
+.espectacle__nom {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+
+.espectacle__estrena { margin: 0.3rem 0 0; font-size: 0.95rem; color: #3d3a36; }
+
+.espectacle__menu { position: relative; grid-column: 3; justify-self: end; }
+
+.espectacle__punts {
+  padding: 0.3rem 0.6rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: #111;
+  font-size: 1.6rem;
+  letter-spacing: 0.1rem;
+  cursor: pointer;
+}
+
+.espectacle__punts:hover { background: #e3ebf4; }
+.espectacle__punts:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+.espectacle__opcions {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  width: 17rem;
+  overflow: hidden;
+  border-radius: 1.6rem;
+  background: #fff;
+  box-shadow: 0 0.8rem 2rem rgba(0, 0, 0, 0.25);
+}
+
+.espectacle__opcions > * {
+  padding: 0.9rem 1.2rem;
+  border: 0;
+  border-bottom: 1px solid #55595f;
+  background: #fff;
+  color: #111;
+  font: inherit;
+  font-size: 1.1rem;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.espectacle__opcions > *:last-child { border-bottom: 0; }
+.espectacle__opcions > *:hover { background: #eef3f9; }
+.espectacle__opcions > *:focus-visible { outline: 3px solid var(--blue); outline-offset: -3px; }
+.espectacle__opcions > .espectacle__opcio--perill { background: #f25c6e; font-weight: 700; }
+.espectacle__opcions > .espectacle__opcio--perill:hover { background: #e14b5e; }
+
+.espectacle__fila {
+  display: grid;
+  grid-template-columns: 9rem 1fr;
+  align-items: start;
+  gap: 1rem;
+}
+
+.espectacle__etiqueta { padding-top: 1rem; font-size: 1.1rem; text-align: right; }
+
+.espectacle__descripcio {
+  min-height: 6rem;
+  margin: 0;
+  padding: 1rem 1.4rem;
+  border-radius: 1.6rem;
+  background: #fff;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.espectacle__descripcio--buida { color: #7b8088; }
+
+/* El toggle entre actuacions i escenes */
+.espectacle__vistes { display: flex; gap: 1rem; padding-left: 1rem; }
+
+.espectacle__vista {
+  padding: 0.5rem 1.2rem;
+  border: 0;
+  border-radius: 999px;
+  background: #e3ebf4;
+  color: #111;
+  font: inherit;
+  font-size: 1.05rem;
+  cursor: pointer;
+}
+
+.espectacle__vista[aria-pressed="true"] { background: #cce8b5; font-weight: 700; }
+.espectacle__vista:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+.espectacle__buit { margin: 0; padding-left: 1rem; color: #3d3a36; }
+
+.espectacle__llista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0 0 0 1rem;
+  list-style: none;
+}
+
+.espectacle__element {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 2.5rem;
+  border-radius: 999px;
+  background: #f8fafc;
+  overflow-wrap: anywhere;
+}
+
+/* Les escenes van numerades, en l'ordre de l'espectacle */
+.espectacle__llista--escenes { counter-reset: escena; }
+.espectacle__llista--escenes .espectacle__element { justify-content: flex-start; }
+.espectacle__llista--escenes .espectacle__element::before {
+  counter-increment: escena;
+  content: counter(escena) ".";
+  min-width: 1.6rem;
+  color: #55595f;
+}
+
+.espectacle__data { flex: none; color: #3d3a36; }
+
+.espectacle__accions { display: flex; justify-content: center; }
+
+.espectacle__boto {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 0.7rem 2rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--yellow);
+  color: #111;
+  font: inherit;
+  font-size: 1.3rem;
+}
+
+.espectacle__boto:disabled { opacity: 0.6; cursor: not-allowed; }
+.espectacle__mes { font-size: 2rem; font-weight: 800; line-height: 1; }
+
+.espectacle__properament {
+  padding: 0.05rem 0.5rem;
+  border-radius: 999px;
+  background: #fff6c9;
+  font-size: 0.75rem;
+}
+
+@media (max-width: 800px) {
+  .espectacle { padding: 1rem 1rem 2rem; }
+  .espectacle__targeta { margin-top: 1.25rem; padding: 1.5rem 1.25rem 2rem; border-radius: 2rem; gap: 1.5rem; }
+  .espectacle__cap { grid-template-columns: 3.5rem 1fr 3.5rem; }
+  .espectacle__fila { grid-template-columns: 1fr; }
+  .espectacle__etiqueta { padding-top: 0; text-align: left; }
+  .espectacle__vistes,
+  .espectacle__buit,
+  .espectacle__llista { padding-left: 0; }
+  .espectacle__element { padding: 0.8rem 1.4rem; border-radius: 1.4rem; }
+}

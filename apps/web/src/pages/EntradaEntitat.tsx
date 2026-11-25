@@ -40,7 +40,7 @@ export default function EntradaEntitat() {
       <main className="entitat__contingut">
         <nav className="entitat__seccions" aria-label={`Seccions de ${entitat.nom}`}>
           <BotoSeccio icona={<IconaPenjador />} text="Vestuari" to="vestuari" />
-          <BotoSeccio icona={<IconaTelo />} text="Espectacles" />
+          <BotoSeccio icona={<IconaTelo />} text="Espectacles" to="espectacles" />
           {veuInterprets ? (
             <BotoSeccio icona={<IconaPersona />} text="Intèrprets" to="interprets" />
           ) : (

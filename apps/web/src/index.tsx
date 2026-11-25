@@ -23,6 +23,9 @@ import Entitat from "./pages/Entitat";
 import EntradaEntitat from "./pages/EntradaEntitat";
 import ConfiguracioEntitat from "./pages/ConfiguracioEntitat";
 import RutaAdmin from "./components/RutaAdmin";
+import Espectacles from "./pages/Espectacles";
+import EspectacleDetall from "./pages/EspectacleDetall";
+import EditaEspectacle from "./pages/EditaEspectacle";
 import Interprets from "./pages/Interprets";
 import PerfilDetall from "./pages/PerfilDetall";
 import NouPerfil from "./pages/NouPerfil";
@@ -66,6 +69,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
               <Route path="vestuari/tipus" element={<TipusPeca />} />
               <Route path="vestuari/tipus/:tipusId" element={<TipusPecaDetall />} />
               <Route path="vestuari/peces/:pecaId" element={<PecaDetall />} />
+              <Route path="espectacles" element={<Espectacles />} />
+              <Route path="espectacles/:espectacleId" element={<EspectacleDetall />} />
 
               {/* Només per als administradors */}
               <Route element={<RutaAdmin />}>
@@ -78,6 +83,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                 <Route path="vestuari/peces/nova" element={<EditaPeca />} />
                 <Route path="vestuari/peces/:pecaId/editar" element={<EditaPeca />} />
                 <Route path="vestuari/colors" element={<ColorsVestuari />} />
+                <Route path="espectacles/nou" element={<EditaEspectacle />} />
+                <Route path="espectacles/:espectacleId/editar" element={<EditaEspectacle />} />
               </Route>
             </Route>
           </Route>

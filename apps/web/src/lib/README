@@ -8,6 +8,8 @@ Utilitats del frontend que no són components
 - navegacio.ts: useDadaPassada(), per rebre l'objecte que ha passat la pantalla anterior en navegar (per exemple,
   el perfil del detall a la pantalla d'editar). Així no s'ha de tornar a demanar. Si no n'hi ha (en recarregar),
   la pantalla el demana a l'API com sempre.
+- dates.ts: per escriure dates com les llegeix una persona: textEstrena() ("Estrenat el 12 de març de 2024",
+  tan completa com sigui la data) i dataCurta() (de AAAA-MM-DD a DD/MM/AAAA).
 - tornada.ts: recorda d'on s'ha obert el compte o les invitacions, perquè la fletxa d'enrere hi torni.
 - imatges.ts: comprimeix(), que redueix i torna a codificar en WebP una foto abans de pujar-la, segons el seu
   tipus (usuari, entitat o vestuari). La compressió perd qualitat i no es pot desfer, però amb els valors que

@@ -1,0 +1,99 @@
+/* Estils de la llista editable d'escenes */
+
+.escenes { display: flex; flex-direction: column; gap: 0.9rem; }
+
+.escenes__llista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.escenes__fila {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  background: #f8fafc;
+}
+
+/* L'escena que s'està arrossegant es veu aixecada */
+.escenes__fila--arrossegant {
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  box-shadow: 0 0.4rem 1.2rem rgba(0, 0, 0, 0.15);
+}
+
+.escenes__nansa,
+.escenes__paperera {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.6rem;
+  height: 2.6rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+}
+
+/* touch-action: none fa que, arrossegant amb el dit, no es mogui la pàgina */
+.escenes__nansa { color: #111; cursor: grab; touch-action: none; }
+.escenes__fila--arrossegant .escenes__nansa { cursor: grabbing; }
+.escenes__paperera { color: #d0405a; }
+
+.escenes__nansa svg,
+.escenes__paperera svg { width: 1.6rem; height: 1.6rem; }
+
+.escenes__nansa:hover,
+.escenes__paperera:hover { background: #e3ebf4; }
+
+.escenes__nansa:focus-visible,
+.escenes__paperera:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+.escenes__nom {
+  flex: 1;
+  min-width: 0;
+  padding: 0.6rem 0.4rem;
+  border: 0;
+  border-radius: 0.6rem;
+  background: none;
+  color: #111;
+  font: inherit;
+  font-size: 1.05rem;
+}
+
+.escenes__nom:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; background: #fff; }
+
+.escenes__afegeix {
+  align-self: flex-end;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.3rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--yellow);
+  color: #111;
+  font: inherit;
+  cursor: pointer;
+}
+
+.escenes__afegeix span { font-size: 1.4rem; font-weight: 800; line-height: 1; }
+.escenes__afegeix:disabled { opacity: 0.6; cursor: not-allowed; }
+.escenes__afegeix:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+/* Només el llegeixen els lectors de pantalla */
+.escenes__anunci {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

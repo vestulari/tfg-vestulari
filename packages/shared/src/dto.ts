@@ -198,3 +198,33 @@ export type PecaDadesDto = {
   tipusId: number
   valors: ValorPecaDto[]
 }
+
+// ---------- Espectacles ----------
+// Un espectacle a la llista (només se'n mostra l'any d'estrena)
+export type EspectacleResumDto = { id: number; nom: string; anyEstrena: number }
+
+// Una escena d'un espectacle. Les escenes sempre van en l'ordre de l'espectacle.
+export type EscenaDto = { id: number; nom: string }
+
+// Una actuació d'un espectacle. data és AAAA-MM-DD, o null si encara no en té.
+export type ActuacioResumDto = { id: number; nom: string; data: string | null }
+
+// Tot el que es veu d'un espectacle. De la data d'estrena, només l'any és obligatori.
+export type EspectacleDetallDto = EspectacleResumDto & {
+  mesEstrena: number | null
+  diaEstrena: number | null
+  descripcio: string | null
+  escenes: EscenaDto[]
+  actuacions: ActuacioResumDto[]
+}
+
+// Les dades d'un espectacle quan es crea o es desa. Les escenes van en l'ordre que han de tenir,
+// i les noves, sense id.
+export type EspectacleDadesDto = {
+  nom: string
+  descripcio: string
+  anyEstrena: number
+  mesEstrena: number | null
+  diaEstrena: number | null
+  escenes: { id: number | null; nom: string }[]
+}

@@ -23,6 +23,8 @@ Components visuals de React reutilitzables
 - RutaAdmin: ruta pare de les pantalles d'una entitat que només poden veure els administradors
 - TipusPecaForm: el formulari d'un tipus de peça (el nom i els atributs, que poden ser Text, Número o Color).
   Funciona com PlantillaPerfilForm i en reaprofita els estils de les files
+- LlistaEscenes: la llista editable de les escenes d'un espectacle. S'ordenen arrossegant la icona ≡ (ratolí o dit)
+  o amb les fletxes del teclat; treure una escena guardada demana confirmació, però no s'esborra fins a Guardar.
 - PecaForm: el formulari d'una peça de roba (nom, tipus, valors dels atributs del tipus, descripció i foto).
   Als atributs de color es tria un color de la paleta. La foto es comprimeix però la puja la pantalla
 - LlistatTipusPeca: la finestra amb el llistat dels tipus de peça existents, per triar-ne un (per crear-ne un de nou a partir d'aquest)

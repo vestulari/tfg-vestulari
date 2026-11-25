@@ -18,6 +18,10 @@ Cada fitxer és un router de Hono, i tots es munten a index.ts:
   (enviar una invitació a un correu), cancel·lar la invitació o descompartir-los. Tot això només els
   administradors. El detall d'un perfil el poden veure els administradors, i cadascú el seu ("El meu perfil").
   Totes les accions retornen el perfil ja actualitzat, perquè el frontend no l'hagi de tornar a demanar.
+- espectacles.ts: penja d'entitats.ts, a /entitats/:id/espectacles. Llistar, veure, crear, desar i eliminar
+  espectacles. Les escenes es desen amb l'espectacle (una sola crida): les que tenen id canvien de nom i d'ordre,
+  les noves es creen i les que falten s'esborren (amb el que tenien a les actuacions, en cascada). El detall porta
+  les escenes en ordre i les actuacions. Tothom ho pot mirar; crear, desar i eliminar, només els administradors.
 - vestuari.ts: penja d'entitats.ts. Tot ho poden mirar els membres; crear, canviar i eliminar, només els administradors.
   - Tipus de peça (/entitats/:id/tipus-peca): no es pot repetir el nom (sense mirar majúscules ni accents), ni
     eliminar-ne un si hi ha peces d'aquell tipus (409). La llista ja porta els atributs de cada tipus, perquè

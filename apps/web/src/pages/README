@@ -42,6 +42,13 @@ Cada pantalla té la seva ruta, i les rutes estan definides a index.tsx:
   En editar, el tipus no es pot canviar (el codi en depèn). Només administradors.
 - TipusPeca (/entitat/:id/vestuari/tipus): la llista de tipus de peça. Els administradors en poden inserir un de
   zero o a partir d'un d'existent (se'n copien els atributs). Fa servir l'estructura de Vestuari.css.
+- Espectacles (/entitat/:id/espectacles): la llista d'espectacles amb el cercador i l'any d'estrena. Els
+  administradors en poden crear de nous.
+- EspectacleDetall (/entitat/:id/espectacles/:espectacleId): el nom, "Estrenat el...", la descripció i un toggle
+  per veure les actuacions (amb el botó "Nova actuació", encara desactivat) o les escenes. Al menú ⋯, editar o
+  eliminar l'espectacle (administradors).
+- EditaEspectacle (/entitat/:id/espectacles/nou i .../:espectacleId/editar, només administradors): el nom, la
+  data d'estrena (només l'any és obligatori i pot ser futura), la descripció i les escenes (LlistaEscenes).
 - TipusPecaDetall (/entitat/:id/vestuari/tipus/:tipusId): el tipus de peça amb els seus atributs, només per mirar.
   Els administradors el poden editar o eliminar (si no hi ha cap peça d'aquest tipus).
 - EditaTipusPeca (/entitat/:id/vestuari/tipus/nou i .../:tipusId/editar): crear (?de=id per copiar-ne un) o

@@ -19,6 +19,7 @@ import * as entitatRepo from '../repositories/entitatRepository'
 import * as plantillaRepo from '../repositories/plantillaRepository'
 import { perfils } from './perfils'
 import { colors, peces, tipusPeca } from './vestuari'
+import { espectacles } from './espectacles'
 
 export const entitats = new Hono<Env>()
 
@@ -31,6 +32,7 @@ entitats.route('/:id/perfils', perfils)
 entitats.route('/:id/tipus-peca', tipusPeca)
 entitats.route('/:id/peces', peces)
 entitats.route('/:id/colors', colors)
+entitats.route('/:id/espectacles', espectacles)
 
 // Crea una entitat nova, amb la plantilla de perfil, el perfil del creador i els tipus de peça inicials.
 // Si porta imatge (formulari multipart), es puja en la mateixa crida. Si la imatge falla, l'entitat ja
